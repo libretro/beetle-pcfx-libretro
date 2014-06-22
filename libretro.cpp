@@ -77,7 +77,7 @@ const char *mednafen_core_str = MEDNAFEN_CORE_NAME;
 
 static void check_system_specs(void)
 {
-   unsigned level = 0;
+   unsigned level = 15;
    environ_cb(RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL, &level);
 }
 
