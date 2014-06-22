@@ -45,9 +45,6 @@
     <Filter Include="Source Files\mednafen\tremor">
       <UniqueIdentifier>{6e70f6f2-5174-46d4-9bd6-33725139e84c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\mednafen\cputest">
-      <UniqueIdentifier>{f70d6936-5cd9-4fba-9309-a48fe85d6517}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\mednafen\hw_cpu\v810">
       <UniqueIdentifier>{585fa68d-736e-4485-95f8-065fb31a5cc4}</UniqueIdentifier>
     </Filter>
@@ -211,9 +208,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\mednafen\tremor\vorbisfile.c">
       <Filter>Source Files\mednafen\tremor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\mednafen\cputest\cputest.c">
-      <Filter>Source Files\mednafen\cputest</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\mednafen\hw_sound\pce_psg\pce_psg.cpp">
       <Filter>Source Files\mednafen\hw_sound\pce_psg</Filter>

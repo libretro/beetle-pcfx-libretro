@@ -24,7 +24,9 @@
 #include <assert.h>
 #include <limits.h>
 #include "OwlResampler.h"
-#include "../cputest/cputest.h"
+#include "../../libretro.h"
+
+extern retro_get_cpu_features_t perf_get_cpu_features_cb;
 
 #ifndef M_PI
 #define M_PI 3.1415926535
@@ -638,7 +640,7 @@ int32 OwlResampler::Resample(OwlBuffer* in, const uint32 in_count, int16* out, c
 
 	}
 #ifdef ARCH_X86
-	else if(cpuext & CPUTEST_FLAG_SSE)
+	else if(cpuext & RETRO_SIMD_SSE2)
 	{
 	 //int32* tp = in->Buf();
 	 //for(unsigned c = 0; c < in_count; c++)
@@ -845,8 +847,9 @@ OwlResampler::OwlResampler(double input_rate, double output_rate, double rate_er
 
  IntermediateBuffer.resize(OutputRate * 4 / 50);	// *4 for safety padding, / min(50,60), an approximate calculation
 
- cpuext = cputest_get_flags();
-//cpuext = 0;
+ cpuext = 0;
+ if (perf_get_cpu_features_cb)
+    cpuext = perf_get_cpu_features_cb();
  MDFN_printf("OwlResampler.cpp debug info:\n");
  MDFN_indent(1);
 
@@ -946,7 +949,7 @@ OwlResampler::OwlResampler(double input_rate, double output_rate, double rate_er
   abort();	// The sky is falling AAAAAAAAAAAAA
  }
  #ifdef ARCH_X86
- else if(cpuext & CPUTEST_FLAG_SSE)
+ else if(cpuext & RETRO_SIMD_SSE2)
  {
   MDFN_printf("SIMD: SSE\n");
 

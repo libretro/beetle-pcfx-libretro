@@ -42,9 +42,6 @@
     <Filter Include="Source Files\mednafen\tremor">
       <UniqueIdentifier>{6e70f6f2-5174-46d4-9bd6-33725139e84c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\mednafen\cputest">
-      <UniqueIdentifier>{473bff84-df08-4518-a515-831989d95593}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\mednafen\pcfx">
       <UniqueIdentifier>{092d3880-01ea-4900-8a83-0f69eeb785d3}</UniqueIdentifier>
     </Filter>
@@ -211,12 +208,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\mednafen\tremor\vorbisfile.c">
       <Filter>Source Files\mednafen\tremor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\mednafen\cputest\cputest.c">
-      <Filter>Source Files\mednafen\cputest</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\mednafen\player.cpp">
-      <Filter>Source Files\mednafen</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\mednafen\pcfx-09333\fxscsi.cpp">
       <Filter>Source Files\mednafen\pcfx</Filter>
