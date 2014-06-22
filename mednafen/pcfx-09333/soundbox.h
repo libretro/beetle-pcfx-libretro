@@ -16,5 +16,4 @@ v810_timestamp_t SoundBox_ADPCMUpdate(const v810_timestamp_t timestamp);
 
 void SoundBox_ResetTS(const v810_timestamp_t ts_base);
 
-#include <blip/Blip_Buffer.h>
 #endif

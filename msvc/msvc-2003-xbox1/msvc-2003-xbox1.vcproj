@@ -337,9 +337,6 @@
 					Name="sound"
 					Filter="">
 					<File
-						RelativePath="..\..\..\mednafen\sound\Blip_Buffer.cpp">
-					</File>
-					<File
 						RelativePath="..\..\..\mednafen\sound\OwlResampler.cpp">
 					</File>
 				</Filter>

@@ -34,7 +34,6 @@ CACHE_CD = 0
 core = pcfx
 NEED_BPP = 32
 WANT_NEW_API = 1
-NEED_BLIP = 1
 NEED_STEREO_SOUND = 1
 NEED_THREADING = 1
 NEED_CD = 1
@@ -113,7 +112,6 @@ MEDNAFEN_SOURCES := $(MEDNAFEN_DIR)/mednafen.cpp \
 	$(MEDNAFEN_DIR)/mempatcher.cpp \
 	$(MEDNAFEN_DIR)/video/Deinterlacer.cpp \
 	$(MEDNAFEN_DIR)/video/surface.cpp \
-	$(MEDNAFEN_DIR)/sound/Blip_Buffer.cpp \
 	$(MEDNAFEN_DIR)/file.cpp \
 	$(MEDNAFEN_DIR)/endian.cpp \
 	$(MEDNAFEN_DIR)/cputest/cputest.c \

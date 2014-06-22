@@ -72,7 +72,6 @@
     <ClCompile Include="..\..\..\mednafen\pcfx-09333\soundbox.cpp" />
     <ClCompile Include="..\..\..\mednafen\pcfx-09333\timer.cpp" />
     <ClCompile Include="..\..\..\mednafen\settings.cpp" />
-    <ClCompile Include="..\..\..\mednafen\sound\Blip_Buffer.cpp" />
     <ClCompile Include="..\..\..\mednafen\sound\OwlResampler.cpp" />
     <ClCompile Include="..\..\..\mednafen\state.cpp" />
     <ClCompile Include="..\..\..\mednafen\Stream.cpp" />
@@ -223,7 +222,6 @@
     <ClCompile Include="..\..\..\mednafen\video\Deinterlacer.cpp" />
     <ClCompile Include="..\..\..\mednafen\video\surface.cpp" />
     <ClCompile Include="..\..\..\scrc32.cpp" />
-    <ClCompile Include="..\..\..\stubs.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{38462FE9-E3FC-4336-B241-50F5599C537B}</ProjectGuid>

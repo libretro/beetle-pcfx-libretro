@@ -30,7 +30,6 @@ NEED_BPP = 32
 ifneq ($(platform), osx)
 	PTHREAD_FLAGS = -pthread
 endif
-NEED_BLIP = 1
 NEED_TREMOR = 1
 WANT_NEW_API = 1
 NEED_STEREO_SOUND = 1
@@ -61,10 +60,6 @@ HW_SOUND_SOURCES += $(MEDNAFEN_DIR)/hw_sound/pce_psg/pce_psg.cpp
 HW_VIDEO_SOURCES += $(MEDNAFEN_DIR)/hw_video/huc6270/vdc_video.cpp
 EXTRA_CORE_INCDIR = -I$(MEDNAFEN_DIR)/hw_sound/ -I$(MEDNAFEN_DIR)/include/blip -I$(MEDNAFEN_DIR)/hw_video/huc6270
 TARGET_NAME := mednafen_$(core)_libretro
-
-ifeq ($(NEED_BLIP), 1)
-RESAMPLER_SOURCES += $(MEDNAFEN_DIR)/sound/Blip_Buffer.cpp
-endif
 
 ifeq ($(NEED_STEREO_SOUND), 1)
 SOUND_DEFINE := -DWANT_STEREO_SOUND
