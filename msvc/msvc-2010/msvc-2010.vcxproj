@@ -53,7 +53,6 @@
     <ClCompile Include="..\..\..\mednafen\pcfx\interrupt.cpp" />
     <ClCompile Include="..\..\..\mednafen\pcfx\jrevdct.cpp" />
     <ClCompile Include="..\..\..\mednafen\pcfx\king.cpp" />
-    <ClCompile Include="..\..\..\mednafen\pcfx\pcfx.cpp" />
     <ClCompile Include="..\..\..\mednafen\pcfx\rainbow.cpp" />
     <ClCompile Include="..\..\..\mednafen\pcfx\soundbox.cpp" />
     <ClCompile Include="..\..\..\mednafen\pcfx\timer.cpp" />

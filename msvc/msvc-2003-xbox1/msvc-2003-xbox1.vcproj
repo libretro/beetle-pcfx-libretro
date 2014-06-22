@@ -362,9 +362,6 @@
 						RelativePath="..\..\..\mednafen\pcfx\king.cpp">
 					</File>
 					<File
-						RelativePath="..\..\..\mednafen\pcfx\pcfx.cpp">
-					</File>
-					<File
 						RelativePath="..\..\..\mednafen\pcfx\rainbow.cpp">
 					</File>
 					<File

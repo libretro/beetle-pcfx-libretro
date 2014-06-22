@@ -41,7 +41,6 @@ CORE_DIR := $(MEDNAFEN_DIR)/pcfx
 
 CORE_SOURCES := $(CORE_DIR)/king.cpp \
 	$(CORE_DIR)/soundbox.cpp \
-	$(CORE_DIR)/pcfx.cpp \
 	$(CORE_DIR)/interrupt.cpp \
 	$(CORE_DIR)/input.cpp \
 	$(CORE_DIR)/timer.cpp \

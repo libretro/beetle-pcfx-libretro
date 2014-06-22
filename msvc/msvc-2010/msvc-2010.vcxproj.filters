@@ -227,9 +227,6 @@
     <ClCompile Include="..\..\..\mednafen\pcfx\king.cpp">
       <Filter>Source Files\mednafen\pcfx</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\mednafen\pcfx\pcfx.cpp">
-      <Filter>Source Files\mednafen\pcfx</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\mednafen\pcfx\rainbow.cpp">
       <Filter>Source Files\mednafen\pcfx</Filter>
     </ClCompile>
