@@ -344,43 +344,43 @@
 					Name="pcfx"
 					Filter="">
 					<File
-						RelativePath="..\..\..\mednafen\pcfx-09333\fxscsi.cpp">
+						RelativePath="..\..\..\mednafen\pcfx\fxscsi.cpp">
 					</File>
 					<File
-						RelativePath="..\..\..\mednafen\pcfx-09333\huc6273.cpp">
+						RelativePath="..\..\..\mednafen\pcfx\huc6273.cpp">
 					</File>
 					<File
-						RelativePath="..\..\..\mednafen\pcfx-09333\input.cpp">
+						RelativePath="..\..\..\mednafen\pcfx\input.cpp">
 					</File>
 					<File
-						RelativePath="..\..\..\mednafen\pcfx-09333\interrupt.cpp">
+						RelativePath="..\..\..\mednafen\pcfx\interrupt.cpp">
 					</File>
 					<File
-						RelativePath="..\..\..\mednafen\pcfx-09333\jrevdct.cpp">
+						RelativePath="..\..\..\mednafen\pcfx\jrevdct.cpp">
 					</File>
 					<File
-						RelativePath="..\..\..\mednafen\pcfx-09333\king.cpp">
+						RelativePath="..\..\..\mednafen\pcfx\king.cpp">
 					</File>
 					<File
-						RelativePath="..\..\..\mednafen\pcfx-09333\pcfx.cpp">
+						RelativePath="..\..\..\mednafen\pcfx\pcfx.cpp">
 					</File>
 					<File
-						RelativePath="..\..\..\mednafen\pcfx-09333\rainbow.cpp">
+						RelativePath="..\..\..\mednafen\pcfx\rainbow.cpp">
 					</File>
 					<File
-						RelativePath="..\..\..\mednafen\pcfx-09333\soundbox.cpp">
+						RelativePath="..\..\..\mednafen\pcfx\soundbox.cpp">
 					</File>
 					<File
-						RelativePath="..\..\..\mednafen\pcfx-09333\timer.cpp">
+						RelativePath="..\..\..\mednafen\pcfx\timer.cpp">
 					</File>
 					<Filter
 						Name="input"
 						Filter="">
 						<File
-							RelativePath="..\..\..\mednafen\pcfx-09333\input\gamepad.cpp">
+							RelativePath="..\..\..\mednafen\pcfx\input\gamepad.cpp">
 						</File>
 						<File
-							RelativePath="..\..\..\mednafen\pcfx-09333\input\mouse.cpp">
+							RelativePath="..\..\..\mednafen\pcfx\input\mouse.cpp">
 						</File>
 					</Filter>
 				</Filter>
