@@ -799,10 +799,6 @@ void CDIF_Stream_Thing::seek(int64 offset, int whence)
 
  switch(whence)
  {
-  default:
-	throw MDFN_Error(ErrnoHolder(EINVAL));
-	break;
-
   case SEEK_SET:
 	new_position = offset;
 	break;
@@ -814,6 +810,8 @@ void CDIF_Stream_Thing::seek(int64 offset, int whence)
   case SEEK_END:
 	new_position = ((int64)sector_count * 2048) + offset;
 	break;
+  default:
+	throw MDFN_Error(ErrnoHolder(EINVAL));
  }
 
  if(new_position < 0 || new_position > ((int64)sector_count * 2048))
