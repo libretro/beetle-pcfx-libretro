@@ -936,44 +936,7 @@ void VDC::DrawBG(uint16 *target, int enabled)
    if((bat & 0xFFF) > VRAM_BGTileNoMask)
     VDC_UNDEFINED("Unmapped BG tile read");
 
-   #ifdef LSB_FIRST
-    #if SIZEOF_LONG == 8
-    uint64 doh = *(uint64 *)pix_lut;
-
-    (target + 0)[x] = (doh & 0xFF) | pal_or;
-    doh >>= 8;
-    (target + 1)[x] = (doh & 0xFF) | pal_or;
-    doh >>= 8;
-    (target + 2)[x] = (doh & 0xFF) | pal_or;
-    doh >>= 8;
-    (target + 3)[x] = (doh & 0xFF) | pal_or;
-    doh >>= 8;
-    (target + 4)[x] = (doh & 0xFF) | pal_or;
-    doh >>= 8;
-    (target + 5)[x] = (doh & 0xFF) | pal_or;
-    doh >>= 8;
-    (target + 6)[x] = (doh & 0xFF) | pal_or;
-    doh >>= 8;
-    (target + 7)[x] = (doh) | pal_or;
-    #else
-    uint32 doh = *(uint32 *)pix_lut;
-    (target + 0)[x] = (doh & 0xFF) | pal_or;
-    doh >>= 8;
-    (target + 1)[x] = (doh & 0xFF) | pal_or;
-    doh >>= 8;
-    (target + 2)[x] = (doh & 0xFF) | pal_or;
-    doh >>= 8;
-    (target + 3)[x] = doh | pal_or;
-    doh = *(uint32 *)(pix_lut + 4);
-    (target + 4)[x] = (doh & 0xFF) | pal_or;
-    doh >>= 8;
-    (target + 5)[x] = (doh & 0xFF) | pal_or;
-    doh >>= 8;
-    (target + 6)[x] = (doh & 0xFF) | pal_or;
-    doh >>= 8;
-    (target + 7)[x] = doh | pal_or;
-    #endif
-   #else
+#ifdef MSB_FIRST
    (target + 0)[x] = pix_lut[0] | pal_or;
    (target + 1)[x] = pix_lut[1] | pal_or;
    (target + 2)[x] = pix_lut[2] | pal_or;
@@ -982,7 +945,44 @@ void VDC::DrawBG(uint16 *target, int enabled)
    (target + 5)[x] = pix_lut[5] | pal_or;
    (target + 6)[x] = pix_lut[6] | pal_or;
    (target + 7)[x] = pix_lut[7] | pal_or;
-   #endif
+#else
+#if SIZEOF_LONG == 8
+   uint64 doh = *(uint64 *)pix_lut;
+
+   (target + 0)[x] = (doh & 0xFF) | pal_or;
+   doh >>= 8;
+   (target + 1)[x] = (doh & 0xFF) | pal_or;
+   doh >>= 8;
+   (target + 2)[x] = (doh & 0xFF) | pal_or;
+   doh >>= 8;
+   (target + 3)[x] = (doh & 0xFF) | pal_or;
+   doh >>= 8;
+   (target + 4)[x] = (doh & 0xFF) | pal_or;
+   doh >>= 8;
+   (target + 5)[x] = (doh & 0xFF) | pal_or;
+   doh >>= 8;
+   (target + 6)[x] = (doh & 0xFF) | pal_or;
+   doh >>= 8;
+   (target + 7)[x] = (doh) | pal_or;
+#else
+   uint32 doh = *(uint32 *)pix_lut;
+   (target + 0)[x] = (doh & 0xFF) | pal_or;
+   doh >>= 8;
+   (target + 1)[x] = (doh & 0xFF) | pal_or;
+   doh >>= 8;
+   (target + 2)[x] = (doh & 0xFF) | pal_or;
+   doh >>= 8;
+   (target + 3)[x] = doh | pal_or;
+   doh = *(uint32 *)(pix_lut + 4);
+   (target + 4)[x] = (doh & 0xFF) | pal_or;
+   doh >>= 8;
+   (target + 5)[x] = (doh & 0xFF) | pal_or;
+   doh >>= 8;
+   (target + 6)[x] = (doh & 0xFF) | pal_or;
+   doh >>= 8;
+   (target + 7)[x] = doh | pal_or;
+#endif
+#endif
 
    bat_boom = (bat_boom + 1) & bat_width_mask;
    BG_XOffset++;
