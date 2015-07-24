@@ -1569,7 +1569,7 @@ extern RavenBuffer* FXCDDABufs[2]; // FIXME, externals are evil!
 
 bool KING_Init(void)
 {
- if(!(king = (king_t*)MDFN_calloc(1, sizeof(king_t), _("KING Data"))))
+ if(!(king = (king_t*)calloc(1, sizeof(king_t))))
   return(0);
 
  king->lastts = 0;

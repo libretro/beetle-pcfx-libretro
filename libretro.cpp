@@ -465,8 +465,8 @@ static bool LoadCommon(std::vector<CDIF *> *CDInterfaces)
 
  if(!KING_Init())
  {
-  MDFN_free(BIOSROM);
-  MDFN_free(RAM);
+  free(BIOSROM);
+  free(RAM);
   BIOSROM = NULL;
   RAM = NULL;
   return(0);

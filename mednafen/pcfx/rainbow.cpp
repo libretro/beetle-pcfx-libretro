@@ -240,10 +240,10 @@ static HuffmanQuickLUT dc_y_qlut = { NULL }, dc_uv_qlut = { NULL}, ac_y_qlut = {
 static void KillHuffmanLUT(HuffmanQuickLUT *qlut)
 {
  if(qlut->lut)
-  MDFN_free(qlut->lut);
+  free(qlut->lut);
 
  if(qlut->lut_bits)
-  MDFN_free(qlut->lut_bits);
+  free(qlut->lut_bits);
 
  qlut->lut = NULL;
  qlut->lut_bits = NULL;
@@ -254,10 +254,10 @@ static bool BuildHuffmanLUT(const HuffmanTable *table, HuffmanQuickLUT *qlut, co
  // TODO: Allocate only (1 << bitmax) entries.
  // TODO: What should we set invalid bitsequences/entries to? 0? ~0?  Something else?
 
- if(!(qlut->lut = (uint8 *)MDFN_calloc(1 << 12, 1, _("Huffman LUT"))))
+ if(!(qlut->lut = (uint8 *)calloc(1 << 12, 1)))
   return(FALSE);
 
- if(!(qlut->lut_bits = (uint8 *)MDFN_calloc(1 << 12, 1, _("Huffman LUT"))))
+ if(!(qlut->lut_bits = (uint8 *)calloc(1 << 12, 1)))
   return(FALSE);
 
  for(int numbits = 2; numbits <= 12; numbits++)
@@ -535,7 +535,7 @@ bool RAINBOW_Init(bool arg_ChromaIP)
 
  for(int i = 0; i < 2; i++)
  {
-  if(!(DecodeBuffer[i] = (uint8*)MDFN_malloc(0x2000 * 4, _("RAINBOW buffer RAM"))))
+  if(!(DecodeBuffer[i] = (uint8*)malloc(0x2000 * 4)))
    return(0);
   memset(DecodeBuffer[i], 0, 0x2000 * 4);
  }

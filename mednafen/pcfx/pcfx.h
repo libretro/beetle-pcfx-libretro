@@ -17,6 +17,17 @@ static inline void FXDBG(const char *format, ...) { (void)0; }
  #define FXDBG(format, ...) ((void)0)
 #endif
 
+static INLINE void MDFN_FastU32MemsetM8(uint32_t *array, uint32_t value_32, unsigned int u32len)
+{
+   uint32_t *ai;
+
+   for(ai = array; ai < array + u32len; ai += 2)
+   {
+      ai[0] = value_32;
+      ai[1] = value_32;
+   }
+}
+
 extern V810 PCFX_V810;
 
 uint8 MDFN_FASTCALL mem_peekbyte(const v810_timestamp_t timestamp, const uint32 A);
