@@ -229,8 +229,8 @@ void ForceEventUpdates(const uint32 timestamp)
  //printf("FEU: %d %d %d %d\n", next_pad_ts, next_timer_ts, next_adpcm_ts, next_king_ts);
 }
 
-#include "io-handler.inc"
-#include "mem-handler.inc"
+#include "mednafen/pcfx/io-handler.inc"
+#include "mednafen/pcfx/mem-handler.inc"
 
 typedef struct
 {
@@ -258,7 +258,7 @@ static uint32 EmuFlags;
 
 static CDGameEntry GameList[] =
 {
- #include "gamedb.inc"
+ #include "mednafen/pcfx/gamedb.inc"
 };
 
 
