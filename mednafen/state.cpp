@@ -159,13 +159,13 @@ static bool SubWrite(StateMem *st, SFORMAT *sf, const char *name_prefix = NULL)
 
    }
    else if(sf->flags & MDFNSTATE_RLSB64)
-    Endian_A64_NE_to_LE(sf->v, bytesize / sizeof(uint64));
+    Endian_A64_Swap(sf->v, bytesize / sizeof(uint64));
    else if(sf->flags & MDFNSTATE_RLSB32)
-    Endian_A32_NE_to_LE(sf->v, bytesize / sizeof(uint32));
+    Endian_A32_Swap(sf->v, bytesize / sizeof(uint32));
    else if(sf->flags & MDFNSTATE_RLSB16)
-    Endian_A16_NE_to_LE(sf->v, bytesize / sizeof(uint16));
+    Endian_A16_Swap(sf->v, bytesize / sizeof(uint16));
    else if(sf->flags & RLSB)
-    Endian_V_NE_to_LE(sf->v, bytesize);
+    FlipByteOrder((uint8_t*)sf->v, bytesize);
     
   // Special case for the evil bool type, to convert bool to 1-byte elements.
   // Don't do it if we're only saving the raw data.
@@ -193,7 +193,7 @@ static bool SubWrite(StateMem *st, SFORMAT *sf, const char *name_prefix = NULL)
   else if(sf->flags & MDFNSTATE_RLSB16)
 	  Endian_A16_LE_to_NE(sf->v, bytesize / sizeof(uint16));
   else if(sf->flags & RLSB)
-	  Endian_V_LE_to_NE(sf->v, bytesize);
+    FlipByteOrder((uint8_t*)sf->v, bytesize);
   sf++; 
  }
 
@@ -363,6 +363,7 @@ static int ReadStateChunk(StateMem *st, SFORMAT *sf, int size)
        ((bool *)tmp->v)[bool_monster] = ((uint8 *)tmp->v)[bool_monster];
       }
      }
+
      if(tmp->flags & MDFNSTATE_RLSB64)
       Endian_A64_LE_to_NE(tmp->v, expected_size / sizeof(uint64));
      else if(tmp->flags & MDFNSTATE_RLSB32)
@@ -370,7 +371,7 @@ static int ReadStateChunk(StateMem *st, SFORMAT *sf, int size)
      else if(tmp->flags & MDFNSTATE_RLSB16)
       Endian_A16_LE_to_NE(tmp->v, expected_size / sizeof(uint16));
      else if(tmp->flags & RLSB)
-      Endian_V_LE_to_NE(tmp->v, expected_size);
+      FlipByteOrder((uint8_t*)tmp->v, expected_size);
     }
    }
    else
