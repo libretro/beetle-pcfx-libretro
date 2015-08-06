@@ -77,7 +77,7 @@
     <ClCompile Include="..\..\..\mednafen\general.cpp">
       <Filter>Source Files\mednafen</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\mednafen\md5.cpp">
+    <ClCompile Include="..\..\..\mednafen\md5.c">
       <Filter>Source Files\mednafen</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\mednafen\mednafen.cpp">

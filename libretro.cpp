@@ -665,9 +665,9 @@ static void DoMD5CDVoodoo(std::vector<CDIF *> *CDInterfaces)
     const char *hash_prefix = "Mednafen PC-FX Multi-Game Set";
     md5_context md5_gameset;
 
-    md5_gameset.starts();
+    md5_starts(&md5_gameset);
 
-    md5_gameset.update_string(hash_prefix);
+    md5_update(&md5_gameset, (uint8_t*)hash_prefix, strlen(hash_prefix));
 
     for(unsigned int disc = 0; disc < found_entry->discs; disc++)
     {
@@ -675,16 +675,16 @@ static void DoMD5CDVoodoo(std::vector<CDIF *> *CDInterfaces)
 
      while(et->tracknum)
      {
-      md5_gameset.update_u32_as_lsb(et->tracknum);
-      md5_gameset.update_u32_as_lsb((uint32)et->format);
-      md5_gameset.update_u32_as_lsb(et->lba);
+      md5_update_u32_as_lsb(&md5_gameset, et->tracknum);
+      md5_update_u32_as_lsb(&md5_gameset, (uint32)et->format);
+      md5_update_u32_as_lsb(&md5_gameset, et->lba);
 
       if(et->tracknum == -1)
        break;
       et++;
      }
     }
-    md5_gameset.finish(MDFNGameInfo->GameSetMD5);
+    md5_finish(&md5_gameset, MDFNGameInfo->GameSetMD5);
     MDFNGameInfo->GameSetMD5Valid = TRUE;
    }
    //printf("%s\n", found_entry->name);
@@ -693,10 +693,10 @@ static void DoMD5CDVoodoo(std::vector<CDIF *> *CDInterfaces)
   }
  } // end: for(unsigned if_disc = 0; if_disc < CDInterfaces->size(); if_disc++)
 
- MDFN_printf(_("CD Layout MD5:   0x%s\n"), md5_context::asciistr(MDFNGameInfo->MD5, 0).c_str());
+ MDFN_printf(_("CD Layout MD5:   0x%s\n"), md5_asciistr(MDFNGameInfo->MD5));
 
  if(MDFNGameInfo->GameSetMD5Valid)
-  MDFN_printf(_("GameSet MD5:     0x%s\n"), md5_context::asciistr(MDFNGameInfo->GameSetMD5, 0).c_str());
+  MDFN_printf(_("GameSet MD5:     0x%s\n"), md5_asciistr(MDFNGameInfo->GameSetMD5));
 }
 
 // PC-FX BIOS will look at all data tracks(not just the first one), in contrast to the PCE CD BIOS, which only looks
@@ -1613,7 +1613,7 @@ std::string MDFN_MakeFName(MakeFName_Type type, int id1, const char *cd1)
          ret = retro_save_directory +slash + retro_base_name +
             std::string(".") +
 #ifndef _XBOX
-	    md5_context::asciistr(MDFNGameInfo->MD5, 0) + std::string(".") +
+	    md5_asciistr(MDFNGameInfo->MD5) + std::string(".") +
 #endif
             std::string(cd1);
          break;

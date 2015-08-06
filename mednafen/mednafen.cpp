@@ -169,7 +169,7 @@ MDFNGI *MDFNI_LoadCD(const char *force_module, const char *devicename)
  {
   md5_context layout_md5;
 
-  layout_md5.starts();
+  md5_starts(&layout_md5);
 
   for(unsigned i = 0; i < CDInterfaces.size(); i++)
   {
@@ -177,18 +177,18 @@ MDFNGI *MDFNI_LoadCD(const char *force_module, const char *devicename)
 
    CDInterfaces[i]->ReadTOC(&toc);
 
-   layout_md5.update_u32_as_lsb(toc.first_track);
-   layout_md5.update_u32_as_lsb(toc.last_track);
-   layout_md5.update_u32_as_lsb(toc.tracks[100].lba);
+   md5_update_u32_as_lsb(&layout_md5, toc.first_track);
+   md5_update_u32_as_lsb(&layout_md5, toc.last_track);
+   md5_update_u32_as_lsb(&layout_md5, toc.tracks[100].lba);
 
    for(uint32 track = toc.first_track; track <= toc.last_track; track++)
    {
-    layout_md5.update_u32_as_lsb(toc.tracks[track].lba);
-    layout_md5.update_u32_as_lsb(toc.tracks[track].control & 0x4);
+    md5_update_u32_as_lsb(&layout_md5, toc.tracks[track].lba);
+    md5_update_u32_as_lsb(&layout_md5, toc.tracks[track].control & 0x4);
    }
   }
 
-  layout_md5.finish(LayoutMD5);
+  md5_finish(&layout_md5, LayoutMD5);
  }
 
  // This if statement will be true if force_module references a system without CDROM support.

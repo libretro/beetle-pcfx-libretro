@@ -255,7 +255,7 @@
 					RelativePath="..\..\mednafen\general.cpp">
 				</File>
 				<File
-					RelativePath="..\..\mednafen\md5.cpp">
+					RelativePath="..\..\mednafen\md5.c">
 				</File>
 				<File
 					RelativePath="..\..\mednafen\mednafen.cpp">

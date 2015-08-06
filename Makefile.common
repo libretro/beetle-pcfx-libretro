@@ -123,11 +123,11 @@ SOURCES_CXX += \
 	$(MEDNAFEN_DIR)/Stream.cpp \
 	$(MEDNAFEN_DIR)/state.cpp \
 	$(MEDNAFEN_DIR)/mempatcher.cpp \
-	$(MEDNAFEN_DIR)/md5.cpp \
 	$(CORE_DIR)/libretro.cpp
 
 SOURCES_C += \
-	$(MEDNAFEN_DIR)/mednafen-endian.c
+	$(MEDNAFEN_DIR)/mednafen-endian.c \
+	$(MEDNAFEN_DIR)/md5.c
 endif
 
 SOURCES_C += $(MEDNAFEN_DIR)/trio/trio.c \
