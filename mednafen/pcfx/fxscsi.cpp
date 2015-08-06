@@ -20,19 +20,15 @@
 
 bool FXSCSI_Init(void)
 {
-
- return true;
+   return true;
 }
 
 uint8 FXSCSI_CtrlRead(uint32 A)
 {
- uint8 ret = 0; //rand();
- //printf("FXSCSI: %08x(ret=%02x)\n", A, ret);
- return(ret);
+   return 0;
 }
-
 
 void FXSCSI_CtrlWrite(uint32 A, uint8 V)
 {
- printf("FXSCSI Write: %08x %02x\n", A, V);
+   printf("FXSCSI Write: %08x %02x\n", A, V);
 }

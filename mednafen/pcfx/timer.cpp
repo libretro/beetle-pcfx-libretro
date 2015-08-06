@@ -32,154 +32,159 @@ static int32 lastts;
 
 static INLINE v810_timestamp_t CalcNextEventTS(const v810_timestamp_t timestamp)
 {
- return((control & 0x2) ? (timestamp + counter) : PCFX_EVENT_NONONO);
+   return((control & 0x2) ? (timestamp + counter) : PCFX_EVENT_NONONO);
 }
 
 #define EFF_PERIOD ((period ? period : 0x10000) * 15)
 
 v810_timestamp_t FXTIMER_Update(const v810_timestamp_t timestamp)
 {
- if(control & 0x2)
- {
-  int32 cycles = timestamp - lastts;
-  counter -= cycles;
-  while(counter <= 0)
-  {
-   counter += EFF_PERIOD;
-   if(control & 0x1)
+   if(control & 0x2)
    {
-    control |= 0x4;
-    PCFXIRQ_Assert(PCFXIRQ_SOURCE_TIMER, TRUE);
+      int32 cycles = timestamp - lastts;
+      counter -= cycles;
+      while(counter <= 0)
+      {
+         counter += EFF_PERIOD;
+         if(control & 0x1)
+         {
+            control |= 0x4;
+            PCFXIRQ_Assert(PCFXIRQ_SOURCE_TIMER, TRUE);
+         }
+      }
    }
-  }
- }
 
- lastts = timestamp;
+   lastts = timestamp;
 
- return(CalcNextEventTS(timestamp));
+   return(CalcNextEventTS(timestamp));
 }
 
 void FXTIMER_ResetTS(int32 ts_base)
 {
- lastts = ts_base;
+   lastts = ts_base;
 }
 
 uint16 FXTIMER_Read16(uint32 A, const v810_timestamp_t timestamp)
 {
- FXTIMER_Update(timestamp);
- switch(A & 0xFC0)
- {
-  default: return(0);
+   FXTIMER_Update(timestamp);
 
-  case 0xF00: return(control);
+   switch(A & 0xFC0)
+   {
+      default:
+         break;
+      case 0xF00:
+         return(control);
+      case 0xF80:
+         return(period);
+      case 0xFC0:
+         return((counter + 14) / 15);
+   }
 
-  case 0xF80: return(period);
-
-  case 0xFC0: return((counter + 14) / 15);
- }
- return(0);
+   return 0;
 }
 
 uint8 FXTIMER_Read8(uint32 A, const v810_timestamp_t timestamp)
 {
- FXTIMER_Update(timestamp);
- return(FXTIMER_Read16(A&~1, timestamp) >> ((A & 1) * 8));
+   FXTIMER_Update(timestamp);
+   return(FXTIMER_Read16(A&~1, timestamp) >> ((A & 1) * 8));
 }
 
 void FXTIMER_Write16(uint32 A, uint16 V, const v810_timestamp_t timestamp)
 {
- FXTIMER_Update(timestamp);
+   FXTIMER_Update(timestamp);
 
- switch(A & 0xFC0)
- {
-  default: break;
+   switch(A & 0xFC0)
+   {
+      default:
+         break;
+      case 0xF00:
+         if(!(control & 0x2) && (V & 0x2))
+            counter = EFF_PERIOD;
+         control = V & 0x7;
 
-  case 0xF00: if(!(control & 0x2) && (V & 0x2))
-	       counter = EFF_PERIOD;
-	      control = V & 0x7;
+         if(V & 0x4)
+            FXDBG("Timer control write with D2 set?");
 
-	      if(V & 0x4)
-	       FXDBG("Timer control write with D2 set?");
+         PCFXIRQ_Assert(PCFXIRQ_SOURCE_TIMER, (bool)(control & 0x4));
+         PCFX_SetEvent(PCFX_EVENT_TIMER, CalcNextEventTS(timestamp));
+         break;
 
-	      PCFXIRQ_Assert(PCFXIRQ_SOURCE_TIMER, (bool)(control & 0x4));
-	      PCFX_SetEvent(PCFX_EVENT_TIMER, CalcNextEventTS(timestamp));
-	      break;
-
-  case 0xF80: period = V; 
-	      PCFX_SetEvent(PCFX_EVENT_TIMER, CalcNextEventTS(timestamp));
-	      break;
- }
+      case 0xF80:
+         period = V; 
+         PCFX_SetEvent(PCFX_EVENT_TIMER, CalcNextEventTS(timestamp));
+         break;
+   }
 }
 
 int FXTIMER_StateAction(StateMem *sm, int load, int data_only)
 {
- SFORMAT StateRegs[] =
- {
-  SFVAR(counter),
-  SFVAR(period),
-  SFVAR(control),
-  SFEND
- };
+   SFORMAT StateRegs[] =
+   {
+      SFVAR(counter),
+      SFVAR(period),
+      SFVAR(control),
+      SFEND
+   };
 
- int ret = MDFNSS_StateAction(sm, load, data_only, StateRegs, "TIMR");
+   int ret = MDFNSS_StateAction(sm, load, data_only, StateRegs, "TIMR");
 
- if(load)
- {
+   if(load)
+   {
 
- }
- return(ret);
+   }
+   return(ret);
 }
 
 
 
 bool FXTIMER_GetRegister(const std::string &name, uint32 &value, std::string *special)
 {
- if(name == "TCTRL")
- {
-  value = control;
-  if(special)
-  {
-   char buf[256];
-   trio_snprintf(buf, 256, "Counting Enabled: %d, IRQ Enabled: %d, IRQ Asserted: %d", (int)(bool)(control & 2), (int)(bool)(control & 1), (int)(bool)(control & 4));
-   *special = std::string(buf);
-  }
-  return(TRUE);
- }
- else if(name == "TPRD")
- {
-  value = period;
-  if(special)
-  {
-   char buf[256];
-   trio_snprintf(buf, 256, "Effective Period: %d; 21477272 / %d = %fHz", EFF_PERIOD, EFF_PERIOD, (double)21477272 / (EFF_PERIOD));
-   *special = std::string(buf);
-  }
-  return(TRUE);
- }
- else if(name == "TCNTR")
- {
-  value = counter;
-  if(special)
-  {
-   //char buf[256];
-   //trio_snprintf(buf, 256, "Pad: %d, ??: %d, Timer: %d, Reset: %d",
-   //*special = std::string(buf);
-  }
-  return(TRUE);
- }
- else
-  return(FALSE);
+   if(name == "TCTRL")
+   {
+      value = control;
+      if(special)
+      {
+         char buf[256];
+         trio_snprintf(buf, 256, "Counting Enabled: %d, IRQ Enabled: %d, IRQ Asserted: %d", (int)(bool)(control & 2), (int)(bool)(control & 1), (int)(bool)(control & 4));
+         *special = std::string(buf);
+      }
+      return(TRUE);
+   }
+   else if(name == "TPRD")
+   {
+      value = period;
+      if(special)
+      {
+         char buf[256];
+         trio_snprintf(buf, 256, "Effective Period: %d; 21477272 / %d = %fHz", EFF_PERIOD, EFF_PERIOD, (double)21477272 / (EFF_PERIOD));
+         *special = std::string(buf);
+      }
+      return(TRUE);
+   }
+   else if(name == "TCNTR")
+   {
+      value = counter;
+      if(special)
+      {
+         //char buf[256];
+         //trio_snprintf(buf, 256, "Pad: %d, ??: %d, Timer: %d, Reset: %d",
+         //*special = std::string(buf);
+      }
+      return(TRUE);
+   }
+   else
+      return(FALSE);
 }
 
 void FXTIMER_Reset(void)
 {
- control = 0;
- period = 0;
- counter = 0;
+   control = 0;
+   period = 0;
+   counter = 0;
 }
 
 void FXTIMER_Init(void)
 {
- lastts = 0;
- FXTIMER_Reset();
+   lastts = 0;
+   FXTIMER_Reset();
 }

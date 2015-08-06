@@ -45,21 +45,21 @@ enum
 
 enum
 {
- INT_RHIT = 15,	// Raster Hit
- INT_HBL = 14, // H blank
- INT_VBL = 13, // V blank
- INT_HSY = 12, // H sync
- INT_VSY = 11, // V sync
- INT_RBDONE = 10, // Read back done
- INT_TESYNC = 9, // TE Sync
- INT_SPDONE = 8, // Sprite done
- INT_CMDONE = 7, // Command macro done
- INT_PESYNC = 6, // PE sync
- INT_AEMP = 5, // Almost empty
- INT_CSE = 4, // Command sync error
- INT_AFL = 3, // Almost full
- INT_OVF = 2, // Overflow
- INT_FSY = 1, // Frame sync
+   INT_RHIT = 15,	// Raster Hit
+   INT_HBL = 14, // H blank
+   INT_VBL = 13, // V blank
+   INT_HSY = 12, // H sync
+   INT_VSY = 11, // V sync
+   INT_RBDONE = 10, // Read back done
+   INT_TESYNC = 9, // TE Sync
+   INT_SPDONE = 8, // Sprite done
+   INT_CMDONE = 7, // Command macro done
+   INT_PESYNC = 6, // PE sync
+   INT_AEMP = 5, // Almost empty
+   INT_CSE = 4, // Command sync error
+   INT_AFL = 3, // Almost full
+   INT_OVF = 2, // Overflow
+   INT_FSY = 1, // Frame sync
 };
 
 static uint16 FIFO[0x20];
@@ -99,154 +99,208 @@ static uint16 Results[0x10];
 
 static void CheckIRQ(void)
 {
- //uint16 MaskedResults = InterruptStatus & InterruptMask;
-
-
-
+   //uint16 MaskedResults = InterruptStatus & InterruptMask;
 }
-
 
 static void ProcessFIFO(void)
 {
- uint8 length = FIFO[0] & 0xFF;
+   uint8 length = FIFO[0] & 0xFF;
 
- if(length > 0x20) 
- {
-  length = 0x20;
-  puts("Length too long");
- }
+   if(length > 0x20) 
+   {
+      length = 0x20;
+      puts("Length too long");
+   }
 
- if(InFIFO >= length)
- {
-  int opcode = FIFO[0] >> 12;
-  int option = (FIFO[0] >> 8) & 0x0F;
+   if(InFIFO >= length)
+   {
+      int opcode = FIFO[0] >> 12;
+      int option = (FIFO[0] >> 8) & 0x0F;
 
-  printf("Op: %02x, option: %02x\n", opcode, option);
+      printf("Op: %02x, option: %02x\n", opcode, option);
 
-  InFIFO -= length;
-  for(int i = 0; i < InFIFO; i++)
-   FIFO[i] = FIFO[length + i];
- }
+      InFIFO -= length;
+      for(int i = 0; i < InFIFO; i++)
+         FIFO[i] = FIFO[length + i];
+   }
 }
 
 
 static void StoreInFIFO(uint16 V)
 {
- if(AFW > 0)
- {
-  FIFO[InFIFO] = V;
-  InFIFO++;
+   if(AFW > 0)
+   {
+      FIFO[InFIFO] = V;
+      InFIFO++;
 
-  ProcessFIFO();
- }
+      ProcessFIFO();
+   }
 }
 
 uint8 HuC6273_Read8(uint32 A)
 {
- puts("73 Read8");
- return(0);
+   puts("73 Read8");
+   return(0);
 }
 
 uint16 HuC6273_Read16(uint32 A)
 {
- A &= 0xfffff;
+   A &= 0xfffff;
 
- printf("HuC6273 Read: %04x\n", A);
+   printf("HuC6273 Read: %04x\n", A);
 
- switch(A)
- {
-  case 0x00000: 
-  case 0x00002: return(AFW); // Command FIFO status
-		
-  case 0x00004: return(FIFOControl);
-  case 0x00006: return(CMTBankSelect);
-  case 0x00008: return(CMTStartAddress);
-  case 0x0000A: return(CMTByteCount);
-  case 0x0000C: return(InterruptMask);
-  case 0x0000E: return(0);
-  case 0x00010: return(InterruptStatus);
-  case 0x00012: return(ReadBack);
-  case 0x00014: return(HorizontalTiming);
-  case 0x00016: return(VerticalTiming);
-  case 0x00018: return(SCTAddressHi);
-  case 0x0001A: return(SpriteControl);
-  case 0x0001C: return(CDResult[0]);
-  case 0x0001E: return(CDResult[1]);
-  case 0x00020: return(SPWindowX[0]);
-  case 0x00022: return(SPWindowY[0]);
-  case 0x00024: return(SPWindowX[1]);
-  case 0x00026: return(SPWindowY[1]);
-  case 0x00028: return(MiscStatus);
-  case 0x0002A: return(ErrorStatus);
-  case 0x0002C: return(DisplayControl);
-  case 0x0002E: return(Config);
- }
- if(A >= 0x00060 && A <= 0x0007E)
- {
-  return(Results[(A >> 1) & 0xF]);
- }
- return(0);
+   switch(A)
+   {
+      case 0x00000: 
+      case 0x00002:
+         return(AFW); // Command FIFO status
+      case 0x00004:
+         return(FIFOControl);
+      case 0x00006:
+         return(CMTBankSelect);
+      case 0x00008:
+         return(CMTStartAddress);
+      case 0x0000A:
+         return(CMTByteCount);
+      case 0x0000C:
+         return(InterruptMask);
+      case 0x0000E:
+         return(0);
+      case 0x00010:
+         return(InterruptStatus);
+      case 0x00012:
+         return(ReadBack);
+      case 0x00014:
+         return(HorizontalTiming);
+      case 0x00016:
+         return(VerticalTiming);
+      case 0x00018:
+         return(SCTAddressHi);
+      case 0x0001A:
+         return(SpriteControl);
+      case 0x0001C:
+         return(CDResult[0]);
+      case 0x0001E:
+         return(CDResult[1]);
+      case 0x00020:
+         return(SPWindowX[0]);
+      case 0x00022:
+         return(SPWindowY[0]);
+      case 0x00024:
+         return(SPWindowX[1]);
+      case 0x00026:
+         return(SPWindowY[1]);
+      case 0x00028:
+         return(MiscStatus);
+      case 0x0002A:
+         return(ErrorStatus);
+      case 0x0002C:
+         return(DisplayControl);
+      case 0x0002E:
+         return(Config);
+   }
+   if(A >= 0x00060 && A <= 0x0007E)
+      return(Results[(A >> 1) & 0xF]);
+   return 0;
 }
 
 
 void HuC6273_Write16(uint32 A, uint16 V)
 {
- A &= 0xfffff;
+   A &= 0xfffff;
 
- printf("HuC6273 Write: %04x:%04x\n", A, V);
+   printf("HuC6273 Write: %04x:%04x\n", A, V);
 
- switch(A)
- {
-  case 0x00000:
-  case 0x00002: StoreInFIFO(V); break;
-
-  case 0x00004: FIFOControl = V; break;
-  case 0x00006: CMTBankSelect = V & 0x1F; break;
-  case 0x00008: CMTStartAddress = V & 0xFFFE; break;
-  case 0x0000A: CMTByteCount = V & 0xFFFE; break;
-  case 0x0000C: InterruptMask = V;
-		CheckIRQ();
-		break;
-  case 0x0000E: // Interrupt Clear
-		CheckIRQ();
-		break;
-  case 0x00010: InterruptStatus = V; 
-		CheckIRQ();
-		break;
-  case 0x00012: ReadBack = V; break;
-  case 0x00014: HorizontalTiming = V; break;
-  case 0x00016: VerticalTiming = V; break;
-  case 0x00018: SCTAddressHi = V; break;
-  case 0x0001A: SpriteControl = V; break;
-  case 0x0001C: CDResult[0] = V; break;
-  case 0x0001E: CDResult[1] = V; break;
-  case 0x00020: SPWindowX[0] = V; break; // X Left
-  case 0x00022: SPWindowY[0] = V; break; // Y Top
-  case 0x00024: SPWindowX[1] = V; break; // X Right
-  case 0x00026: SPWindowY[1] = V; break; // Y Bottom
-  case 0x00028: MiscStatus = V; break;
-  case 0x0002C: DisplayControl = V; break;
-  case 0x0002E: StatusControl = V; break;
-
-  case 0x0003C: RasterHit = V; break;
- }
+   switch(A)
+   {
+      case 0x00000:
+      case 0x00002:
+         StoreInFIFO(V);
+         break;
+      case 0x00004:
+         FIFOControl = V;
+         break;
+      case 0x00006:
+         CMTBankSelect = V & 0x1F;
+         break;
+      case 0x00008:
+         CMTStartAddress = V & 0xFFFE;
+         break;
+      case 0x0000A:
+         CMTByteCount = V & 0xFFFE;
+         break;
+      case 0x0000C:
+         InterruptMask = V;
+         CheckIRQ();
+         break;
+      case 0x0000E:
+         /* Interrupt Clear */
+         CheckIRQ();
+         break;
+      case 0x00010:
+         InterruptStatus = V; 
+         CheckIRQ();
+         break;
+      case 0x00012:
+         ReadBack = V;
+         break;
+      case 0x00014:
+         HorizontalTiming = V;
+         break;
+      case 0x00016:
+         VerticalTiming = V;
+         break;
+      case 0x00018:
+         SCTAddressHi = V;
+         break;
+      case 0x0001A:
+         SpriteControl = V;
+         break;
+      case 0x0001C:
+         CDResult[0] = V;
+         break;
+      case 0x0001E:
+         CDResult[1] = V;
+         break;
+      case 0x00020: /* X Left */
+         SPWindowX[0] = V;
+         break;
+      case 0x00022: /* Y Top */
+         SPWindowY[0] = V;
+         break;
+      case 0x00024: /* X Right */
+         SPWindowX[1] = V;
+         break;
+      case 0x00026: /* Y Bottom */
+         SPWindowY[1] = V;
+         break;
+      case 0x00028:
+         MiscStatus = V;
+         break;
+      case 0x0002C:
+         DisplayControl = V;
+         break;
+      case 0x0002E:
+         StatusControl = V;
+         break;
+      case 0x0003C:
+         RasterHit = V;
+         break;
+   }
 }
 
 void HuC6273_Write8(uint32 A, uint8 V)
 {
- puts("73 Write8");
+   puts("73 Write8");
 }
 
 void HuC6273_Reset(void)
 {
- InFIFO = 0;
- FIFOControl = 0x5 | (0x20 << 4);
+   InFIFO = 0;
+   FIFOControl = 0x5 | (0x20 << 4);
 }
-
-
 
 bool HuC6273_Init(void)
 {
-
- return(TRUE);
+   return(TRUE);
 }
