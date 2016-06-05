@@ -17,7 +17,6 @@
 
 #include "pcfx.h"
 #include "interrupt.h"
-#include <trio/trio.h>
 
 static uint16 InterruptAsserted;
 static uint16 InterruptMask;
@@ -171,7 +170,7 @@ bool PCFXIRQ_GetRegister(const std::string &name, uint32 &value, std::string *sp
       if(special)
       {
          char buf[256];
-         trio_snprintf(buf, 256, "IRQ Allowed; HuC6273: %s, HuC6270-B: %s, HuC6272: %s, HuC6270-A: %s, Pad: %s, Timer: %s, Reset: %s",
+         snprintf(buf, 256, "IRQ Allowed; HuC6273: %s, HuC6270-B: %s, HuC6272: %s, HuC6270-A: %s, Pad: %s, Timer: %s, Reset: %s",
                (InterruptMask & (1 << 0)) ? "No" : "Yes", (InterruptMask & (1 << 1)) ? "No" : "Yes",
                (InterruptMask & (1 << 2)) ? "No" : "Yes", (InterruptMask & (1 << 3)) ? "No" : "Yes",
                (InterruptMask & (1 << 4)) ? "No" : "Yes", (InterruptMask & (1 << 6)) ? "No" : "Yes",
@@ -186,7 +185,7 @@ bool PCFXIRQ_GetRegister(const std::string &name, uint32 &value, std::string *sp
       if(special)
       {
          char buf[256];
-         trio_snprintf(buf, 256, "HuC6273: %d, HuC6270-B: %d, HuC6272: %d, HuC6270-A: %d",
+         snprintf(buf, 256, "HuC6273: %d, HuC6270-B: %d, HuC6272: %d, HuC6270-A: %d",
                (InterruptPriority[0] >> 0) & 0x7, (InterruptPriority[0] >> 3) & 0x7,
                (InterruptPriority[0] >> 6) & 0x7, (InterruptPriority[0] >> 9) & 0x7);
          *special = std::string(buf);
@@ -199,7 +198,7 @@ bool PCFXIRQ_GetRegister(const std::string &name, uint32 &value, std::string *sp
       if(special)
       {
          char buf[256];
-         trio_snprintf(buf, 256, "Pad: %d, ??: %d, Timer: %d, Reset: %d",
+         snprintf(buf, 256, "Pad: %d, ??: %d, Timer: %d, Reset: %d",
                (InterruptPriority[1] >> 0) & 0x7, (InterruptPriority[1] >> 3) & 0x7,
                (InterruptPriority[1] >> 6) & 0x7, (InterruptPriority[1] >> 9) & 0x7);
          *special = std::string(buf);
@@ -212,7 +211,7 @@ bool PCFXIRQ_GetRegister(const std::string &name, uint32 &value, std::string *sp
       if(special)
       {
          char buf[256];
-         trio_snprintf(buf, 256, "HuC6273: %d, HuC6270-B: %d, HuC6272: %d, HuC6270-A: %d, Pad: %d, ??: %d, Timer: %d, Reset: %d", (int)(bool)(value & 0x01), (int)(bool)(value & 0x02),
+         snprintf(buf, 256, "HuC6273: %d, HuC6270-B: %d, HuC6272: %d, HuC6270-A: %d, Pad: %d, ??: %d, Timer: %d, Reset: %d", (int)(bool)(value & 0x01), (int)(bool)(value & 0x02),
                (int)(bool)(value & 0x04), (int)(bool)(value & 0x08), (int)(bool)(value & 0x10), (int)(bool)(value & 0x20),
                (int)(bool)(value & 0x40), (int)(bool)(value & 0x80));
          *special = std::string(buf);

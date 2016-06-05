@@ -22,7 +22,6 @@
 #include "pcfx.h"
 #include "interrupt.h"
 #include "timer.h"
-#include <trio/trio.h>
 
 static uint16 control;
 static uint16 period;
@@ -145,7 +144,7 @@ bool FXTIMER_GetRegister(const std::string &name, uint32 &value, std::string *sp
       if(special)
       {
          char buf[256];
-         trio_snprintf(buf, 256, "Counting Enabled: %d, IRQ Enabled: %d, IRQ Asserted: %d", (int)(bool)(control & 2), (int)(bool)(control & 1), (int)(bool)(control & 4));
+         snprintf(buf, 256, "Counting Enabled: %d, IRQ Enabled: %d, IRQ Asserted: %d", (int)(bool)(control & 2), (int)(bool)(control & 1), (int)(bool)(control & 4));
          *special = std::string(buf);
       }
       return(TRUE);
@@ -156,7 +155,7 @@ bool FXTIMER_GetRegister(const std::string &name, uint32 &value, std::string *sp
       if(special)
       {
          char buf[256];
-         trio_snprintf(buf, 256, "Effective Period: %d; 21477272 / %d = %fHz", EFF_PERIOD, EFF_PERIOD, (double)21477272 / (EFF_PERIOD));
+         snprintf(buf, 256, "Effective Period: %d; 21477272 / %d = %fHz", EFF_PERIOD, EFF_PERIOD, (double)21477272 / (EFF_PERIOD));
          *special = std::string(buf);
       }
       return(TRUE);
@@ -167,7 +166,7 @@ bool FXTIMER_GetRegister(const std::string &name, uint32 &value, std::string *sp
       if(special)
       {
          //char buf[256];
-         //trio_snprintf(buf, 256, "Pad: %d, ??: %d, Timer: %d, Reset: %d",
+         //snprintf(buf, 256, "Pad: %d, ??: %d, Timer: %d, Reset: %d",
          //*special = std::string(buf);
       }
       return(TRUE);

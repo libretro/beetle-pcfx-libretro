@@ -70,7 +70,6 @@ std::string retro_save_directory;
 #include "mednafen/md5.h"
 #include "mednafen/clamp.h"
 
-#include <trio/trio.h>
 #include <errno.h>
 #include <string.h>
 #include <math.h>

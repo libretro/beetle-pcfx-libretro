@@ -22,8 +22,6 @@
 #include "input/gamepad.h"
 #include "input/mouse.h"
 
-#include <trio/trio.h>
-
 #define PCFX_PORTS	2
 #define TOTAL_PORTS	8
 
@@ -340,7 +338,7 @@ int FXINPUT_StateAction(StateMem *sm, int load, int data_only)
  for(int i = 0; i < TOTAL_PORTS; i++)
  {
   char sname[256];
-  trio_snprintf(sname, 256, "INPUT%d:%d", i, InputTypes[i]);
+  snprintf(sname, 256, "INPUT%d:%d", i, InputTypes[i]);
   ret &= devices[i]->StateAction(sm, load, data_only, sname);
  }
 

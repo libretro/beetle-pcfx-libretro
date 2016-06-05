@@ -42,7 +42,6 @@
 #include "input.h"
 #include "timer.h"
 #include "debug.h"
-#include <trio/trio.h>
 #include <math.h>
 #include "../video.h"
 #include "../clamp.h"

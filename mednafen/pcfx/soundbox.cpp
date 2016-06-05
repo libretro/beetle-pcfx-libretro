@@ -23,7 +23,6 @@
 #include "../clamp.h"
 #include "../sound/OwlResampler.h"
 
-#include <trio/trio.h>
 #include <math.h>
 #include <string.h>
 
