@@ -3,8 +3,9 @@ SOURCES_C   :=
 
 MEDNAFEN_DIR := $(CORE_DIR)/mednafen
 CORE_EMU_DIR := $(MEDNAFEN_DIR)/pcfx
+LIBRETRO_DIR := $(CORE_DIR)/libretro-common
 
-INCFLAGS := -I$(CORE_DIR) -I$(MEDNAFEN_DIR) -I$(MEDNAFEN_DIR)/include -I$(MEDNAFEN_DIR)/intl -I$(MEDNAFEN_DIR)/hw_sound -I$(MEDNAFEN_DIR)/hw_cpu -I$(MEDNAFEN_DIR)/hw_misc
+INCFLAGS := -I$(CORE_DIR) -I$(MEDNAFEN_DIR) -I$(MEDNAFEN_DIR)/include -I$(MEDNAFEN_DIR)/intl -I$(MEDNAFEN_DIR)/hw_sound -I$(MEDNAFEN_DIR)/hw_cpu -I$(MEDNAFEN_DIR)/hw_misc -I$(LIBRETRO_DIR)/include
 
 ifneq ($(HAVE_GRIFFIN),1)
    SOURCES_CXX += \
@@ -127,5 +128,6 @@ SOURCES_CXX += \
 
 SOURCES_C += \
 	$(MEDNAFEN_DIR)/mednafen-endian.c \
-	$(MEDNAFEN_DIR)/md5.c
+	$(MEDNAFEN_DIR)/md5.c \
+   $(LIBRETRO_DIR)/string/stdstring.c 
 endif
