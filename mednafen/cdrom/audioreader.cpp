@@ -105,58 +105,30 @@ static size_t iov_read_func(void *ptr, size_t size, size_t nmemb, void *user_dat
  if(!size)
   return(0);
 
- try
- {
-  return fw->read(ptr, size * nmemb, false) / size;
- }
- catch(...)
- {
-  return(0);
- }
+ return fw->read(ptr, size * nmemb, false) / size;
 }
 
 static int iov_seek_func(void *user_data, ogg_int64_t offset, int whence)
 {
- Stream *fw = (Stream*)user_data;
+   Stream *fw = (Stream*)user_data;
 
- try
- {
-  fw->seek(offset, whence);
-  return(0);
- }
- catch(...)
- {
-  return(-1);
- }
+   fw->seek(offset, whence);
+   return(0);
 }
 
 static int iov_close_func(void *user_data)
 {
- Stream *fw = (Stream*)user_data;
+   Stream *fw = (Stream*)user_data;
 
- try
- {
-  fw->close();
-  return(0);
- }
- catch(...)
- {
-  return EOF;
- }
+   fw->close();
+   return(0);
 }
 
 static long iov_tell_func(void *user_data)
 {
- Stream *fw = (Stream*)user_data;
+   Stream *fw = (Stream*)user_data;
 
- try
- {
-  return fw->tell();
- }
- catch(...)
- {
-  return(-1);
- }
+   return fw->tell();
 }
 
 OggVorbisReader::OggVorbisReader(Stream *fp) : fw(fp)
@@ -244,53 +216,30 @@ class SFReader : public AudioReader
 
 static sf_count_t isf_get_filelen(void *user_data)
 {
- Stream *fw = (Stream*)user_data;
+   Stream *fw = (Stream*)user_data;
 
- try
- {
-  return fw->size();
- }
- catch(...)
- {
-  return(-1);
- }
+   return fw->size();
 }
 
 static sf_count_t isf_seek(sf_count_t offset, int whence, void *user_data)
 {
- Stream *fw = (Stream*)user_data;
+   Stream *fw = (Stream*)user_data;
 
- try
- {
-  //printf("Seek: offset=%lld, whence=%lld\n", (long long)offset, (long long)whence);
+   //printf("Seek: offset=%lld, whence=%lld\n", (long long)offset, (long long)whence);
 
-  fw->seek(offset, whence);
-  return fw->tell();
- }
- catch(...)
- {
-  //printf("  SEEK FAILED\n");
-  return(-1);
- }
+   fw->seek(offset, whence);
+   return fw->tell();
 }
 
 static sf_count_t isf_read(void *ptr, sf_count_t count, void *user_data)
 {
- Stream *fw = (Stream*)user_data;
+   Stream *fw = (Stream*)user_data;
 
- try
- {
-  sf_count_t ret = fw->read(ptr, count, false);
+   sf_count_t ret = fw->read(ptr, count, false);
 
-  //printf("Read: count=%lld, ret=%lld\n", (long long)count, (long long)ret);
+   //printf("Read: count=%lld, ret=%lld\n", (long long)count, (long long)ret);
 
-  return ret;
- }
- catch(...)
- {
-  //printf("  READ FAILED\n");
-  return(0);
- }
+   return ret;
 }
 
 static sf_count_t isf_write(const void *ptr, sf_count_t count, void *user_data)
@@ -302,14 +251,7 @@ static sf_count_t isf_tell(void *user_data)
 {
  Stream *fw = (Stream*)user_data;
 
- try
- {
-  return fw->tell();
- }
- catch(...)
- {
-  return(-1);
- }
+ return fw->tell();
 }
 
 SFReader::SFReader(Stream *fp) : fw(fp)
