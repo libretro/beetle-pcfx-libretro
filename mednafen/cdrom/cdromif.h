@@ -62,6 +62,6 @@ class CDIF
  bool DiscEjected;
 };
 
-CDIF *CDIF_Open(const char *path, const bool is_device, bool image_memcache);
+CDIF *CDIF_Open(const char *path, bool *success, bool image_memcache);
 
 #endif

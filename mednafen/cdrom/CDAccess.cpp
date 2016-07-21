@@ -45,14 +45,14 @@ CDAccess::~CDAccess()
 
 }
 
-CDAccess *cdaccess_open_image(const char *path, bool image_memcache)
+CDAccess *cdaccess_open_image(const char *path, bool *success, bool image_memcache)
 {
  CDAccess *ret = NULL;
 
  if(strlen(path) >= 4 && !strcasecmp(path + strlen(path) - 4, ".ccd"))
-  ret = new CDAccess_CCD(path, image_memcache);
+  ret = new CDAccess_CCD(path, success, image_memcache);
  else
-  ret = new CDAccess_Image(path, image_memcache);
+  ret = new CDAccess_Image(path, success, image_memcache);
 
  return ret;
 }

@@ -23,6 +23,6 @@ class CDAccess
  CDAccess& operator=(const CDAccess&); // No assignment operator.
 };
 
-CDAccess *cdaccess_open_image(const char *path, bool image_memcache);
+CDAccess *cdaccess_open_image(const char *path, bool *success, bool image_memcache);
 
 #endif

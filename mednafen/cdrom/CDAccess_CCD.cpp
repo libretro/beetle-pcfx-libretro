@@ -86,301 +86,327 @@ static T CCD_ReadInt(CCD_Section &s, const std::string &propname, const bool hav
 }
 
 
-CDAccess_CCD::CDAccess_CCD(const char *path, bool image_memcache) : img_stream(NULL), sub_stream(NULL), img_numsectors(0)
+CDAccess_CCD::CDAccess_CCD(const char *path, bool *success, bool image_memcache) : img_stream(NULL), sub_stream(NULL), img_numsectors(0)
 {
-  Load(path, image_memcache);
+  if (!Load(path, image_memcache))
+     *success = false;
 }
 
-void CDAccess_CCD::Load(const char *path, bool image_memcache)
+bool CDAccess_CCD::Load(const char *path, bool image_memcache)
 {
- FileStream cf(path, FileStream::MODE_READ);
- std::map<std::string, CCD_Section> Sections;
- std::string linebuf;
- std::string cur_section_name;
- std::string dir_path, file_base, file_ext;
- char img_extsd[4] = { 'i', 'm', 'g', 0 };
- char sub_extsd[4] = { 's', 'u', 'b', 0 };
+   FileStream cf(path, FileStream::MODE_READ);
+   std::map<std::string, CCD_Section> Sections;
+   std::string linebuf;
+   std::string cur_section_name;
+   std::string dir_path, file_base, file_ext;
+   char img_extsd[4] = { 'i', 'm', 'g', 0 };
+   char sub_extsd[4] = { 's', 'u', 'b', 0 };
 
- MDFN_GetFilePathComponents(path, &dir_path, &file_base, &file_ext);
+   MDFN_GetFilePathComponents(path, &dir_path, &file_base, &file_ext);
 
- if(file_ext.length() == 4 && file_ext[0] == '.')
- {
-  signed char extupt[3] = { -1, -1, -1 };
-
-  for(int i = 1; i < 4; i++)
-  {
-   if(file_ext[i] >= 'A' && file_ext[i] <= 'Z')
-    extupt[i - 1] = 'A' - 'a';
-   else if(file_ext[i] >= 'a' && file_ext[i] <= 'z')
-    extupt[i - 1] = 0;
-  }
-
-  signed char av = -1;
-  for(int i = 0; i < 3; i++)
-  {
-   if(extupt[i] != -1)
-    av = extupt[i];
-   else
-    extupt[i] = av;
-  }
-
-  if(av == -1)
-   av = 0;
-
-  for(int i = 0; i < 3; i++)
-  {
-   if(extupt[i] == -1)
-    extupt[i] = av;
-  }
-
-  for(int i = 0; i < 3; i++)
-  {
-   img_extsd[i] += extupt[i];
-   sub_extsd[i] += extupt[i];
-  }
- }
-
- //printf("%s %d %d %d\n", file_ext.c_str(), extupt[0], extupt[1], extupt[2]);
-
- linebuf.reserve(256);
-
- while(cf.get_line(linebuf) >= 0)
- {
-  MDFN_trim(linebuf);
-
-  if(linebuf.length() == 0)	// Skip blank lines.
-   continue;
-
-  if(linebuf[0] == '[')
-  {
-   if(linebuf.length() < 3 || linebuf[linebuf.length() - 1] != ']')
-    throw MDFN_Error(0, _("Malformed section specifier: %s"), linebuf.c_str());
-
-   cur_section_name = linebuf.substr(1, linebuf.length() - 2);
-   MDFN_strtoupper(cur_section_name);
-  }
-  else
-  {
-   const size_t feqpos = linebuf.find('=');
-   const size_t leqpos = linebuf.rfind('=');
-   std::string k, v;
-
-   if(feqpos == std::string::npos || feqpos != leqpos)
-    throw MDFN_Error(0, _("Malformed value pair specifier: %s"), linebuf.c_str());
-
-   k = linebuf.substr(0, feqpos);
-   v = linebuf.substr(feqpos + 1);
-
-   MDFN_trim(k);
-   MDFN_trim(v);
-
-   MDFN_strtoupper(k);
-
-   Sections[cur_section_name][k] = v;
-  }
- }
-
- {
-  CCD_Section& ds = Sections["DISC"];
-  unsigned toc_entries = CCD_ReadInt<unsigned>(ds, "TOCENTRIES");
-  unsigned num_sessions = CCD_ReadInt<unsigned>(ds, "SESSIONS");
-  bool data_tracks_scrambled = CCD_ReadInt<unsigned>(ds, "DATATRACKSSCRAMBLED");
-
-  if(num_sessions != 1)
-   throw MDFN_Error(0, _("Unsupported number of sessions: %u"), num_sessions);
-
-  if(data_tracks_scrambled)
-   throw MDFN_Error(0, _("Scrambled CCD data tracks currently not supported."));
-
-  //printf("MOO: %d\n", toc_entries);
-
-  for(unsigned te = 0; te < toc_entries; te++)
-  {
-   char tmpbuf[64];
-   snprintf(tmpbuf, sizeof(tmpbuf), "ENTRY %u", te);
-   CCD_Section& ts = Sections[std::string(tmpbuf)];
-   unsigned session = CCD_ReadInt<unsigned>(ts, "SESSION");
-   uint8 point = CCD_ReadInt<uint8>(ts, "POINT");
-   uint8 adr = CCD_ReadInt<uint8>(ts, "ADR");
-   uint8 control = CCD_ReadInt<uint8>(ts, "CONTROL");
-   uint8 pmin = CCD_ReadInt<uint8>(ts, "PMIN");
-   uint8 psec = CCD_ReadInt<uint8>(ts, "PSEC");
-   uint8 pframe = CCD_ReadInt<uint8>(ts, "PFRAME");
-   signed plba = CCD_ReadInt<signed>(ts, "PLBA");
-
-   if(session != 1)
-    throw MDFN_Error(0, "Unsupported TOC entry Session value: %u", session);
-
-   // Reference: ECMA-394, page 5-14
-   switch(point)
+   if(file_ext.length() == 4 && file_ext[0] == '.')
    {
-    default:
-	throw MDFN_Error(0, "Unsupported TOC entry Point value: %u", point);
-	break;
+      signed char extupt[3] = { -1, -1, -1 };
 
-    case 0xA0:
-	tocd.first_track = pmin;
-	tocd.disc_type = psec;
-	break;
+      for(int i = 1; i < 4; i++)
+      {
+         if(file_ext[i] >= 'A' && file_ext[i] <= 'Z')
+            extupt[i - 1] = 'A' - 'a';
+         else if(file_ext[i] >= 'a' && file_ext[i] <= 'z')
+            extupt[i - 1] = 0;
+      }
 
-    case 0xA1:
-	tocd.last_track = pmin;
-	break;
+      signed char av = -1;
+      for(int i = 0; i < 3; i++)
+      {
+         if(extupt[i] != -1)
+            av = extupt[i];
+         else
+            extupt[i] = av;
+      }
 
-    case 0xA2:
-	tocd.tracks[100].adr = adr;
-	tocd.tracks[100].control = control;
-	tocd.tracks[100].lba = plba;
-	break;
+      if(av == -1)
+         av = 0;
 
-case 99:
-case 98:
-case 97:
-case 96:
-case 95:
-case 94:
-case 93:
-case 92:
-case 91:
-case 90:
-case 89:
-case 88:
-case 87:
-case 86:
-case 85:
-case 84:
-case 83:
-case 82:
-case 81:
-case 80:
-case 79:
-case 78:
-case 77:
-case 76:
-case 75:
-case 74:
-case 73:
-case 72:
-case 71:
-case 70:
-case 69:
-case 68:
-case 67:
-case 66:
-case 65:
-case 64:
-case 63:
-case 62:
-case 61:
-case 60:
-case 59:
-case 58:
-case 57:
-case 56:
-case 55:
-case 54:
-case 53:
-case 52:
-case 51:
-case 50:
-case 49:
-case 48:
-case 47:
-case 46:
-case 45:
-case 44:
-case 43:
-case 42:
-case 41:
-case 40:
-case 39:
-case 38:
-case 37:
-case 36:
-case 35:
-case 34:
-case 33:
-case 32:
-case 31:
-case 30:
-case 29:
-case 28:
-case 27:
-case 26:
-case 25:
-case 24:
-case 23:
-case 22:
-case 21:
-case 20:
-case 19:
-case 18:
-case 17:
-case 16:
-case 15:
-case 14:
-case 13:
-case 12:
-case 11:
-case 10:
-case 9:
-case 8:
-case 7:
-case 6:
-case 5:
-case 4:
-case 3:
-case 2:
-case 1:
-	tocd.tracks[point].adr = adr;
-	tocd.tracks[point].control = control;
-	tocd.tracks[point].lba = plba;
-	break;
+      for(int i = 0; i < 3; i++)
+      {
+         if(extupt[i] == -1)
+            extupt[i] = av;
+      }
+
+      for(int i = 0; i < 3; i++)
+      {
+         img_extsd[i] += extupt[i];
+         sub_extsd[i] += extupt[i];
+      }
    }
-  }
- }
 
- // Convenience leadout track duplication.
- if(tocd.last_track < 99)
-  tocd.tracks[tocd.last_track + 1] = tocd.tracks[100];
+   //printf("%s %d %d %d\n", file_ext.c_str(), extupt[0], extupt[1], extupt[2]);
 
- //
- // Open image stream.
- {
-  std::string image_path = MDFN_EvalFIP(dir_path, file_base + std::string(".") + std::string(img_extsd), true);
+   linebuf.reserve(256);
 
-  if(image_memcache)
-  {
-   img_stream = new MemoryStream(new FileStream(image_path.c_str(), FileStream::MODE_READ));
-  }
-  else
-  {
-   img_stream = new FileStream(image_path.c_str(), FileStream::MODE_READ);
-  }
+   while(cf.get_line(linebuf) >= 0)
+   {
+      MDFN_trim(linebuf);
 
-  int64 ss = img_stream->size();
+      if(linebuf.length() == 0)	// Skip blank lines.
+         continue;
 
-  if(ss % 2352)
-   throw MDFN_Error(0, _("CCD image size is not evenly divisible by 2352."));
+      if(linebuf[0] == '[')
+      {
+         if(linebuf.length() < 3 || linebuf[linebuf.length() - 1] != ']')
+         {
+            MDFN_Error(0, _("Malformed section specifier: %s"), linebuf.c_str());
+            return false;
+         }
 
-  img_numsectors = ss / 2352;  
- }
+         cur_section_name = linebuf.substr(1, linebuf.length() - 2);
+         MDFN_strtoupper(cur_section_name);
+      }
+      else
+      {
+         const size_t feqpos = linebuf.find('=');
+         const size_t leqpos = linebuf.rfind('=');
+         std::string k, v;
 
- //
- // Open subchannel stream
- {
-  std::string sub_path = MDFN_EvalFIP(dir_path, file_base + std::string(".") + std::string(sub_extsd), true);
+         if(feqpos == std::string::npos || feqpos != leqpos)
+         {
+            MDFN_Error(0, _("Malformed value pair specifier: %s"), linebuf.c_str());
+            return false;
+         }
 
-  if(image_memcache)
-   sub_stream = new MemoryStream(new FileStream(sub_path.c_str(), FileStream::MODE_READ));
-  else
-   sub_stream = new FileStream(sub_path.c_str(), FileStream::MODE_READ);
+         k = linebuf.substr(0, feqpos);
+         v = linebuf.substr(feqpos + 1);
 
-  if(sub_stream->size() != (int64)img_numsectors * 96)
-   throw MDFN_Error(0, _("CCD SUB file size mismatch."));
- }
+         MDFN_trim(k);
+         MDFN_trim(v);
 
- CheckSubQSanity();
+         MDFN_strtoupper(k);
+
+         Sections[cur_section_name][k] = v;
+      }
+   }
+
+   {
+      CCD_Section& ds = Sections["DISC"];
+      unsigned toc_entries = CCD_ReadInt<unsigned>(ds, "TOCENTRIES");
+      unsigned num_sessions = CCD_ReadInt<unsigned>(ds, "SESSIONS");
+      bool data_tracks_scrambled = CCD_ReadInt<unsigned>(ds, "DATATRACKSSCRAMBLED");
+
+      if(num_sessions != 1)
+      {
+         MDFN_Error(0, _("Unsupported number of sessions: %u"), num_sessions);
+         return false;
+      }
+
+      if(data_tracks_scrambled)
+      {
+         MDFN_Error(0, _("Scrambled CCD data tracks currently not supported."));
+         return false;
+      }
+
+      //printf("MOO: %d\n", toc_entries);
+
+      for(unsigned te = 0; te < toc_entries; te++)
+      {
+         char tmpbuf[64];
+         snprintf(tmpbuf, sizeof(tmpbuf), "ENTRY %u", te);
+         CCD_Section& ts = Sections[std::string(tmpbuf)];
+         unsigned session = CCD_ReadInt<unsigned>(ts, "SESSION");
+         uint8 point = CCD_ReadInt<uint8>(ts, "POINT");
+         uint8 adr = CCD_ReadInt<uint8>(ts, "ADR");
+         uint8 control = CCD_ReadInt<uint8>(ts, "CONTROL");
+         uint8 pmin = CCD_ReadInt<uint8>(ts, "PMIN");
+         uint8 psec = CCD_ReadInt<uint8>(ts, "PSEC");
+         uint8 pframe = CCD_ReadInt<uint8>(ts, "PFRAME");
+         signed plba = CCD_ReadInt<signed>(ts, "PLBA");
+
+         if(session != 1)
+         {
+            MDFN_Error(0, "Unsupported TOC entry Session value: %u", session);
+            return false;
+         }
+
+         // Reference: ECMA-394, page 5-14
+         switch(point)
+         {
+            default:
+               MDFN_Error(0, "Unsupported TOC entry Point value: %u", point);
+               return false;
+               break;
+
+            case 0xA0:
+               tocd.first_track = pmin;
+               tocd.disc_type = psec;
+               break;
+
+            case 0xA1:
+               tocd.last_track = pmin;
+               break;
+
+            case 0xA2:
+               tocd.tracks[100].adr = adr;
+               tocd.tracks[100].control = control;
+               tocd.tracks[100].lba = plba;
+               break;
+
+            case 99:
+            case 98:
+            case 97:
+            case 96:
+            case 95:
+            case 94:
+            case 93:
+            case 92:
+            case 91:
+            case 90:
+            case 89:
+            case 88:
+            case 87:
+            case 86:
+            case 85:
+            case 84:
+            case 83:
+            case 82:
+            case 81:
+            case 80:
+            case 79:
+            case 78:
+            case 77:
+            case 76:
+            case 75:
+            case 74:
+            case 73:
+            case 72:
+            case 71:
+            case 70:
+            case 69:
+            case 68:
+            case 67:
+            case 66:
+            case 65:
+            case 64:
+            case 63:
+            case 62:
+            case 61:
+            case 60:
+            case 59:
+            case 58:
+            case 57:
+            case 56:
+            case 55:
+            case 54:
+            case 53:
+            case 52:
+            case 51:
+            case 50:
+            case 49:
+            case 48:
+            case 47:
+            case 46:
+            case 45:
+            case 44:
+            case 43:
+            case 42:
+            case 41:
+            case 40:
+            case 39:
+            case 38:
+            case 37:
+            case 36:
+            case 35:
+            case 34:
+            case 33:
+            case 32:
+            case 31:
+            case 30:
+            case 29:
+            case 28:
+            case 27:
+            case 26:
+            case 25:
+            case 24:
+            case 23:
+            case 22:
+            case 21:
+            case 20:
+            case 19:
+            case 18:
+            case 17:
+            case 16:
+            case 15:
+            case 14:
+            case 13:
+            case 12:
+            case 11:
+            case 10:
+            case 9:
+            case 8:
+            case 7:
+            case 6:
+            case 5:
+            case 4:
+            case 3:
+            case 2:
+            case 1:
+               tocd.tracks[point].adr = adr;
+               tocd.tracks[point].control = control;
+               tocd.tracks[point].lba = plba;
+               break;
+         }
+      }
+   }
+
+   // Convenience leadout track duplication.
+   if(tocd.last_track < 99)
+      tocd.tracks[tocd.last_track + 1] = tocd.tracks[100];
+
+   //
+   // Open image stream.
+   {
+      std::string image_path = MDFN_EvalFIP(dir_path, file_base + std::string(".") + std::string(img_extsd), true);
+
+      if(image_memcache)
+      {
+         img_stream = new MemoryStream(new FileStream(image_path.c_str(), FileStream::MODE_READ));
+      }
+      else
+      {
+         img_stream = new FileStream(image_path.c_str(), FileStream::MODE_READ);
+      }
+
+      int64 ss = img_stream->size();
+
+      if(ss % 2352)
+      {
+         MDFN_Error(0, _("CCD image size is not evenly divisible by 2352."));
+         return false;
+      }
+
+      img_numsectors = ss / 2352;  
+   }
+
+   //
+   // Open subchannel stream
+   {
+      std::string sub_path = MDFN_EvalFIP(dir_path, file_base + std::string(".") + std::string(sub_extsd), true);
+
+      if(image_memcache)
+         sub_stream = new MemoryStream(new FileStream(sub_path.c_str(), FileStream::MODE_READ));
+      else
+         sub_stream = new FileStream(sub_path.c_str(), FileStream::MODE_READ);
+
+      if(sub_stream->size() != (int64)img_numsectors * 96)
+      {
+         MDFN_Error(0, _("CCD SUB file size mismatch."));
+         return false;
+      }
+   }
+
+   if (!CheckSubQSanity())
+      return false;
+
+   return true;
 }
 
 //
@@ -391,7 +417,7 @@ case 1:
 // This check is not as aggressive or exhaustive as it could be, and will not detect all potential Q subchannel rip errors; as such, it should definitely NOT be
 // used in an effort to "repair" a broken rip.
 //
-void CDAccess_CCD::CheckSubQSanity(void)
+bool CDAccess_CCD::CheckSubQSanity(void)
 {
  size_t checksum_pass_counter = 0;
  int prev_lba = INT_MAX;
@@ -433,7 +459,8 @@ void CDAccess_CCD::CheckSubQSanity(void)
 	!BCD_is_valid(am_bcd) || !BCD_is_valid(as_bcd) || !BCD_is_valid(af_bcd) ||
 	rs_bcd > 0x59 || rf_bcd > 0x74 || as_bcd > 0x59 || af_bcd > 0x74)
     {
-     throw MDFN_Error(0, _("Garbage subchannel Q data detected(bad BCD/out of range): %02x:%02x:%02x %02x:%02x:%02x"), rm_bcd, rs_bcd, rf_bcd, am_bcd, as_bcd, af_bcd);
+     MDFN_Error(0, _("Garbage subchannel Q data detected(bad BCD/out of range): %02x:%02x:%02x %02x:%02x:%02x"), rm_bcd, rs_bcd, rf_bcd, am_bcd, as_bcd, af_bcd);
+     return false;
     }
     else
     {
@@ -443,7 +470,10 @@ void CDAccess_CCD::CheckSubQSanity(void)
      prev_lba = lba;
 
      if(track < prev_track)
-      throw MDFN_Error(0, _("Garbage subchannel Q data detected(bad track number)"));
+     {
+        MDFN_Error(0, _("Garbage subchannel Q data detected(bad track number)"));
+        return false;
+     }
      //else if(prev_track && track - pre
 
      prev_track = track;
@@ -454,6 +484,7 @@ void CDAccess_CCD::CheckSubQSanity(void)
  }
 
  //printf("%u/%u\n", checksum_pass_counter, img_numsectors);
+ return true;
 }
 
 void CDAccess_CCD::Cleanup(void)

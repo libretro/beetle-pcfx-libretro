@@ -25,7 +25,7 @@ class CDAccess_CCD : public CDAccess
 {
  public:
 
- CDAccess_CCD(const char *path, bool image_memcache);
+ CDAccess_CCD(const char *path, bool *success, bool image_memcache);
  virtual ~CDAccess_CCD();
 
  virtual void Read_Raw_Sector(uint8 *buf, int32 lba);
@@ -36,10 +36,10 @@ class CDAccess_CCD : public CDAccess
 
  private:
 
- void Load(const char *path, bool image_memcache);
+ bool Load(const char *path, bool image_memcache);
  void Cleanup(void);
 
- void CheckSubQSanity(void);
+ bool CheckSubQSanity(void);
 
  Stream* img_stream;
  Stream* sub_stream;

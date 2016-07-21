@@ -203,32 +203,35 @@ CDIF_Queue::~CDIF_Queue()
 // Will throw MDFN_Error if the read message code is CDIF_MSG_FATAL_ERROR
 bool CDIF_Queue::Read(CDIF_Message *message, bool blocking)
 {
-  TryAgain:
+TryAgain:
 
-  MDFND_LockMutex(ze_mutex);
-  
-  if(ze_queue.size() > 0)
-  {
-   *message = ze_queue.front();
-   ze_queue.pop();
-   MDFND_UnlockMutex(ze_mutex);
+   MDFND_LockMutex(ze_mutex);
 
-   if(message->message == CDIF_MSG_FATAL_ERROR)
-    throw MDFN_Error(0, "%s", message->str_message.c_str());
+   if(ze_queue.size() > 0)
+   {
+      *message = ze_queue.front();
+      ze_queue.pop();
+      MDFND_UnlockMutex(ze_mutex);
 
-   return(TRUE);
-  }
-  else if(blocking)
-  {
-   MDFND_UnlockMutex(ze_mutex);
-   MDFND_Sleep(1);
-   goto TryAgain;
-  }
-  else
-  {
-   MDFND_UnlockMutex(ze_mutex);
-   return(FALSE);
-  }
+      if(message->message == CDIF_MSG_FATAL_ERROR)
+      {
+         MDFN_Error(0, "%s", message->str_message.c_str());
+         return false;
+      }
+
+      return(TRUE);
+   }
+   else if(blocking)
+   {
+      MDFND_UnlockMutex(ze_mutex);
+      MDFND_Sleep(1);
+      goto TryAgain;
+   }
+   else
+   {
+      MDFND_UnlockMutex(ze_mutex);
+      return(FALSE);
+   }
 }
 
 void CDIF_Queue::Write(const CDIF_Message &message)
@@ -756,9 +759,9 @@ Stream *CDIF::MakeStream(uint32 lba, uint32 sector_count)
 }
 
 
-CDIF *CDIF_Open(const char *path, const bool is_device, bool image_memcache)
+CDIF *CDIF_Open(const char *path, bool *success, bool image_memcache)
 {
-   CDAccess *cda = cdaccess_open_image(path, image_memcache);
+   CDAccess *cda = cdaccess_open_image(path, success, image_memcache);
 
    if(!image_memcache)
       return new CDIF_MT(cda);

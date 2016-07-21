@@ -63,7 +63,7 @@ class CDAccess_Image : public CDAccess
 {
  public:
 
- CDAccess_Image(const char *path, bool image_memcache);
+ CDAccess_Image(const char *path, bool *success, bool image_memcache);
  virtual ~CDAccess_Image();
 
  virtual void Read_Raw_Sector(uint8 *buf, int32 lba);
@@ -82,13 +82,13 @@ class CDAccess_Image : public CDAccess
 
  std::string base_dir;
 
- void ImageOpen(const char *path, bool image_memcache);
+ bool ImageOpen(const char *path, bool image_memcache);
  void Cleanup(void);
 
  // MakeSubPQ will OR the simulated P and Q subchannel data into SubPWBuf.
  void MakeSubPQ(int32 lba, uint8 *SubPWBuf);
 
- void ParseTOCFileLineInfo(CDRFILE_TRACK_INFO *track, const int tracknum, const std::string &filename, const char *binoffset, const char *msfoffset, const char *length, bool image_memcache, std::map<std::string, Stream*> &toc_streamcache);
+ bool ParseTOCFileLineInfo(CDRFILE_TRACK_INFO *track, const int tracknum, const std::string &filename, const char *binoffset, const char *msfoffset, const char *length, bool image_memcache, std::map<std::string, Stream*> &toc_streamcache);
  uint32 GetSectorCount(CDRFILE_TRACK_INFO *track);
 };
 

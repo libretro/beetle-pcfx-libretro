@@ -191,96 +191,102 @@ uint32 CDAccess_Image::GetSectorCount(CDRFILE_TRACK_INFO *track)
    return((size - track->FileOffset) / DI_Size_Table[track->DIFormat]);
 }
 
-void CDAccess_Image::ParseTOCFileLineInfo(CDRFILE_TRACK_INFO *track, const int tracknum, const std::string &filename, const char *binoffset, const char *msfoffset, const char *length, bool image_memcache, std::map<std::string, Stream*> &toc_streamcache)
+bool CDAccess_Image::ParseTOCFileLineInfo(CDRFILE_TRACK_INFO *track, const int tracknum, const std::string &filename, const char *binoffset, const char *msfoffset, const char *length, bool image_memcache, std::map<std::string, Stream*> &toc_streamcache)
 {
- long offset = 0; // In bytes!
- long tmp_long;
- int m, s, f;
- uint32 sector_mult;
- long sectors;
- std::map<std::string, Stream*>::iterator ribbit;
+   long offset = 0; // In bytes!
+   long tmp_long;
+   int m, s, f;
+   uint32 sector_mult;
+   long sectors;
+   std::map<std::string, Stream*>::iterator ribbit;
 
- ribbit = toc_streamcache.find(filename);
+   ribbit = toc_streamcache.find(filename);
 
- if(ribbit != toc_streamcache.end())
- {
-  track->FirstFileInstance = 0;
-
-  track->fp = ribbit->second;
- }
- else
- {
-  std::string efn;
-
-  track->FirstFileInstance = 1;
-
-  efn = MDFN_EvalFIP(base_dir, filename);
-
-  if(image_memcache)
-   track->fp = new MemoryStream(new FileStream(efn.c_str(), FileStream::MODE_READ));
-  else
-   track->fp = new FileStream(efn.c_str(), FileStream::MODE_READ);
-
-  toc_streamcache[filename] = track->fp;
- }
-
- if(filename.length() >= 4 && !strcasecmp(filename.c_str() + filename.length() - 4, ".wav"))
- {
-  track->AReader = AR_Open(track->fp);
-
-  if(!track->AReader)
-   throw MDFN_Error(0, "TODO ERROR");
- }
-
- sector_mult = DI_Size_Table[track->DIFormat];
-
- if(track->SubchannelMode)
-  sector_mult += 96;
-
- if(binoffset && sscanf(binoffset, "%ld", &tmp_long) == 1)
- {
-  offset += tmp_long;
- }
-
- if(msfoffset && sscanf(msfoffset, "%d:%d:%d", &m, &s, &f) == 3)
- {
-  offset += ((m * 60 + s) * 75 + f) * sector_mult;
- }
-
- track->FileOffset = offset; // Make sure this is set before calling GetSectorCount()!
- sectors = GetSectorCount(track);
- //printf("Track: %d, offset: %ld, %ld\n", tracknum, offset, sectors);
-
- if(length)
- {
-  tmp_long = sectors;
-
-  if(sscanf(length, "%d:%d:%d", &m, &s, &f) == 3)
-   tmp_long = (m * 60 + s) * 75 + f;
-  else if(track->DIFormat == DI_FORMAT_AUDIO)
-  {
-   char *endptr = NULL;
-
-   tmp_long = strtol(length, &endptr, 10);
-
-   // Error?
-   if(endptr == length)
+   if(ribbit != toc_streamcache.end())
    {
-    tmp_long = sectors;
+      track->FirstFileInstance = 0;
+
+      track->fp = ribbit->second;
    }
    else
-    tmp_long /= 588;
+   {
+      std::string efn;
 
-  }
+      track->FirstFileInstance = 1;
 
-  if(tmp_long > sectors)
-  {
-   throw MDFN_Error(0, _("Length specified in TOC file for track %d is too large by %ld sectors!\n"), tracknum, (long)(tmp_long - sectors));
-  }
-  sectors = tmp_long;
- }
+      efn = MDFN_EvalFIP(base_dir, filename);
 
- track->sectors = sectors;
+      if(image_memcache)
+         track->fp = new MemoryStream(new FileStream(efn.c_str(), FileStream::MODE_READ));
+      else
+         track->fp = new FileStream(efn.c_str(), FileStream::MODE_READ);
+
+      toc_streamcache[filename] = track->fp;
+   }
+
+   if(filename.length() >= 4 && !strcasecmp(filename.c_str() + filename.length() - 4, ".wav"))
+   {
+      track->AReader = AR_Open(track->fp);
+
+      if(!track->AReader)
+      {
+         MDFN_Error(0, "TODO ERROR");
+         return false;
+      }
+   }
+
+   sector_mult = DI_Size_Table[track->DIFormat];
+
+   if(track->SubchannelMode)
+      sector_mult += 96;
+
+   if(binoffset && sscanf(binoffset, "%ld", &tmp_long) == 1)
+   {
+      offset += tmp_long;
+   }
+
+   if(msfoffset && sscanf(msfoffset, "%d:%d:%d", &m, &s, &f) == 3)
+   {
+      offset += ((m * 60 + s) * 75 + f) * sector_mult;
+   }
+
+   track->FileOffset = offset; // Make sure this is set before calling GetSectorCount()!
+   sectors = GetSectorCount(track);
+   //printf("Track: %d, offset: %ld, %ld\n", tracknum, offset, sectors);
+
+   if(length)
+   {
+      tmp_long = sectors;
+
+      if(sscanf(length, "%d:%d:%d", &m, &s, &f) == 3)
+         tmp_long = (m * 60 + s) * 75 + f;
+      else if(track->DIFormat == DI_FORMAT_AUDIO)
+      {
+         char *endptr = NULL;
+
+         tmp_long = strtol(length, &endptr, 10);
+
+         // Error?
+         if(endptr == length)
+         {
+            tmp_long = sectors;
+         }
+         else
+            tmp_long /= 588;
+
+      }
+
+      if(tmp_long > sectors)
+      {
+         MDFN_Error(0, _("Length specified in TOC file for track %d is too large by %ld sectors!\n"), tracknum, (long)(tmp_long - sectors));
+         return false;
+      }
+      sectors = tmp_long;
+   }
+
+   track->sectors = sectors;
+
+   return true;
 }
 
 
@@ -328,518 +334,537 @@ std::string MDFN_toupper(const std::string &str)
 }
 #endif
 
-void CDAccess_Image::ImageOpen(const char *path, bool image_memcache)
+bool CDAccess_Image::ImageOpen(const char *path, bool image_memcache)
 {
- MemoryStream fp(new FileStream(path, FileStream::MODE_READ));
- static const unsigned max_args = 4;
- std::string linebuf;
- std::string cmdbuf, args[max_args];
- bool IsTOC = FALSE;
- int32 active_track = -1;
- int32 AutoTrackInc = 1; // For TOC
- CDRFILE_TRACK_INFO TmpTrack;
- std::string file_base, file_ext;
- std::map<std::string, Stream*> toc_streamcache;
+   MemoryStream fp(new FileStream(path, FileStream::MODE_READ));
+   static const unsigned max_args = 4;
+   std::string linebuf;
+   std::string cmdbuf, args[max_args];
+   bool IsTOC = FALSE;
+   int32 active_track = -1;
+   int32 AutoTrackInc = 1; // For TOC
+   CDRFILE_TRACK_INFO TmpTrack;
+   std::string file_base, file_ext;
+   std::map<std::string, Stream*> toc_streamcache;
 
- disc_type = DISC_TYPE_CDDA_OR_M1;
- memset(&TmpTrack, 0, sizeof(TmpTrack));
+   disc_type = DISC_TYPE_CDDA_OR_M1;
+   memset(&TmpTrack, 0, sizeof(TmpTrack));
 
- MDFN_GetFilePathComponents(path, &base_dir, &file_base, &file_ext);
+   MDFN_GetFilePathComponents(path, &base_dir, &file_base, &file_ext);
 
- if(!strcasecmp(file_ext.c_str(), ".toc"))
- {
-  MDFN_printf(_("TOC file detected.\n"));
-  IsTOC = true;
- }
-
- // Check for annoying UTF-8 BOM.
- if(!IsTOC)
- {
-  uint8 bom_tmp[3];
-
-  if(fp.read(bom_tmp, 3, false) == 3 && bom_tmp[0] == 0xEF && bom_tmp[1] == 0xBB && bom_tmp[2] == 0xBF)
-  {
-   // Print an annoying error message, but don't actually error out.
-   MDFN_PrintError(_("UTF-8 BOM detected at start of CUE sheet."));
-  }
-  else
-   fp.seek(0, SEEK_SET);
- }
-
-
- // Assign opposite maximum values so our tests will work!
- FirstTrack = 99;
- LastTrack = 0;
-
- linebuf.reserve(1024);
- while(fp.get_line(linebuf) >= 0)
- {
-   unsigned argcount = 0;
-
-   if(IsTOC)
+   if(!strcasecmp(file_ext.c_str(), ".toc"))
    {
-    // Handle TOC format comments
-    size_t ss_loc = linebuf.find("//");
-
-    if(ss_loc != std::string::npos)
-     linebuf.resize(ss_loc);
+      MDFN_printf(_("TOC file detected.\n"));
+      IsTOC = true;
    }
 
-   // Call trim AFTER we handle TOC-style comments, so we'll be sure to remove trailing whitespace in lines like: MONKEY  // BABIES
-   MDFN_trim(linebuf);
-
-   if(linebuf.length() == 0)	// Skip blank lines.
-    continue;
-
-   // Grab command and arguments.
+   // Check for annoying UTF-8 BOM.
+   if(!IsTOC)
    {
-    size_t offs = 0;
+      uint8 bom_tmp[3];
 
-    offs = UnQuotify(linebuf, offs, cmdbuf, false);
-    for(argcount = 0; argcount < max_args && offs < linebuf.length(); argcount++)
-     offs = UnQuotify(linebuf, offs, args[argcount]);
-
-    // Make sure unused arguments are cleared out so we don't have inter-line leaks!
-    for(unsigned x = argcount; x < max_args; x++)
-     args[x].clear();
-
-    MDFN_strtoupper(cmdbuf);
-   }
-
-   //printf("%s\n", cmdbuf.c_str()); //: %s %s %s %s\n", cmdbuf.c_str(), args[0].c_str(), args[1].c_str(), args[2].c_str(), args[3].c_str());
-
-   if(IsTOC)
-   {
-    if(cmdbuf == "TRACK")
-    {
-     if(active_track >= 0)
-     {
-      memcpy(&Tracks[active_track], &TmpTrack, sizeof(TmpTrack));
-      memset(&TmpTrack, 0, sizeof(TmpTrack));
-      active_track = -1;
-     }
- 
-     if(AutoTrackInc > 99)
-     {
-      throw(MDFN_Error(0, _("Invalid track number: %d"), AutoTrackInc));
-     }
-
-     active_track = AutoTrackInc++;
-     if(active_track < FirstTrack)
-      FirstTrack = active_track;
-     if(active_track > LastTrack)
-      LastTrack = active_track;
-
-     int format_lookup;
-     for(format_lookup = 0; format_lookup < _DI_FORMAT_COUNT; format_lookup++)
-     {
-      if(!strcasecmp(args[0].c_str(), DI_CDRDAO_Strings[format_lookup]))
+      if(fp.read(bom_tmp, 3, false) == 3 && bom_tmp[0] == 0xEF && bom_tmp[1] == 0xBB && bom_tmp[2] == 0xBF)
       {
-       TmpTrack.DIFormat = format_lookup;
-       break;
-      }
-     }
-
-     if(format_lookup == _DI_FORMAT_COUNT)
-     {
-      throw(MDFN_Error(0, _("Invalid track format: %s"), args[0].c_str()));
-     }
-
-     if(TmpTrack.DIFormat == DI_FORMAT_AUDIO)
-      TmpTrack.RawAudioMSBFirst = TRUE; // Silly cdrdao...
-
-     if(!strcasecmp(args[1].c_str(), "RW"))
-     {
-      TmpTrack.SubchannelMode = CDRF_SUBM_RW;
-      throw(MDFN_Error(0, _("\"RW\" format subchannel data not supported, only \"RW_RAW\" is!")));
-     }
-     else if(!strcasecmp(args[1].c_str(), "RW_RAW"))
-      TmpTrack.SubchannelMode = CDRF_SUBM_RW_RAW;
-
-    } // end to TRACK
-    else if(cmdbuf == "SILENCE")
-    {
-     //throw MDFN_Error(0, _("Unsupported directive: %s"), cmdbuf.c_str());
-    }
-    else if(cmdbuf == "ZERO")
-    {
-     //throw MDFN_Error(0, _("Unsupported directive: %s"), cmdbuf.c_str());
-    }
-    else if(cmdbuf == "FIFO")
-    {
-     throw MDFN_Error(0, _("Unsupported directive: %s"), cmdbuf.c_str());
-    }
-    else if(cmdbuf == "FILE" || cmdbuf == "AUDIOFILE")
-    {
-     const char *binoffset = NULL;
-     const char *msfoffset = NULL;
-     const char *length = NULL;
-
-     if(args[1].c_str()[0] == '#')
-     {
-      binoffset = args[1].c_str() + 1;
-      msfoffset = args[2].c_str();
-      length = args[3].c_str();
-     }
-     else
-     {
-      msfoffset = args[1].c_str();
-      length = args[2].c_str();
-     }
-     //printf("%s, %s, %s, %s\n", args[0].c_str(), binoffset, msfoffset, length);
-     ParseTOCFileLineInfo(&TmpTrack, active_track, args[0], binoffset, msfoffset, length, image_memcache, toc_streamcache);
-    }
-    else if(cmdbuf == "DATAFILE")
-    {
-     const char *binoffset = NULL;
-     const char *length = NULL;
-  
-     if(args[1].c_str()[0] == '#') 
-     {
-      binoffset = args[1].c_str() + 1;
-      length = args[2].c_str();
-     }
-     else
-      length = args[1].c_str();
-
-     ParseTOCFileLineInfo(&TmpTrack, active_track, args[0], binoffset, NULL, length, image_memcache, toc_streamcache);
-    }
-    else if(cmdbuf == "INDEX")
-    {
-
-    }
-    else if(cmdbuf == "PREGAP")
-    {
-     if(active_track < 0)
-     {
-      throw(MDFN_Error(0, _("Command %s is outside of a TRACK definition!\n"), cmdbuf.c_str()));
-     }
-     int m,s,f;
-     sscanf(args[0].c_str(), "%d:%d:%d", &m, &s, &f);
-     TmpTrack.pregap = (m * 60 + s) * 75 + f;
-    } // end to PREGAP
-    else if(cmdbuf == "START")
-    {
-     if(active_track < 0)
-     {
-      throw(MDFN_Error(0, _("Command %s is outside of a TRACK definition!\n"), cmdbuf.c_str()));
-     }
-     int m,s,f;
-     sscanf(args[0].c_str(), "%d:%d:%d", &m, &s, &f);
-     TmpTrack.pregap = (m * 60 + s) * 75 + f;
-    }
-    else if(cmdbuf == "TWO_CHANNEL_AUDIO")
-    {
-     TmpTrack.subq_control &= ~SUBQ_CTRLF_4CH;
-    }
-    else if(cmdbuf == "FOUR_CHANNEL_AUDIO")
-    {
-     TmpTrack.subq_control |= SUBQ_CTRLF_4CH;
-    }
-    else if(cmdbuf == "NO")
-    {
-     MDFN_strtoupper(args[0]);
-
-     if(args[0] == "COPY")
-     {
-      TmpTrack.subq_control &= ~SUBQ_CTRLF_DCP; 
-     }
-     else if(args[0] == "PRE_EMPHASIS")
-     {
-      TmpTrack.subq_control &= ~SUBQ_CTRLF_PRE;
-     }
-     else
-     {
-      throw MDFN_Error(0, _("Unsupported argument to \"NO\" directive: %s"), args[0].c_str());
-     }
-    }
-    else if(cmdbuf == "COPY")
-    {
-     TmpTrack.subq_control |= SUBQ_CTRLF_DCP;
-    } 
-    else if(cmdbuf == "PRE_EMPHASIS")
-    {
-     TmpTrack.subq_control |= SUBQ_CTRLF_PRE;
-    }
-    // TODO: Confirm that these are taken from the TOC of the disc, and not synthesized by cdrdao.
-    else if(cmdbuf == "CD_DA")
-     disc_type = DISC_TYPE_CDDA_OR_M1;
-    else if(cmdbuf == "CD_ROM")
-     disc_type = DISC_TYPE_CDDA_OR_M1;
-    else if(cmdbuf == "CD_ROM_XA")
-     disc_type = DISC_TYPE_CD_XA;
-    else
-    {
-     //throw MDFN_Error(0, _("Unsupported directive: %s"), cmdbuf.c_str());
-    }
-    // TODO: CATALOG
-
-   } /*********** END TOC HANDLING ************/
-   else // now for CUE sheet handling
-   {
-    if(cmdbuf == "FILE")
-    {
-     if(active_track >= 0)
-     {
-      memcpy(&Tracks[active_track], &TmpTrack, sizeof(TmpTrack));
-      memset(&TmpTrack, 0, sizeof(TmpTrack));
-      active_track = -1;
-     }
-
-     if(!MDFN_IsFIROPSafe(args[0]))
-     {
-      throw(MDFN_Error(0, _("Referenced path \"%s\" is potentially unsafe.  See \"filesys.untrusted_fip_check\" setting.\n"), args[0].c_str()));
-     }
-
-     std::string efn = MDFN_EvalFIP(base_dir, args[0]);
-     TmpTrack.fp = new FileStream(efn.c_str(), FileStream::MODE_READ);
-     TmpTrack.FirstFileInstance = 1;
-
-     if(image_memcache)
-      TmpTrack.fp = new MemoryStream(TmpTrack.fp);
-
-     if(!strcasecmp(args[1].c_str(), "BINARY"))
-     {
-      //TmpTrack.Format = TRACK_FORMAT_DATA;
-      //struct stat stat_buf;
-      //fstat(fileno(TmpTrack.fp), &stat_buf);
-      //TmpTrack.sectors = stat_buf.st_size; // / 2048;
-     }
-     else if(!strcasecmp(args[1].c_str(), "OGG") || !strcasecmp(args[1].c_str(), "VORBIS") || !strcasecmp(args[1].c_str(), "WAVE") || !strcasecmp(args[1].c_str(), "WAV") || !strcasecmp(args[1].c_str(), "PCM")
-	|| !strcasecmp(args[1].c_str(), "MPC") || !strcasecmp(args[1].c_str(), "MP+"))
-     {
-      TmpTrack.AReader = AR_Open(TmpTrack.fp);
-      if(!TmpTrack.AReader)
-      {
-       throw(MDFN_Error(0, _("Unsupported audio track file format: %s\n"), args[0].c_str()));
-      }
-     }
-     else
-     {
-      throw(MDFN_Error(0, _("Unsupported track format: %s\n"), args[1].c_str()));
-     }
-    }
-    else if(cmdbuf == "TRACK")
-    {
-     if(active_track >= 0)
-     {
-      memcpy(&Tracks[active_track], &TmpTrack, sizeof(TmpTrack));
-      TmpTrack.FirstFileInstance = 0;
-      TmpTrack.pregap = 0;
-      TmpTrack.pregap_dv = 0;
-      TmpTrack.postgap = 0;
-      TmpTrack.index[0] = -1;
-      TmpTrack.index[1] = 0;
-     }
-     active_track = atoi(args[0].c_str());
-
-     if(active_track < FirstTrack)
-      FirstTrack = active_track;
-     if(active_track > LastTrack)
-      LastTrack = active_track;
-
-     int format_lookup;
-     for(format_lookup = 0; format_lookup < _DI_FORMAT_COUNT; format_lookup++)
-     {
-      if(!strcasecmp(args[1].c_str(), DI_CUE_Strings[format_lookup]))
-      {
-       TmpTrack.DIFormat = format_lookup;
-       break;
-      }
-     }
-
-     if(format_lookup == _DI_FORMAT_COUNT)
-     {
-      throw(MDFN_Error(0, _("Invalid track format: %s\n"), args[1].c_str()));
-     }
-
-     if(active_track < 0 || active_track > 99)
-     {
-      throw(MDFN_Error(0, _("Invalid track number: %d\n"), active_track));
-     }
-    }
-    else if(cmdbuf == "INDEX")
-    {
-     if(active_track >= 0)
-     {
-      unsigned int m,s,f;
-
-      if(sscanf(args[1].c_str(), "%u:%u:%u", &m, &s, &f) != 3)
-      {
-       throw MDFN_Error(0, _("Malformed m:s:f time in \"%s\" directive: %s"), cmdbuf.c_str(), args[0].c_str());
-      }
-
-      if(!strcasecmp(args[0].c_str(), "01") || !strcasecmp(args[0].c_str(), "1"))
-       TmpTrack.index[1] = (m * 60 + s) * 75 + f;
-      else if(!strcasecmp(args[0].c_str(), "00") || !strcasecmp(args[0].c_str(), "0"))
-       TmpTrack.index[0] = (m * 60 + s) * 75 + f;
-     }
-    }
-    else if(cmdbuf == "PREGAP")
-    {
-     if(active_track >= 0)
-     {
-      unsigned int m,s,f;
-
-      if(sscanf(args[0].c_str(), "%u:%u:%u", &m, &s, &f) != 3)
-      {
-       throw MDFN_Error(0, _("Malformed m:s:f time in \"%s\" directive: %s"), cmdbuf.c_str(), args[0].c_str());
-      }
-
-      TmpTrack.pregap = (m * 60 + s) * 75 + f;
-     }
-    }
-    else if(cmdbuf == "POSTGAP")
-    {
-     if(active_track >= 0)
-     {
-      unsigned int m,s,f;
-
-      if(sscanf(args[0].c_str(), "%u:%u:%u", &m, &s, &f) != 3)
-      {
-       throw MDFN_Error(0, _("Malformed m:s:f time in \"%s\" directive: %s"), cmdbuf.c_str(), args[0].c_str());
-      }      
-
-      TmpTrack.postgap = (m * 60 + s) * 75 + f;
-     }
-    }
-    else if(cmdbuf == "REM")
-    {
-
-    }
-    else if(cmdbuf == "FLAGS")
-    {
-     TmpTrack.subq_control &= ~(SUBQ_CTRLF_PRE | SUBQ_CTRLF_DCP | SUBQ_CTRLF_4CH);
-     for(unsigned i = 0; i < argcount; i++)
-     {
-      if(args[i] == "DCP")
-      {
-       TmpTrack.subq_control |= SUBQ_CTRLF_DCP;
-      }
-      else if(args[i] == "4CH")
-      {
-       TmpTrack.subq_control |= SUBQ_CTRLF_4CH;
-      }
-      else if(args[i] == "PRE")
-      {
-       TmpTrack.subq_control |= SUBQ_CTRLF_PRE;
-      }
-      else if(args[i] == "SCMS")
-      {
-	// Not implemented, likely pointless.  PROBABLY indicates that the copy bit of the subchannel Q control field is supposed to
-	// alternate between 1 and 0 at 9.375 Hz(four 1, four 0, four 1, four 0, etc.).
+         // Print an annoying error message, but don't actually error out.
+         MDFN_PrintError(_("UTF-8 BOM detected at start of CUE sheet."));
       }
       else
+         fp.seek(0, SEEK_SET);
+   }
+
+
+   // Assign opposite maximum values so our tests will work!
+   FirstTrack = 99;
+   LastTrack = 0;
+
+   linebuf.reserve(1024);
+   while(fp.get_line(linebuf) >= 0)
+   {
+      unsigned argcount = 0;
+
+      if(IsTOC)
       {
-       throw MDFN_Error(0, _("Unknown CUE sheet \"FLAGS\" directive flag \"%s\".\n"), args[i].c_str());
+         // Handle TOC format comments
+         size_t ss_loc = linebuf.find("//");
+
+         if(ss_loc != std::string::npos)
+            linebuf.resize(ss_loc);
       }
-     }
-    }
-    else if(cmdbuf == "CDTEXTFILE" || cmdbuf == "CATALOG" || cmdbuf == "ISRC" ||
-	    cmdbuf == "TITLE" || cmdbuf == "PERFORMER" || cmdbuf == "SONGWRITER")
-    {
-     MDFN_printf(_("Unsupported CUE sheet directive: \"%s\".\n"), cmdbuf.c_str());	// FIXME, generic logger passed by pointer to constructor
-    }
-    else
-    {
-     throw MDFN_Error(0, _("Unknown CUE sheet directive \"%s\".\n"), cmdbuf.c_str());
-    }
-   } // end of CUE sheet handling
- } // end of fgets() loop
 
- if(active_track >= 0)
-  memcpy(&Tracks[active_track], &TmpTrack, sizeof(TmpTrack));
+      // Call trim AFTER we handle TOC-style comments, so we'll be sure to remove trailing whitespace in lines like: MONKEY  // BABIES
+      MDFN_trim(linebuf);
 
- if(FirstTrack > LastTrack)
- {
-  throw(MDFN_Error(0, _("No tracks found!\n")));
- }
+      if(linebuf.length() == 0)	// Skip blank lines.
+         continue;
 
- FirstTrack = FirstTrack;
- NumTracks = 1 + LastTrack - FirstTrack;
+      // Grab command and arguments.
+      {
+         size_t offs = 0;
 
- int32 RunningLBA = 0;
- int32 LastIndex = 0;
- long FileOffset = 0;
+         offs = UnQuotify(linebuf, offs, cmdbuf, false);
+         for(argcount = 0; argcount < max_args && offs < linebuf.length(); argcount++)
+            offs = UnQuotify(linebuf, offs, args[argcount]);
 
- for(int x = FirstTrack; x < (FirstTrack + NumTracks); x++)
- {
-  if(Tracks[x].DIFormat == DI_FORMAT_AUDIO)
-   Tracks[x].subq_control &= ~SUBQ_CTRLF_DATA;
-  else
-   Tracks[x].subq_control |= SUBQ_CTRLF_DATA;
+         // Make sure unused arguments are cleared out so we don't have inter-line leaks!
+         for(unsigned x = argcount; x < max_args; x++)
+            args[x].clear();
 
-  if(!IsTOC)	// TOC-format disc_type calculation is handled differently.
-  {
-   switch(Tracks[x].DIFormat)
+         MDFN_strtoupper(cmdbuf);
+      }
+
+      //printf("%s\n", cmdbuf.c_str()); //: %s %s %s %s\n", cmdbuf.c_str(), args[0].c_str(), args[1].c_str(), args[2].c_str(), args[3].c_str());
+
+      if(IsTOC)
+      {
+         if(cmdbuf == "TRACK")
+         {
+            if(active_track >= 0)
+            {
+               memcpy(&Tracks[active_track], &TmpTrack, sizeof(TmpTrack));
+               memset(&TmpTrack, 0, sizeof(TmpTrack));
+               active_track = -1;
+            }
+
+            if(AutoTrackInc > 99)
+            {
+               MDFN_Error(0, _("Invalid track number: %d"), AutoTrackInc);
+               return false;
+            }
+
+            active_track = AutoTrackInc++;
+            if(active_track < FirstTrack)
+               FirstTrack = active_track;
+            if(active_track > LastTrack)
+               LastTrack = active_track;
+
+            int format_lookup;
+            for(format_lookup = 0; format_lookup < _DI_FORMAT_COUNT; format_lookup++)
+            {
+               if(!strcasecmp(args[0].c_str(), DI_CDRDAO_Strings[format_lookup]))
+               {
+                  TmpTrack.DIFormat = format_lookup;
+                  break;
+               }
+            }
+
+            if(format_lookup == _DI_FORMAT_COUNT)
+            {
+               MDFN_Error(0, _("Invalid track format: %s"), args[0].c_str());
+               return false;
+            }
+
+            if(TmpTrack.DIFormat == DI_FORMAT_AUDIO)
+               TmpTrack.RawAudioMSBFirst = TRUE; // Silly cdrdao...
+
+            if(!strcasecmp(args[1].c_str(), "RW"))
+            {
+               TmpTrack.SubchannelMode = CDRF_SUBM_RW;
+               MDFN_Error(0, _("\"RW\" format subchannel data not supported, only \"RW_RAW\" is!"));
+               return false;
+            }
+            else if(!strcasecmp(args[1].c_str(), "RW_RAW"))
+               TmpTrack.SubchannelMode = CDRF_SUBM_RW_RAW;
+
+         } // end to TRACK
+         else if(cmdbuf == "SILENCE")
+         {
+            //throw MDFN_Error(0, _("Unsupported directive: %s"), cmdbuf.c_str());
+         }
+         else if(cmdbuf == "ZERO")
+         {
+            //throw MDFN_Error(0, _("Unsupported directive: %s"), cmdbuf.c_str());
+         }
+         else if(cmdbuf == "FIFO")
+         {
+            MDFN_Error(0, _("Unsupported directive: %s"), cmdbuf.c_str());
+            return false;
+         }
+         else if(cmdbuf == "FILE" || cmdbuf == "AUDIOFILE")
+         {
+            const char *binoffset = NULL;
+            const char *msfoffset = NULL;
+            const char *length = NULL;
+
+            if(args[1].c_str()[0] == '#')
+            {
+               binoffset = args[1].c_str() + 1;
+               msfoffset = args[2].c_str();
+               length = args[3].c_str();
+            }
+            else
+            {
+               msfoffset = args[1].c_str();
+               length = args[2].c_str();
+            }
+            //printf("%s, %s, %s, %s\n", args[0].c_str(), binoffset, msfoffset, length);
+            ParseTOCFileLineInfo(&TmpTrack, active_track, args[0], binoffset, msfoffset, length, image_memcache, toc_streamcache);
+         }
+         else if(cmdbuf == "DATAFILE")
+         {
+            const char *binoffset = NULL;
+            const char *length = NULL;
+
+            if(args[1].c_str()[0] == '#') 
+            {
+               binoffset = args[1].c_str() + 1;
+               length = args[2].c_str();
+            }
+            else
+               length = args[1].c_str();
+
+            ParseTOCFileLineInfo(&TmpTrack, active_track, args[0], binoffset, NULL, length, image_memcache, toc_streamcache);
+         }
+         else if(cmdbuf == "INDEX")
+         {
+
+         }
+         else if(cmdbuf == "PREGAP")
+         {
+            if(active_track < 0)
+            {
+               MDFN_Error(0, _("Command %s is outside of a TRACK definition!\n"), cmdbuf.c_str());
+               return false;
+            }
+            int m,s,f;
+            sscanf(args[0].c_str(), "%d:%d:%d", &m, &s, &f);
+            TmpTrack.pregap = (m * 60 + s) * 75 + f;
+         } // end to PREGAP
+         else if(cmdbuf == "START")
+         {
+            if(active_track < 0)
+            {
+               MDFN_Error(0, _("Command %s is outside of a TRACK definition!\n"), cmdbuf.c_str());
+               return false;
+            }
+            int m,s,f;
+            sscanf(args[0].c_str(), "%d:%d:%d", &m, &s, &f);
+            TmpTrack.pregap = (m * 60 + s) * 75 + f;
+         }
+         else if(cmdbuf == "TWO_CHANNEL_AUDIO")
+         {
+            TmpTrack.subq_control &= ~SUBQ_CTRLF_4CH;
+         }
+         else if(cmdbuf == "FOUR_CHANNEL_AUDIO")
+         {
+            TmpTrack.subq_control |= SUBQ_CTRLF_4CH;
+         }
+         else if(cmdbuf == "NO")
+         {
+            MDFN_strtoupper(args[0]);
+
+            if(args[0] == "COPY")
+            {
+               TmpTrack.subq_control &= ~SUBQ_CTRLF_DCP; 
+            }
+            else if(args[0] == "PRE_EMPHASIS")
+            {
+               TmpTrack.subq_control &= ~SUBQ_CTRLF_PRE;
+            }
+            else
+            {
+               MDFN_Error(0, _("Unsupported argument to \"NO\" directive: %s"), args[0].c_str());
+               return false;
+            }
+         }
+         else if(cmdbuf == "COPY")
+         {
+            TmpTrack.subq_control |= SUBQ_CTRLF_DCP;
+         } 
+         else if(cmdbuf == "PRE_EMPHASIS")
+         {
+            TmpTrack.subq_control |= SUBQ_CTRLF_PRE;
+         }
+         // TODO: Confirm that these are taken from the TOC of the disc, and not synthesized by cdrdao.
+         else if(cmdbuf == "CD_DA")
+            disc_type = DISC_TYPE_CDDA_OR_M1;
+         else if(cmdbuf == "CD_ROM")
+            disc_type = DISC_TYPE_CDDA_OR_M1;
+         else if(cmdbuf == "CD_ROM_XA")
+            disc_type = DISC_TYPE_CD_XA;
+         else
+         {
+            //throw MDFN_Error(0, _("Unsupported directive: %s"), cmdbuf.c_str());
+         }
+         // TODO: CATALOG
+
+      } /*********** END TOC HANDLING ************/
+      else // now for CUE sheet handling
+      {
+         if(cmdbuf == "FILE")
+         {
+            if(active_track >= 0)
+            {
+               memcpy(&Tracks[active_track], &TmpTrack, sizeof(TmpTrack));
+               memset(&TmpTrack, 0, sizeof(TmpTrack));
+               active_track = -1;
+            }
+
+            if(!MDFN_IsFIROPSafe(args[0]))
+            {
+               MDFN_Error(0, _("Referenced path \"%s\" is potentially unsafe.  See \"filesys.untrusted_fip_check\" setting.\n"), args[0].c_str());
+               return false;
+            }
+
+            std::string efn = MDFN_EvalFIP(base_dir, args[0]);
+            TmpTrack.fp = new FileStream(efn.c_str(), FileStream::MODE_READ);
+            TmpTrack.FirstFileInstance = 1;
+
+            if(image_memcache)
+               TmpTrack.fp = new MemoryStream(TmpTrack.fp);
+
+            if(!strcasecmp(args[1].c_str(), "BINARY"))
+            {
+               //TmpTrack.Format = TRACK_FORMAT_DATA;
+               //struct stat stat_buf;
+               //fstat(fileno(TmpTrack.fp), &stat_buf);
+               //TmpTrack.sectors = stat_buf.st_size; // / 2048;
+            }
+            else if(!strcasecmp(args[1].c_str(), "OGG") || !strcasecmp(args[1].c_str(), "VORBIS") || !strcasecmp(args[1].c_str(), "WAVE") || !strcasecmp(args[1].c_str(), "WAV") || !strcasecmp(args[1].c_str(), "PCM")
+                  || !strcasecmp(args[1].c_str(), "MPC") || !strcasecmp(args[1].c_str(), "MP+"))
+            {
+               TmpTrack.AReader = AR_Open(TmpTrack.fp);
+               if(!TmpTrack.AReader)
+               {
+                  MDFN_Error(0, _("Unsupported audio track file format: %s\n"), args[0].c_str());
+                  return false;
+               }
+            }
+            else
+            {
+               MDFN_Error(0, _("Unsupported track format: %s\n"), args[1].c_str());
+               return false;
+            }
+         }
+         else if(cmdbuf == "TRACK")
+         {
+            if(active_track >= 0)
+            {
+               memcpy(&Tracks[active_track], &TmpTrack, sizeof(TmpTrack));
+               TmpTrack.FirstFileInstance = 0;
+               TmpTrack.pregap = 0;
+               TmpTrack.pregap_dv = 0;
+               TmpTrack.postgap = 0;
+               TmpTrack.index[0] = -1;
+               TmpTrack.index[1] = 0;
+            }
+            active_track = atoi(args[0].c_str());
+
+            if(active_track < FirstTrack)
+               FirstTrack = active_track;
+            if(active_track > LastTrack)
+               LastTrack = active_track;
+
+            int format_lookup;
+            for(format_lookup = 0; format_lookup < _DI_FORMAT_COUNT; format_lookup++)
+            {
+               if(!strcasecmp(args[1].c_str(), DI_CUE_Strings[format_lookup]))
+               {
+                  TmpTrack.DIFormat = format_lookup;
+                  break;
+               }
+            }
+
+            if(format_lookup == _DI_FORMAT_COUNT)
+            {
+               MDFN_Error(0, _("Invalid track format: %s\n"), args[1].c_str());
+               return false;
+            }
+
+            if(active_track < 0 || active_track > 99)
+            {
+               MDFN_Error(0, _("Invalid track number: %d\n"), active_track);
+               return false;
+            }
+         }
+         else if(cmdbuf == "INDEX")
+         {
+            if(active_track >= 0)
+            {
+               unsigned int m,s,f;
+
+               if(sscanf(args[1].c_str(), "%u:%u:%u", &m, &s, &f) != 3)
+               {
+                  MDFN_Error(0, _("Malformed m:s:f time in \"%s\" directive: %s"), cmdbuf.c_str(), args[0].c_str());
+                  return false;
+               }
+
+               if(!strcasecmp(args[0].c_str(), "01") || !strcasecmp(args[0].c_str(), "1"))
+                  TmpTrack.index[1] = (m * 60 + s) * 75 + f;
+               else if(!strcasecmp(args[0].c_str(), "00") || !strcasecmp(args[0].c_str(), "0"))
+                  TmpTrack.index[0] = (m * 60 + s) * 75 + f;
+            }
+         }
+         else if(cmdbuf == "PREGAP")
+         {
+            if(active_track >= 0)
+            {
+               unsigned int m,s,f;
+
+               if(sscanf(args[0].c_str(), "%u:%u:%u", &m, &s, &f) != 3)
+               {
+                  MDFN_Error(0, _("Malformed m:s:f time in \"%s\" directive: %s"), cmdbuf.c_str(), args[0].c_str());
+                  return false;
+               }
+
+               TmpTrack.pregap = (m * 60 + s) * 75 + f;
+            }
+         }
+         else if(cmdbuf == "POSTGAP")
+         {
+            if(active_track >= 0)
+            {
+               unsigned int m,s,f;
+
+               if(sscanf(args[0].c_str(), "%u:%u:%u", &m, &s, &f) != 3)
+               {
+                  MDFN_Error(0, _("Malformed m:s:f time in \"%s\" directive: %s"), cmdbuf.c_str(), args[0].c_str());
+                  return false;
+               }      
+
+               TmpTrack.postgap = (m * 60 + s) * 75 + f;
+            }
+         }
+         else if(cmdbuf == "REM")
+         {
+
+         }
+         else if(cmdbuf == "FLAGS")
+         {
+            TmpTrack.subq_control &= ~(SUBQ_CTRLF_PRE | SUBQ_CTRLF_DCP | SUBQ_CTRLF_4CH);
+            for(unsigned i = 0; i < argcount; i++)
+            {
+               if(args[i] == "DCP")
+               {
+                  TmpTrack.subq_control |= SUBQ_CTRLF_DCP;
+               }
+               else if(args[i] == "4CH")
+               {
+                  TmpTrack.subq_control |= SUBQ_CTRLF_4CH;
+               }
+               else if(args[i] == "PRE")
+               {
+                  TmpTrack.subq_control |= SUBQ_CTRLF_PRE;
+               }
+               else if(args[i] == "SCMS")
+               {
+                  // Not implemented, likely pointless.  PROBABLY indicates that the copy bit of the subchannel Q control field is supposed to
+                  // alternate between 1 and 0 at 9.375 Hz(four 1, four 0, four 1, four 0, etc.).
+               }
+               else
+               {
+                  MDFN_Error(0, _("Unknown CUE sheet \"FLAGS\" directive flag \"%s\".\n"), args[i].c_str());
+                  return false;
+               }
+            }
+         }
+         else if(cmdbuf == "CDTEXTFILE" || cmdbuf == "CATALOG" || cmdbuf == "ISRC" ||
+               cmdbuf == "TITLE" || cmdbuf == "PERFORMER" || cmdbuf == "SONGWRITER")
+         {
+            MDFN_printf(_("Unsupported CUE sheet directive: \"%s\".\n"), cmdbuf.c_str());	// FIXME, generic logger passed by pointer to constructor
+         }
+         else
+         {
+            MDFN_Error(0, _("Unknown CUE sheet directive \"%s\".\n"), cmdbuf.c_str());
+            return false;
+         }
+      } // end of CUE sheet handling
+   } // end of fgets() loop
+
+   if(active_track >= 0)
+      memcpy(&Tracks[active_track], &TmpTrack, sizeof(TmpTrack));
+
+   if(FirstTrack > LastTrack)
    {
-    default: break;
-
-    case DI_FORMAT_MODE2:
-    case DI_FORMAT_MODE2_FORM1:
-    case DI_FORMAT_MODE2_FORM2:
-    case DI_FORMAT_MODE2_RAW:
-	disc_type = DISC_TYPE_CD_XA;	
-	break;
+      MDFN_Error(0, _("No tracks found!\n"));
+      return false;
    }
-  }
 
-  if(IsTOC)
-  {
-   RunningLBA += Tracks[x].pregap;
-   Tracks[x].LBA = RunningLBA;
-   RunningLBA += Tracks[x].sectors;
-   RunningLBA += Tracks[x].postgap;
-  }
-  else // else handle CUE sheet...
-  {
-   if(Tracks[x].FirstFileInstance) 
+   FirstTrack = FirstTrack;
+   NumTracks = 1 + LastTrack - FirstTrack;
+
+   int32 RunningLBA = 0;
+   int32 LastIndex = 0;
+   long FileOffset = 0;
+
+   for(int x = FirstTrack; x < (FirstTrack + NumTracks); x++)
    {
-    LastIndex = 0;
-    FileOffset = 0;
-   }
+      if(Tracks[x].DIFormat == DI_FORMAT_AUDIO)
+         Tracks[x].subq_control &= ~SUBQ_CTRLF_DATA;
+      else
+         Tracks[x].subq_control |= SUBQ_CTRLF_DATA;
 
-   RunningLBA += Tracks[x].pregap;
+      if(!IsTOC)	// TOC-format disc_type calculation is handled differently.
+      {
+         switch(Tracks[x].DIFormat)
+         {
+            default: break;
 
-   Tracks[x].pregap_dv = 0;
+            case DI_FORMAT_MODE2:
+            case DI_FORMAT_MODE2_FORM1:
+            case DI_FORMAT_MODE2_FORM2:
+            case DI_FORMAT_MODE2_RAW:
+                     disc_type = DISC_TYPE_CD_XA;	
+                     break;
+         }
+      }
 
-   if(Tracks[x].index[0] != -1)
-    Tracks[x].pregap_dv = Tracks[x].index[1] - Tracks[x].index[0];
+      if(IsTOC)
+      {
+         RunningLBA += Tracks[x].pregap;
+         Tracks[x].LBA = RunningLBA;
+         RunningLBA += Tracks[x].sectors;
+         RunningLBA += Tracks[x].postgap;
+      }
+      else // else handle CUE sheet...
+      {
+         if(Tracks[x].FirstFileInstance) 
+         {
+            LastIndex = 0;
+            FileOffset = 0;
+         }
 
-   FileOffset += Tracks[x].pregap_dv * DI_Size_Table[Tracks[x].DIFormat];
+         RunningLBA += Tracks[x].pregap;
 
-   RunningLBA += Tracks[x].pregap_dv;
+         Tracks[x].pregap_dv = 0;
 
-   Tracks[x].LBA = RunningLBA;
+         if(Tracks[x].index[0] != -1)
+            Tracks[x].pregap_dv = Tracks[x].index[1] - Tracks[x].index[0];
 
-   // Make sure FileOffset this is set before the call to GetSectorCount()
-   Tracks[x].FileOffset = FileOffset;
-   Tracks[x].sectors = GetSectorCount(&Tracks[x]);
+         FileOffset += Tracks[x].pregap_dv * DI_Size_Table[Tracks[x].DIFormat];
 
-   if((x + 1) >= (FirstTrack + NumTracks) || Tracks[x+1].FirstFileInstance)
-   {
+         RunningLBA += Tracks[x].pregap_dv;
 
-   }
-   else
-   { 
-    // Fix the sector count if we have multiple tracks per one binary image file.
-    if(Tracks[x + 1].index[0] == -1)
-     Tracks[x].sectors = Tracks[x + 1].index[1] - Tracks[x].index[1];
-    else
-     Tracks[x].sectors = Tracks[x + 1].index[0] - Tracks[x].index[1];	//Tracks[x + 1].index - Tracks[x].index;
-   }
+         Tracks[x].LBA = RunningLBA;
 
-   //printf("Poo: %d %d\n", x, Tracks[x].sectors);
-   RunningLBA += Tracks[x].sectors;
-   RunningLBA += Tracks[x].postgap;
+         // Make sure FileOffset this is set before the call to GetSectorCount()
+         Tracks[x].FileOffset = FileOffset;
+         Tracks[x].sectors = GetSectorCount(&Tracks[x]);
 
-   //printf("%d, %ld %d %d %d %d\n", x, FileOffset, Tracks[x].index, Tracks[x].pregap, Tracks[x].sectors, Tracks[x].LBA);
+         if((x + 1) >= (FirstTrack + NumTracks) || Tracks[x+1].FirstFileInstance)
+         {
 
-   FileOffset += Tracks[x].sectors * DI_Size_Table[Tracks[x].DIFormat];
-  } // end to cue sheet handling
- } // end to track loop
+         }
+         else
+         { 
+            // Fix the sector count if we have multiple tracks per one binary image file.
+            if(Tracks[x + 1].index[0] == -1)
+               Tracks[x].sectors = Tracks[x + 1].index[1] - Tracks[x].index[1];
+            else
+               Tracks[x].sectors = Tracks[x + 1].index[0] - Tracks[x].index[1];	//Tracks[x + 1].index - Tracks[x].index;
+         }
 
- total_sectors = RunningLBA;
+         //printf("Poo: %d %d\n", x, Tracks[x].sectors);
+         RunningLBA += Tracks[x].sectors;
+         RunningLBA += Tracks[x].postgap;
+
+         //printf("%d, %ld %d %d %d %d\n", x, FileOffset, Tracks[x].index, Tracks[x].pregap, Tracks[x].sectors, Tracks[x].LBA);
+
+         FileOffset += Tracks[x].sectors * DI_Size_Table[Tracks[x].DIFormat];
+      } // end to cue sheet handling
+   } // end to track loop
+
+   total_sectors = RunningLBA;
+   return true;
 }
 
 void CDAccess_Image::Cleanup(void)
@@ -865,11 +890,12 @@ void CDAccess_Image::Cleanup(void)
  }
 }
 
-CDAccess_Image::CDAccess_Image(const char *path, bool image_memcache) : NumTracks(0), FirstTrack(0), LastTrack(0), total_sectors(0)
+CDAccess_Image::CDAccess_Image(const char *path, bool *success, bool image_memcache) : NumTracks(0), FirstTrack(0), LastTrack(0), total_sectors(0)
 {
  memset(Tracks, 0, sizeof(Tracks));
 
- ImageOpen(path, image_memcache);
+ if (!ImageOpen(path, image_memcache))
+    *success = false;
 }
 
 CDAccess_Image::~CDAccess_Image()

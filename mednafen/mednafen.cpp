@@ -71,38 +71,48 @@ void MDFN_ResetMessages(void)
 
 
 #ifdef NEED_CD
-static void ReadM3U(std::vector<std::string> &file_list, std::string path, unsigned depth = 0)
+static bool ReadM3U(std::vector<std::string> &file_list, std::string path, unsigned depth = 0)
 {
- std::vector<std::string> ret;
- FileWrapper m3u_file(path.c_str(), FileWrapper::MODE_READ, _("M3U CD Set"));
- std::string dir_path;
- char linebuf[2048];
+   char linebuf[2048];
+   std::string dir_path;
+   std::vector<std::string> ret;
+   FileWrapper m3u_file(path.c_str(), FileWrapper::MODE_READ, _("M3U CD Set"));
 
- MDFN_GetFilePathComponents(path, &dir_path);
+   MDFN_GetFilePathComponents(path, &dir_path);
 
- while(m3u_file.get_line(linebuf, sizeof(linebuf)))
- {
-  std::string efp;
+   while(m3u_file.get_line(linebuf, sizeof(linebuf)))
+   {
+      std::string efp;
 
-  if(linebuf[0] == '#') continue;
-  string_trim_whitespace_right(linebuf);
-  if(linebuf[0] == 0) continue;
+      if(linebuf[0] == '#')
+         continue;
+      string_trim_whitespace_right(linebuf);
+      if(linebuf[0] == 0)
+         continue;
 
-  efp = MDFN_EvalFIP(dir_path, std::string(linebuf));
+      efp = MDFN_EvalFIP(dir_path, std::string(linebuf));
 
-  if(efp.size() >= 4 && efp.substr(efp.size() - 4) == ".m3u")
-  {
-   if(efp == path)
-    throw(MDFN_Error(0, _("M3U at \"%s\" references self."), efp.c_str()));
+      if(efp.size() >= 4 && efp.substr(efp.size() - 4) == ".m3u")
+      {
+         if(efp == path)
+         {
+            MDFN_Error(0, _("M3U at \"%s\" references self."), efp.c_str());
+            return false;
+         }
 
-   if(depth == 99)
-    throw(MDFN_Error(0, _("M3U load recursion too deep!")));
+         if(depth == 99)
+         {
+            MDFN_Error(0, _("M3U load recursion too deep!"));
+            return false;
+         }
 
-   ReadM3U(file_list, efp, depth++);
-  }
-  else
-   file_list.push_back(efp);
- }
+         ReadM3U(file_list, efp, depth++);
+      }
+      else
+         file_list.push_back(efp);
+   }
+
+   return true;
 }
 
 #ifdef NEED_CD
@@ -116,8 +126,6 @@ MDFNGI *MDFNI_LoadCD(const char *force_module, const char *devicename)
 
  MDFN_printf(_("Loading %s...\n\n"), devicename ? devicename : _("PHYSICAL CD"));
 
- try
- {
   if(devicename && strlen(devicename) > 4 && !strcasecmp(devicename + strlen(devicename) - 4, ".m3u"))
   {
    std::vector<std::string> file_list;
@@ -126,20 +134,17 @@ MDFNGI *MDFNI_LoadCD(const char *force_module, const char *devicename)
 
    for(unsigned i = 0; i < file_list.size(); i++)
    {
-    CDInterfaces.push_back(CDIF_Open(file_list[i].c_str(), false, false /* cdimage_memcache */));
+      bool success = true;
+      CDIF *cdif   = CDIF_Open(file_list[i].c_str(), &success, false /* cdimage_memcache */);
+      CDInterfaces.push_back(cdif);
    }
   }
   else
   {
-   CDInterfaces.push_back(CDIF_Open(devicename, false, false /* cdimage_memcache */));
+     bool success = true;
+     CDIF *cdif   = CDIF_Open(devicename, &success, false /* cdimage_memcache */);
+   CDInterfaces.push_back(cdif);
   }
- }
- catch(std::exception &e)
- {
-  MDFND_PrintError(e.what());
-  MDFN_PrintError(_("Error opening CD."));
-  return(0);
- }
 
  //
  // Print out a track list for all discs.
