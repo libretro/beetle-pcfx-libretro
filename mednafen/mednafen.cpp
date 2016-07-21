@@ -124,7 +124,7 @@ MDFNGI *MDFNI_LoadCD(const char *force_module, const char *devicename)
 {
  uint8 LayoutMD5[16];
 
- MDFN_printf(_("Loading %s...\n\n"), devicename ? devicename : _("PHYSICAL CD"));
+ MDFN_printf(_("Loading %s...\n"), devicename);
 
   if(devicename && strlen(devicename) > 4 && !strcasecmp(devicename + strlen(devicename) - 4, ".m3u"))
   {
@@ -149,7 +149,6 @@ MDFNGI *MDFNI_LoadCD(const char *force_module, const char *devicename)
  //
  // Print out a track list for all discs.
  //
- MDFN_indent(1);
  for(unsigned i = 0; i < CDInterfaces.size(); i++)
  {
   CDUtility::TOC toc;
@@ -157,7 +156,6 @@ MDFNGI *MDFNI_LoadCD(const char *force_module, const char *devicename)
   CDInterfaces[i]->ReadTOC(&toc);
 
   MDFN_printf(_("CD %d Layout:\n"), i + 1);
-  MDFN_indent(1);
 
   for(int32 track = toc.first_track; track <= toc.last_track; track++)
   {
@@ -165,10 +163,8 @@ MDFNGI *MDFNI_LoadCD(const char *force_module, const char *devicename)
   }
 
   MDFN_printf("Leadout: %6d\n", toc.tracks[100].lba);
-  MDFN_indent(-1);
   MDFN_printf("\n");
  }
- MDFN_indent(-1);
 
  // Calculate layout MD5.  The system emulation LoadCD() code is free to ignore this value and calculate
  // its own, or to use it to look up a game in its database.
@@ -243,8 +239,6 @@ MDFNGI *MDFNI_LoadGame(const char *force_module, const char *name)
 
 	MDFN_printf(_("Loading %s...\n"),name);
 
-	MDFN_indent(1);
-
 	// Construct a NULL-delimited list of known file extensions for MDFN_fopen()
    const FileExtensionSpecStruct *curexts = MDFNGameInfo->FileExtensions;
 
@@ -261,7 +255,6 @@ MDFNGI *MDFNI_LoadGame(const char *force_module, const char *name)
    }
 
 	MDFN_printf(_("Using module: %s(%s)\n\n"), MDFNGameInfo->shortname, MDFNGameInfo->fullname);
-	MDFN_indent(1);
 
 	//
 	// Load per-game settings
@@ -271,19 +264,12 @@ MDFNGI *MDFNI_LoadGame(const char *force_module, const char *name)
 	//
 
    if(MDFNGameInfo->Load(name, &GameFile) <= 0)
-   {
-      GameFile.Close();
-      MDFN_indent(-2);
-      MDFNGameInfo = NULL;
-      return(0);
-   }
+      goto error;
 
 	MDFN_LoadGameCheats(NULL);
 	MDFNMP_InstallReadPatches();
 
 	MDFN_ResetMessages();	// Save state, status messages, etc.
-
-	MDFN_indent(-2);
 
 	if(!MDFNGameInfo->name)
    {
@@ -302,6 +288,12 @@ MDFNGI *MDFNI_LoadGame(const char *force_module, const char *name)
    }
 
    return(MDFNGameInfo);
+   
+error:
+   GameFile.Close();
+   MDFNGameInfo = NULL;
+
+   return NULL;
 }
 
 void MDFNI_CloseGame(void)
