@@ -228,8 +228,8 @@ MDFNGI *MDFNI_LoadCD(const char *force_module, const char *devicename)
 
 MDFNGI *MDFNI_LoadGame(const char *force_module, const char *name)
 {
-   MDFNFILE *GameFile;
 	std::vector<FileExtensionSpecStruct> valid_iae;
+   MDFNFILE *GameFile = NULL;
    MDFNGameInfo = &EmulatedPCFX;
 
 #ifdef NEED_CD
@@ -253,15 +253,6 @@ MDFNGI *MDFNI_LoadGame(const char *force_module, const char *name)
 	if(!GameFile)
       goto error;
 
-	MDFN_printf(_("Using module: %s(%s)\n\n"), MDFNGameInfo->shortname, MDFNGameInfo->fullname);
-
-	//
-	// Load per-game settings
-	//
-	// Maybe we should make a "pgcfg" subdir, and automatically load all files in it?
-	// End load per-game settings
-	//
-
    if(MDFNGameInfo->Load(name, GameFile) <= 0)
       goto error;
 
@@ -269,6 +260,9 @@ MDFNGI *MDFNI_LoadGame(const char *force_module, const char *name)
 	MDFNMP_InstallReadPatches();
 
 	MDFN_ResetMessages();	// Save state, status messages, etc.
+
+   file_close(GameFile);
+   GameFile   = NULL;
 
 	if(!MDFNGameInfo->name)
    {
