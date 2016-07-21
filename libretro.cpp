@@ -37,6 +37,62 @@ std::string retro_base_directory;
 std::string retro_base_name;
 std::string retro_save_directory;
 
+
+class PtrLengthPair
+{
+   public:
+
+      inline PtrLengthPair(const void *new_data, const uint64 new_length)
+      {
+         data = new_data;
+         length = new_length;
+      }
+
+      ~PtrLengthPair() 
+      { 
+
+      } 
+
+      INLINE const void *GetData(void) const
+      {
+         return(data);
+      }
+
+      INLINE uint64 GetLength(void) const
+      {
+         return(length);
+      }
+
+   private:
+      const void *data;
+      uint64 length;
+};
+
+static bool MDFN_DumpToFile(const char *filename, int compress, const std::vector<PtrLengthPair> &pearpairs)
+{
+   FILE *fp = fopen(filename, "wb");
+
+   if (!fp)
+      return 0;
+
+   for(unsigned int i = 0; i < pearpairs.size(); i++)
+   {
+      const void *data = pearpairs[i].GetData();
+      const uint64 length = pearpairs[i].GetLength();
+
+      if (fwrite(data, 1, length, fp) != length)
+      {
+         fclose(fp);
+         return 0;
+      }
+   }
+
+   if (fclose(fp) == EOF)
+      return 0;
+
+   return 1;
+}
+
 /* Mednafen - Multi-system Emulator
  *
  * This program is free software; you can redistribute it and/or modify
@@ -372,11 +428,12 @@ static bool LoadCommon(std::vector<CDIF *> *CDInterfaces)
 {
  std::string biospath = MDFN_MakeFName(MDFNMKF_FIRMWARE, 0, MDFN_GetSettingS("pcfx.bios").c_str());
  std::string fxscsi_path = MDFN_GetSettingS("pcfx.fxscsi");	// For developers only, so don't make it convenient.
- MDFNFILE BIOSFile;
+ MDFNFILE *BIOSFile;
  V810_Emu_Mode cpu_mode;
 
+ BIOSFile = file_open(biospath.c_str());
 
- if(!BIOSFile.Open(biospath, NULL, "BIOS"))
+ if(!BIOSFile)
   return(0);
 
  cpu_mode = (V810_Emu_Mode)MDFN_GetSettingI("pcfx.cpu_emulation");
@@ -407,25 +464,28 @@ static bool LoadCommon(std::vector<CDIF *> *CDInterfaces)
   return(0);
  }
 
- if(GET_FSIZE(BIOSFile) != 1024 * 1024)
+ if(GET_FSIZE_PTR(BIOSFile) != 1024 * 1024)
  {
   MDFN_PrintError(_("BIOS ROM file is incorrect size.\n"));
   return(0);
  }
 
- memcpy(BIOSROM, GET_FDATA(BIOSFile), 1024 * 1024);
+ memcpy(BIOSROM, GET_FDATA_PTR(BIOSFile), 1024 * 1024);
 
- BIOSFile.Close();
+ file_close(BIOSFile);
+ BIOSFile = NULL;
 
 #if 0
  if(fxscsi_path != "0" && fxscsi_path != "" && fxscsi_path != "none")
  {
-  MDFNFILE FXSCSIFile;
+  MDFNFILE *FXSCSIFile;
 
-  if(!FXSCSIFile.Open(fxscsi_path, NULL, "FX-SCSI ROM"))
+  FXSCSIFile = file_open(fxscsi_path);
+
+  if(!FXSCSIFile)
    return(0);
 
-  if(GET_FSIZE(FXSCSIFile) != 1024 * 512)
+  if(GET_FSIZE_PTR(FXSCSIFile) != 1024 * 512)
   {
    MDFN_PrintError(_("BIOS ROM file is incorrect size.\n"));
    return(0);
@@ -438,9 +498,10 @@ static bool LoadCommon(std::vector<CDIF *> *CDInterfaces)
    return(0);
   }
 
-  memcpy(FXSCSIROM, GET_FDATA(FXSCSIFile), 1024 * 512);
+  memcpy(FXSCSIROM, GET_FDATA_PTR(FXSCSIFile), 1024 * 512);
 
-  FXSCSIFile.Close();
+  file_close(FXSCSIFile);
+  FXSCSIFile = NULL;
  }
 #endif
 

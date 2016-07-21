@@ -228,7 +228,7 @@ MDFNGI *MDFNI_LoadCD(const char *force_module, const char *devicename)
 
 MDFNGI *MDFNI_LoadGame(const char *force_module, const char *name)
 {
-   MDFNFILE GameFile;
+   MDFNFILE *GameFile;
 	std::vector<FileExtensionSpecStruct> valid_iae;
    MDFNGameInfo = &EmulatedPCFX;
 
@@ -248,11 +248,10 @@ MDFNGI *MDFNI_LoadGame(const char *force_module, const char *name)
       curexts++;
    }
 
-	if(!GameFile.Open(name, &valid_iae[0], _("game")))
-   {
-      MDFNGameInfo = NULL;
-      return 0;
-   }
+   GameFile = file_open(name);
+
+	if(!GameFile)
+      goto error;
 
 	MDFN_printf(_("Using module: %s(%s)\n\n"), MDFNGameInfo->shortname, MDFNGameInfo->fullname);
 
@@ -263,7 +262,7 @@ MDFNGI *MDFNI_LoadGame(const char *force_module, const char *name)
 	// End load per-game settings
 	//
 
-   if(MDFNGameInfo->Load(name, &GameFile) <= 0)
+   if(MDFNGameInfo->Load(name, GameFile) <= 0)
       goto error;
 
 	MDFN_LoadGameCheats(NULL);
@@ -290,7 +289,9 @@ MDFNGI *MDFNI_LoadGame(const char *force_module, const char *name)
    return(MDFNGameInfo);
    
 error:
-   GameFile.Close();
+   if (GameFile)
+      file_close(GameFile);
+   GameFile     = NULL;
    MDFNGameInfo = NULL;
 
    return NULL;
