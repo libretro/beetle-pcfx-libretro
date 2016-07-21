@@ -12,7 +12,7 @@ class CDAccess
  CDAccess();
  virtual ~CDAccess();
 
- virtual void Read_Raw_Sector(uint8 *buf, int32 lba) = 0;
+ virtual bool Read_Raw_Sector(uint8 *buf, int32 lba) = 0;
 
  virtual void Read_TOC(CDUtility::TOC *toc) = 0;
 

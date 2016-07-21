@@ -507,20 +507,25 @@ CDAccess_CCD::~CDAccess_CCD()
  Cleanup();
 }
 
-void CDAccess_CCD::Read_Raw_Sector(uint8 *buf, int32 lba)
+bool CDAccess_CCD::Read_Raw_Sector(uint8 *buf, int32 lba)
 {
- if(lba < 0 || (size_t)lba >= img_numsectors)
-  throw(MDFN_Error(0, _("LBA out of range.")));
+   if(lba < 0 || (size_t)lba >= img_numsectors)
+   {
+      MDFN_Error(0, _("LBA out of range."));
+      return false;
+   }
 
- uint8 sub_buf[96];
+   uint8 sub_buf[96];
 
- img_stream->seek(lba * 2352, SEEK_SET);
- img_stream->read(buf, 2352);
+   img_stream->seek(lba * 2352, SEEK_SET);
+   img_stream->read(buf, 2352);
 
- sub_stream->seek(lba * 96, SEEK_SET);
- sub_stream->read(sub_buf, 96);
+   sub_stream->seek(lba * 96, SEEK_SET);
+   sub_stream->read(sub_buf, 96);
 
- subpw_interleave(sub_buf, buf + 2352);
+   subpw_interleave(sub_buf, buf + 2352);
+
+   return true;
 }
 
 

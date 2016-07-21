@@ -903,7 +903,7 @@ CDAccess_Image::~CDAccess_Image()
  Cleanup();
 }
 
-void CDAccess_Image::Read_Raw_Sector(uint8 *buf, int32 lba)
+bool CDAccess_Image::Read_Raw_Sector(uint8 *buf, int32 lba)
 {
   bool TrackFound = FALSE;
   uint8 SimuQ[0xC];
@@ -1010,7 +1010,8 @@ void CDAccess_Image::Read_Raw_Sector(uint8 *buf, int32 lba)
 
   if(!TrackFound)
   {
-   throw(MDFN_Error(0, _("Could not find track for sector %u!"), lba));
+   MDFN_Error(0, _("Could not find track for sector %u!"), lba);
+   return false;
   }
 
 #if 0
@@ -1041,6 +1042,7 @@ void CDAccess_Image::Read_Raw_Sector(uint8 *buf, int32 lba)
  //subq_deinterleave(buf + 2352, qbuf);
  //printf("%02x\n", qbuf[0]);
  //printf("%02x\n", buf[12 + 3]);
+ return true;
 }
 
 //

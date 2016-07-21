@@ -66,7 +66,7 @@ class CDAccess_Image : public CDAccess
  CDAccess_Image(const char *path, bool *success, bool image_memcache);
  virtual ~CDAccess_Image();
 
- virtual void Read_Raw_Sector(uint8 *buf, int32 lba);
+ virtual bool Read_Raw_Sector(uint8 *buf, int32 lba);
 
  virtual void Read_TOC(CDUtility::TOC *toc);
 
