@@ -1971,64 +1971,12 @@ MDFNGI *MDFNI_LoadCD(const char *force_module, const char *devicename)
 MDFNGI *MDFNI_LoadGame(const char *force_module, const char *name)
 {
 	std::vector<FileExtensionSpecStruct> valid_iae;
-   MDFNFILE *GameFile = NULL;
    MDFNGameInfo = &EmulatedPCFX;
 
 #ifdef NEED_CD
-	if(strlen(name) > 4 && (!strcasecmp(name + strlen(name) - 4, ".cue") || !strcasecmp(name + strlen(name) - 4, ".ccd") || !strcasecmp(name + strlen(name) - 4, ".toc") || !strcasecmp(name + strlen(name) - 4, ".m3u")))
-	 return(MDFNI_LoadCD(force_module, name));
+   if(strlen(name) > 4 && (!strcasecmp(name + strlen(name) - 4, ".cue") || !strcasecmp(name + strlen(name) - 4, ".ccd") || !strcasecmp(name + strlen(name) - 4, ".toc") || !strcasecmp(name + strlen(name) - 4, ".m3u")))
+      return(MDFNI_LoadCD(force_module, name));
 #endif
-
-	MDFN_printf(_("Loading %s...\n"),name);
-
-	// Construct a NULL-delimited list of known file extensions for MDFN_fopen()
-   const FileExtensionSpecStruct *curexts = MDFNGameInfo->FileExtensions;
-
-   while(curexts->extension && curexts->description)
-   {
-      valid_iae.push_back(*curexts);
-      curexts++;
-   }
-
-   GameFile = file_open(name);
-
-	if(!GameFile)
-      goto error;
-
-   if(MDFNGameInfo->Load(name, GameFile) <= 0)
-      goto error;
-
-	MDFN_LoadGameCheats(NULL);
-	MDFNMP_InstallReadPatches();
-
-	MDFN_ResetMessages();	// Save state, status messages, etc.
-
-   file_close(GameFile);
-   GameFile   = NULL;
-
-	if(!MDFNGameInfo->name)
-   {
-      unsigned int x;
-      char *tmp;
-
-      MDFNGameInfo->name = (UTF8 *)strdup(GetFNComponent(name));
-
-      for(x=0;x<strlen((char *)MDFNGameInfo->name);x++)
-      {
-         if(MDFNGameInfo->name[x] == '_')
-            MDFNGameInfo->name[x] = ' ';
-      }
-      if((tmp = strrchr((char *)MDFNGameInfo->name, '.')))
-         *tmp = 0;
-   }
-
-   return(MDFNGameInfo);
-   
-error:
-   if (GameFile)
-      file_close(GameFile);
-   GameFile     = NULL;
-   MDFNGameInfo = NULL;
 
    return NULL;
 }
