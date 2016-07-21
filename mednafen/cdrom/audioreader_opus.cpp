@@ -138,13 +138,13 @@ OggOpusReader::OggOpusReader(Stream *fp) : fw(fp)
  {
   switch(error)
   {
-   default:
-	throw MDFN_Error(0, _("opusfile: error code: %d(%s)", error, op_errstring(error)));
-	break;
+     default:
+        throw MDFN_Error(0, _("opusfile: error code: %d(%s)", error, op_errstring(error)));
+        break;
 
-   case OP_ENOTFORMAT:
-	throw(0);
-	break;
+     case OP_ENOTFORMAT:
+        throw(0);
+        break;
   }
  }
 }
