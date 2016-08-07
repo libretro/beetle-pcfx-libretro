@@ -30,7 +30,7 @@ class CDAccess_CCD : public CDAccess
 
  virtual bool Read_Raw_Sector(uint8 *buf, int32 lba);
 
- virtual void Read_TOC(CDUtility::TOC *toc);
+ virtual void Read_TOC(TOC *toc);
 
  virtual void Eject(bool eject_status);
 
@@ -44,5 +44,5 @@ class CDAccess_CCD : public CDAccess
  Stream* img_stream;
  Stream* sub_stream;
  size_t img_numsectors;
- CDUtility::TOC tocd;
+ TOC tocd;
 };

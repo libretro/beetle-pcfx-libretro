@@ -36,8 +36,6 @@ static inline void SCSIDBG(const char *format, ...)
 }
 //#define SCSIDBG(format, ...) { }
 
-using namespace CDUtility;
-
 static const unsigned CDDA_Filter_NumConvolutions = 7;
 
 static const int16 CDDA_Filter[1 + 256 + 1][CDDA_Filter_NumConvolutions] =
@@ -180,7 +178,7 @@ static cdda_t cdda;
 
 static SimpleFIFO<uint8> *din = NULL;
 
-static CDUtility::TOC toc;
+static TOC toc;
 
 static uint32 read_sec_start;
 static uint32 read_sec;
@@ -1696,7 +1694,7 @@ static void DoREADCDCAP10(const uint8 *cdb)
    ret_lba = toc.tracks[toc.first_track].lba - 1;
   else
   {
-   const int track = toc.FindTrackByLBA(lba);
+   const int track = TOC_FindTrackByLBA(&toc, lba);
 
    for(int st = track + 1; st <= toc.last_track; st++)
    {
@@ -1813,7 +1811,7 @@ static void DoPABase(const uint32 lba, const uint32 length, unsigned int status 
  }
  else
  {
-  if(toc.tracks[toc.FindTrackByLBA(lba)].control & 0x04)
+  if(toc.tracks[TOC_FindTrackByLBA(&toc, lba)].control & 0x04)
   {
    CommandCCError(SENSEKEY_MEDIUM_ERROR, NSE_NOT_AUDIO_TRACK);
    return;
@@ -2100,7 +2098,7 @@ static void DoPATRBase(const uint32 lba, const uint32 length)
  }
  else
  {  
-  if(toc.tracks[toc.FindTrackByLBA(lba)].control & 0x04)
+  if(toc.tracks[TOC_FindTrackByLBA(&toc, lba)].control & 0x04)
   {
    CommandCCError(SENSEKEY_MEDIUM_ERROR, NSE_NOT_AUDIO_TRACK);
    return;
@@ -2194,7 +2192,7 @@ static void DoREADBase(uint32 sa, uint32 sc)
   return;
  }
 
- if((track = toc.FindTrackByLBA(sa)) == 0)
+ if((track = TOC_FindTrackByLBA(&toc, sa)) == 0)
  {
   CommandCCError(SENSEKEY_ILLEGAL_REQUEST, NSE_END_OF_VOLUME);
   return;
@@ -2215,7 +2213,7 @@ static void DoREADBase(uint32 sa, uint32 sc)
 
  if(SCSILog)
  {
-  int Track = toc.FindTrackByLBA(sa);
+  int Track     = TOC_FindTrackByLBA(&toc, sa);
   uint32 Offset = sa - toc.tracks[Track].lba; //Cur_CDIF->GetTrackStartPositionLBA(Track);
   SCSILog("SCSI", "Read: start=0x%08x(track=%d, offs=0x%08x), cnt=0x%08x", sa, Track, Offset, sc);
  }

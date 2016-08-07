@@ -23,7 +23,7 @@
 
 #include <queue>
 
-typedef CDUtility::TOC CD_TOC;
+typedef TOC CD_TOC;
 
 class CDIF
 {
@@ -32,7 +32,7 @@ class CDIF
  CDIF();
  virtual ~CDIF();
 
- inline void ReadTOC(CDUtility::TOC *read_target)
+ inline void ReadTOC(TOC *read_target)
  {
   *read_target = disc_toc;
  }
@@ -58,7 +58,7 @@ class CDIF
 
  protected:
  bool UnrecoverableError;
- CDUtility::TOC disc_toc;
+ TOC disc_toc;
  bool DiscEjected;
 };
 

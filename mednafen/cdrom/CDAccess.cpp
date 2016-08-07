@@ -33,8 +33,6 @@
 #include "CDAccess_Physical.h"
 #endif
 
-using namespace CDUtility;
-
 CDAccess::CDAccess()
 {
 

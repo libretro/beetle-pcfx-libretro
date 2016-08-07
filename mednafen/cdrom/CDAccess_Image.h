@@ -68,7 +68,7 @@ class CDAccess_Image : public CDAccess
 
  virtual bool Read_Raw_Sector(uint8 *buf, int32 lba);
 
- virtual void Read_TOC(CDUtility::TOC *toc);
+ virtual void Read_TOC(TOC *toc);
 
  virtual void Eject(bool eject_status);
  private:

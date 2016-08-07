@@ -23,8 +23,6 @@
 #include <limits.h>
 #include <map>
 
-using namespace CDUtility;
-
 static void MDFN_strtoupper(std::string &str)
 {
  const size_t len = str.length();
@@ -529,7 +527,7 @@ bool CDAccess_CCD::Read_Raw_Sector(uint8 *buf, int32 lba)
 }
 
 
-void CDAccess_CCD::Read_TOC(CDUtility::TOC *toc)
+void CDAccess_CCD::Read_TOC(TOC *toc)
 {
  *toc = tocd;
 }

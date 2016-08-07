@@ -643,9 +643,9 @@ static bool LoadCommon(std::vector<CDIF *> *CDInterfaces)
 static void DoMD5CDVoodoo(std::vector<CDIF *> *CDInterfaces)
 {
  const CDGameEntry *found_entry = NULL;
- CDUtility::TOC toc;
+ TOC toc;
 
- #if 0
+#if 0
  puts("{");
  puts(" ,");
  puts(" ,");
@@ -656,18 +656,18 @@ static void DoMD5CDVoodoo(std::vector<CDIF *> *CDInterfaces)
 
  for(int i = CDIF_GetFirstTrack(); i <= CDIF_GetLastTrack(); i++)
  {
-  CDIF_Track_Format tf;
+    CDIF_Track_Format tf;
 
-  CDIF_GetTrackFormat(i, tf);
-  
-  printf("   { %d, %s, %d },\n", i, (tf == CDIF_FORMAT_AUDIO) ? "CDIF_FORMAT_AUDIO" : "CDIF_FORMAT_MODE1", CDIF_GetTrackStartPositionLBA(i));
+    CDIF_GetTrackFormat(i, tf);
+
+    printf("   { %d, %s, %d },\n", i, (tf == CDIF_FORMAT_AUDIO) ? "CDIF_FORMAT_AUDIO" : "CDIF_FORMAT_MODE1", CDIF_GetTrackStartPositionLBA(i));
  }
  printf("   { -1, (CDIF_Track_Format)-1, %d },\n", CDIF_GetSectorCountLBA());
  puts("  }");
  puts(" }");
  puts("},");
  //exit(1);
- #endif
+#endif
 
  for(unsigned if_disc = 0; if_disc < CDInterfaces->size(); if_disc++)
  {
@@ -766,9 +766,9 @@ static void DoMD5CDVoodoo(std::vector<CDIF *> *CDInterfaces)
 // at the first data track.
 static bool TestMagicCD(std::vector<CDIF *> *CDInterfaces)
 {
- CDIF *cdiface = (*CDInterfaces)[0];
- CDUtility::TOC toc;
+ TOC toc;
  uint8 sector_buffer[2048];
+ CDIF *cdiface = (*CDInterfaces)[0];
 
  memset(sector_buffer, 0, sizeof(sector_buffer));
 
@@ -1893,7 +1893,7 @@ MDFNGI *MDFNI_LoadCD(const char *force_module, const char *devicename)
  //
  for(unsigned i = 0; i < CDInterfaces.size(); i++)
  {
-  CDUtility::TOC toc;
+  TOC toc;
 
   CDInterfaces[i]->ReadTOC(&toc);
 
@@ -2007,10 +2007,7 @@ void MDFNI_CloseGame(void)
 
 bool MDFNI_InitializeModule(void)
 {
-
-#ifdef NEED_CD
- CDUtility::CDUtility_Init();
-#endif
+ CDUtility_Init();
 
  return(1);
 }
