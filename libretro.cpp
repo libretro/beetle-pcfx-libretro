@@ -750,8 +750,6 @@ static void DoMD5CDVoodoo(std::vector<CDIF *> *CDInterfaces)
     md5_finish(&md5_gameset, MDFNGameInfo->GameSetMD5);
     MDFNGameInfo->GameSetMD5Valid = TRUE;
    }
-   //printf("%s\n", found_entry->name);
-   MDFNGameInfo->name = (UTF8*)strdup(found_entry->name);
    break;
   }
  } // end: for(unsigned if_disc = 0; if_disc < CDInterfaces->size(); if_disc++)
@@ -903,7 +901,7 @@ static void DoSimpleCommand(int cmd)
  }
 }
 
-static int StateAction(StateMem *sm, int load, int data_only)
+int StateAction(StateMem *sm, int load, int data_only)
 {
  const v810_timestamp_t timestamp = PCFX_V810.v810_timestamp;
 
@@ -1019,30 +1017,6 @@ static const FileExtensionSpecStruct KnownExtensions[] =
 
 MDFNGI EmulatedPCFX =
 {
- "pcfx",
- "PC-FX",
- KnownExtensions,
- MODPRIO_INTERNAL_HIGH,
- NULL,
- &PCFXInputInfo,
- NULL,
- NULL,
- LoadCD,
- TestMagicCD,
- CloseGame,
- KING_SetLayerEnableMask,
- "BG0\0BG1\0BG2\0BG3\0VDC-A BG\0VDC-A SPR\0VDC-B BG\0VDC-B SPR\0RAINBOW\0",
- NULL,
- NULL,
- NULL,
- NULL,
- NULL,
- NULL,
- false,
- StateAction,
- Emulate,
- FXINPUT_SetInput,
- DoSimpleCommand,
  PCFXSettings,
  MDFN_MASTERCLOCK_FIXED(PCFX_MASTER_CLOCK),
  0,
@@ -1171,7 +1145,7 @@ void retro_init(void)
 
 void retro_reset(void)
 {
-   game->DoSimpleCommand(MDFN_MSC_RESET);
+   DoSimpleCommand(MDFN_MSC_RESET);
 }
 
 bool retro_load_game_special(unsigned, const struct retro_game_info *, size_t)
@@ -1202,12 +1176,10 @@ static uint16_t input_buf[MAX_PLAYERS];
 
 static void hookup_ports(bool force)
 {
-   MDFNGI *currgame = game;
-
    if (initial_ports_hookup && !force)
       return;
 
-   currgame->SetInput(0, "gamepad", &input_buf[0]);
+   FXINPUT_SetInput(0, "gamepad", &input_buf[0]);
 
    initial_ports_hookup = true;
 }
@@ -1430,7 +1402,7 @@ void retro_run()
       last_sound_rate = spec.SoundRate;
    }
 
-   curgame->Emulate(&spec);
+   Emulate(&spec);
 
 #ifdef NEED_DEINTERLACER
    if (spec.InterlaceOn)
@@ -1532,12 +1504,10 @@ void retro_set_controller_port_device(unsigned in_port, unsigned device)
    switch(device)
    {
       case RETRO_DEVICE_JOYPAD:
-         if (currgame->SetInput)
-            currgame->SetInput(in_port, "gamepad", &input_buf[in_port]);
+         FXINPUT_SetInput(in_port, "gamepad", &input_buf[in_port]);
          break;
       case RETRO_DEVICE_MOUSE:
-         if (currgame->SetInput)
-            currgame->SetInput(in_port, "mouse", &input_buf[in_port]);
+         FXINPUT_SetInput(in_port, "mouse", &input_buf[in_port]);
          break;
    }
 }
@@ -1589,24 +1559,13 @@ static size_t serialize_size;
 
 size_t retro_serialize_size(void)
 {
-   MDFNGI *curgame = (MDFNGI*)game;
-   //if (serialize_size)
-   //   return serialize_size;
-
-   if (!curgame->StateAction)
-   {
-      if (log_cb)
-         log_cb(RETRO_LOG_WARN, "[mednafen]: Module %s doesn't support save states.\n", curgame->shortname);
-      return 0;
-   }
-
    StateMem st;
    memset(&st, 0, sizeof(st));
 
    if (!MDFNSS_SaveSM(&st, 0, 0, NULL, NULL, NULL))
    {
       if (log_cb)
-         log_cb(RETRO_LOG_WARN, "[mednafen]: Module %s doesn't support save states.\n", curgame->shortname);
+         log_cb(RETRO_LOG_WARN, "[mednafen]: Module pcfx doesn't support save states.\n");
       return 0;
    }
 
@@ -1935,19 +1894,12 @@ MDFNGI *MDFNI_LoadCD(const char *force_module, const char *devicename)
   md5_finish(&layout_md5, LayoutMD5);
  }
 
- // This if statement will be true if force_module references a system without CDROM support.
- if(!MDFNGameInfo->LoadCD)
- {
-    MDFN_PrintError(_("Specified system \"%s\" doesn't support CDs!"), force_module);
-    return(0);
- }
-
- MDFN_printf(_("Using module: %s(%s)\n\n"), MDFNGameInfo->shortname, MDFNGameInfo->fullname);
+ MDFN_printf(_("Using module: pcfx\n\n"));
 
  // TODO: include module name in hash
  memcpy(MDFNGameInfo->MD5, LayoutMD5, 16);
 
- if(!(MDFNGameInfo->LoadCD(&CDInterfaces)))
+ if(!(LoadCD(&CDInterfaces)))
  {
   for(unsigned i = 0; i < CDInterfaces.size(); i++)
    delete CDInterfaces[i];
@@ -1988,11 +1940,7 @@ void MDFNI_CloseGame(void)
 
    MDFN_FlushGameCheats(0);
 
-   MDFNGameInfo->CloseGame();
-
-   if(MDFNGameInfo->name)
-      free(MDFNGameInfo->name);
-   MDFNGameInfo->name = NULL;
+   CloseGame();
 
    MDFNMP_Kill();
 
