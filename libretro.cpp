@@ -1327,7 +1327,6 @@ void retro_unload_game()
 
 static void update_input(void)
 {
-   MDFNGI *currgame = (MDFNGI*)game;
    input_buf[0] = input_buf[1] = 0;
    static unsigned map[] = {
       RETRO_DEVICE_ID_JOYPAD_A,
@@ -1496,11 +1495,6 @@ unsigned retro_api_version(void)
 
 void retro_set_controller_port_device(unsigned in_port, unsigned device)
 {
-   MDFNGI *currgame = (MDFNGI*)game;
-
-   if (!currgame)
-      return;
-
    switch(device)
    {
       case RETRO_DEVICE_JOYPAD:
