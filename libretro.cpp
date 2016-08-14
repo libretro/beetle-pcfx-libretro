@@ -1189,7 +1189,7 @@ static bool ReadM3U(std::vector<std::string> &file_list, std::string path, unsig
    char linebuf[2048];
    std::string dir_path;
    std::vector<std::string> ret;
-   FileWrapper m3u_file(path.c_str(), FileWrapper::MODE_READ, _("M3U CD Set"));
+   FileWrapper m3u_file(path.c_str(), MODE_READ, "M3U CD Set");
 
    MDFN_GetFilePathComponents(path, &dir_path);
 

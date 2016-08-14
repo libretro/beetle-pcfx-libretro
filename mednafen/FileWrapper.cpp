@@ -18,6 +18,7 @@
 #include <sys/stat.h>
 #include "mednafen.h"
 #include "FileWrapper.h"
+#include "Stream.h"
 
 #include <stdarg.h>
 #include <string.h>

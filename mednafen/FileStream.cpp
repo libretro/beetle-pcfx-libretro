@@ -36,7 +36,7 @@
 
 FileStream::FileStream(const char *path, const int mode): OpenedMode(mode)
 {
- if(mode == FileStream::MODE_WRITE)
+ if(mode == MODE_WRITE)
   fp = fopen(path, "wb");
  else
   fp = fopen(path, "rb");
@@ -59,11 +59,11 @@ uint64 FileStream::attributes(void)
 
    switch(OpenedMode)
    {
-      case FileStream::MODE_READ:
+      case MODE_READ:
          ret |= ATTRIBUTE_READABLE;
          break;
-      case FileStream::MODE_WRITE_SAFE:
-      case FileStream::MODE_WRITE:
+      case MODE_WRITE_SAFE:
+      case MODE_WRITE:
          ret |= ATTRIBUTE_WRITEABLE;
          break;
    }

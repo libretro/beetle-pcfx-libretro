@@ -27,13 +27,6 @@ class FileStream : public Stream
 {
  public:
 
- enum
- {
-  MODE_READ = FileWrapper::MODE_READ,
-  MODE_WRITE = FileWrapper::MODE_WRITE,
-  MODE_WRITE_SAFE = FileWrapper::MODE_WRITE_SAFE,
- };
-
  FileStream(const char *path, const int mode);
  virtual ~FileStream();
 

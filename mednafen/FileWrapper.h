@@ -6,13 +6,6 @@ class FileWrapper
 {
  public:
 
- enum
- {
-  MODE_READ = 0,
-  MODE_WRITE,
-  MODE_WRITE_SAFE	// Will throw an exception instead of overwriting an existing file.
- };
-
  FileWrapper(const char *path, const int mode, const char *purpose = NULL);
  ~FileWrapper();
 
