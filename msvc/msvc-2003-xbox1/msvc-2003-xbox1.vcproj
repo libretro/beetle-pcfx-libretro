@@ -314,9 +314,6 @@
 					<File
 						RelativePath="..\..\mednafen\cdrom\scsicd.cpp">
 					</File>
-					<File
-						RelativePath="..\..\mednafen\cdrom\SimpleFIFO.cpp">
-					</File>
 				</Filter>
 				<Filter
 					Name="sound"
