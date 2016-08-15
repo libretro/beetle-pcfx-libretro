@@ -86,18 +86,26 @@ void FileStream::seek(int64 offset, int whence)
    fseeko(fp, offset, whence);
 }
 
-int64 FileStream::tell(void)
+uint64_t FileStream::tell(void)
 {
    return ftello(fp);
 }
 
-int64 FileStream::size(void)
+uint64_t FileStream::size(void)
 {
    struct stat buf;
 
    fstat(fileno(fp), &buf);
 
    return(buf.st_size);
+}
+
+void FileStream::truncate(uint64_t length)
+{
+}
+
+void FileStream::flush(void)
+{
 }
 
 void FileStream::close(void)

@@ -10,7 +10,7 @@
 #include	"mednafen/video/Deinterlacer.h"
 #endif
 #include "libretro.h"
-#include "thread.h"
+#include <rthreads/rthreads.h>
 
 static MDFNGI *game;
 
@@ -815,11 +815,13 @@ static void PCFX_CDInsertEject(void)
 
  for(unsigned disc = 0; disc < cdifs->size(); disc++)
  {
+#if 0
   if(!(*cdifs)[disc]->Eject(CD_TrayOpen))
   {
    MDFN_DispMessage(_("Eject error."));
    CD_TrayOpen = !CD_TrayOpen;
   }
+#endif
  }
 
  if(CD_TrayOpen)
@@ -1256,15 +1258,13 @@ MDFNGI *MDFNI_LoadCD(const char *devicename)
 
    for(unsigned i = 0; i < file_list.size(); i++)
    {
-      bool success = true;
-      CDIF *cdif   = CDIF_Open(file_list[i].c_str(), &success, false /* cdimage_memcache */);
+      CDIF *cdif   = CDIF_Open(file_list[i].c_str(), false /* cdimage_memcache */);
       CDInterfaces.push_back(cdif);
    }
   }
   else
   {
-     bool success = true;
-     CDIF *cdif   = CDIF_Open(devicename, &success, false /* cdimage_memcache */);
+     CDIF *cdif   = CDIF_Open(devicename, false /* cdimage_memcache */);
    CDInterfaces.push_back(cdif);
   }
 
@@ -1297,7 +1297,7 @@ MDFNGI *MDFNI_LoadCD(const char *devicename)
 
   for(unsigned i = 0; i < CDInterfaces.size(); i++)
   {
-   CD_TOC toc;
+   TOC toc;
 
    CDInterfaces[i]->ReadTOC(&toc);
 

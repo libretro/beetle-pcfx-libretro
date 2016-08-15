@@ -15,19 +15,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-
-#include <sys/stat.h>
-#ifdef _WIN32
-#include <direct.h>
-#else
-#include <unistd.h>
-#endif
-
 #include "../mednafen.h"
-
 #include "CDAccess.h"
 #include "CDAccess_Image.h"
 #include "CDAccess_CCD.h"
+#ifdef HAVE_PBP
+#include "CDAccess_PBP.h"
+#endif
 
 CDAccess::CDAccess()
 {
@@ -39,14 +33,19 @@ CDAccess::~CDAccess()
 
 }
 
-CDAccess *cdaccess_open_image(const char *path, bool *success, bool image_memcache)
+CDAccess* CDAccess_Open(const std::string& path, bool image_memcache)
 {
- CDAccess *ret = NULL;
+   CDAccess *ret = NULL;
 
- if(strlen(path) >= 4 && !strcasecmp(path + strlen(path) - 4, ".ccd"))
-  ret = new CDAccess_CCD(path, success, image_memcache);
- else
-  ret = new CDAccess_Image(path, success, image_memcache);
+   if(path.size() >= 4 && !strcasecmp(path.c_str() + path.size() - 4, ".ccd"))
+      ret = new CDAccess_CCD(path, image_memcache);
+#ifdef HAVE_PBP
+   else if(path.size() >= 4 && !strcasecmp(path.c_str() + path.size() - 4, ".pbp"))
+      ret = new CDAccess_PBP(path, image_memcache);
+#endif
+   else
+      ret = new CDAccess_Image(path, image_memcache);
 
- return ret;
+   return ret;
 }
+

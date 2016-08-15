@@ -22,9 +22,9 @@ class FileWrapper
 
  void seek(int64 offset, int whence);
 
- int64 tell(void);
+ uint64_t tell(void);
 
- int64 size(void);
+ uint64_t size(void);
 
  void flush(void);
 

@@ -111,7 +111,7 @@ void FileWrapper::seek(int64 offset, int whence)
    fseeko(fp, offset, whence);
 }
 
-int64 FileWrapper::size(void)
+uint64_t FileWrapper::size(void)
 {
    struct stat buf;
 
@@ -120,7 +120,7 @@ int64 FileWrapper::size(void)
    return(buf.st_size);
 }
 
-int64 FileWrapper::tell(void)
+uint64_t FileWrapper::tell(void)
 {
    return ftello(fp);
 }

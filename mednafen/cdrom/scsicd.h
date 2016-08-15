@@ -1,14 +1,14 @@
 #ifndef __PCFX_SCSICD_H
 #define __PCFX_SCSICD_H
 
-typedef int32 scsicd_timestamp_t;
+typedef int32_t scsicd_timestamp_t;
 
 typedef struct
 {
  // Data bus(FIXME: we should have a variable for the target and the initiator, and OR them together to be truly accurate).
- uint8 DB;
+ uint8_t DB;
 
- uint32 signals;
+ uint32_t signals;
 
  // Signals under our(the "target") control.
  //bool BSY, MSG, CD, REQ, IO;
@@ -42,7 +42,7 @@ extern scsicd_bus_t cd_bus; // Don't access this structure directly by name outs
 #define CD_signal ((const bool)(cd_bus.signals & SCSICD_CD_mask))
 #define ATN_signal ((const bool)(cd_bus.signals & SCSICD_kingATN_mask))
 
-#define DB_signal ((const uint8)cd_bus.DB)
+#define DB_signal ((const uint8_t)cd_bus.DB)
 
 #define SCSICD_GetDB() DB_signal
 #define SCSICD_GetBSY() BSY_signal
@@ -58,7 +58,7 @@ extern scsicd_bus_t cd_bus; // Don't access this structure directly by name outs
 #define SCSICD_GetATN() ATN_signal
 
 void SCSICD_Power(scsicd_timestamp_t system_timestamp);
-void SCSICD_SetDB(uint8 data);
+void SCSICD_SetDB(uint8_t data);
 
 // These SCSICD_Set* functions are kind of misnomers, at least in comparison to the SCSICD_Get* functions...
 // They will set/clear the bits corresponding to the KING's side of the bus.
@@ -67,8 +67,8 @@ void SCSICD_SetSEL(bool set);
 void SCSICD_SetRST(bool set);
 void SCSICD_SetATN(bool set);
 
-uint32 SCSICD_Run(scsicd_timestamp_t);
-void SCSICD_ResetTS(uint32 ts_base);
+uint32_t SCSICD_Run(scsicd_timestamp_t);
+void SCSICD_ResetTS(uint32_t ts_base);
 
 enum
 {
@@ -87,12 +87,12 @@ void SCSICD_GetCDDAValues(int16 &left, int16 &right);
 
 void SCSICD_SetLog(void (*logfunc)(const char *, const char *, ...));
 
-void SCSICD_Init(int type, int CDDATimeDiv, int32* left_hrbuf, int32* right_hrbuf, uint32 TransferRate, uint32 SystemClock, void (*IRQFunc)(int), void (*SSCFunc)(uint8, int));
+void SCSICD_Init(int type, int CDDATimeDiv, int32_t* left_hrbuf, int32_t* right_hrbuf, uint32_t TransferRate, uint32_t SystemClock, void (*IRQFunc)(int), void (*SSCFunc)(uint8_t, int));
 void SCSICD_Close(void);
 
-void SCSICD_SetTransferRate(uint32 TransferRate);
+void SCSICD_SetTransferRate(uint32_t TransferRate);
 void SCSICD_SetCDDAVolume(double left, double right);
-int SCSICD_StateAction(StateMem *sm, int load, int data_only, const char *sname);
+int SCSICD_StateAction(StateMem *sm, const unsigned load, const bool data_only, const char *sname);
 
 void SCSICD_SetDisc(bool tray_open, CDIF *cdif, bool no_emu_side_effects = false);
 

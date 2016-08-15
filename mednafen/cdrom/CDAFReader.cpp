@@ -1,8 +1,8 @@
 /******************************************************************************/
 /* Mednafen - Multi-system Emulator                                           */
 /******************************************************************************/
-/* CDAccess_CCD.h:
-**  Copyright (C) 2013-2016 Mednafen Team
+/* CDAFReader.cpp:
+**  Copyright (C) 2010-2016 Mednafen Team
 **
 ** This program is free software; you can redistribute it and/or
 ** modify it under the terms of the GNU General Public License
@@ -19,34 +19,35 @@
 ** 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include <mednafen/FileStream.h>
-#include <mednafen/MemoryStream.h>
+// CDAFR_Open(), and CDAFReader, will NOT take "ownership" of the Stream object(IE it won't ever delete it).  Though it does assume it has exclusive access
+// to it for as long as the CDAFReader object exists.
 
-#include "CDAccess.h"
+// Don't allow exceptions to propagate into the vorbis/musepack/etc. libraries, as it could easily leave the state of the library's decoder "object" in an
+// inconsistent state, which would cause all sorts of unfun when we try to destroy it while handling the exception farther up.
 
-class CDAccess_CCD : public CDAccess
+#include <mednafen/mednafen.h>
+#include "CDAFReader.h"
+#include "CDAFReader_Vorbis.h"
+#ifdef HAVE_MPC
+#include "CDAFReader_MPC.h"
+#endif
+
+CDAFReader::CDAFReader() : LastReadPos(0)
 {
- public:
 
- CDAccess_CCD(const std::string& path, bool image_memcache);
- virtual ~CDAccess_CCD();
+}
 
- virtual bool Read_Raw_Sector(uint8 *buf, int32 lba);
+CDAFReader::~CDAFReader()
+{
 
- virtual bool Fast_Read_Raw_PW_TSRE(uint8* pwbuf, int32 lba);
+}
 
- virtual bool Read_TOC(TOC *toc);
+CDAFReader* CDAFR_Open(Stream* fp)
+{
+#ifdef HAVE_MPC
+  return CDAFR_MPC_Open(fp);
+#else
+  return CDAFR_Vorbis_Open(fp);
+#endif
+}
 
- private:
-
- bool Load(const std::string& path, bool image_memcache);
- void Cleanup(void);
-
- bool CheckSubQSanity(void);
-
- Stream *img_stream;
- uint8_t *sub_data;
-
- size_t img_numsectors;
- TOC tocd;
-};

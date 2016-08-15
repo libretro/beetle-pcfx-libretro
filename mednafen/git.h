@@ -4,6 +4,7 @@
 #include <string>
 
 #include "video.h"
+#include "../libretro.h"
 
 typedef struct
 {
@@ -338,5 +339,7 @@ typedef struct
 } MDFNGI;
 
 int StateAction(StateMem *sm, int load, int data_only);
+
+extern retro_log_printf_t log_cb;
 
 #endif

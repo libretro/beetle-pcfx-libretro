@@ -3,15 +3,14 @@
 *	PC Engine CD Command 0xD8 - SAPSP		*
 *							*
 ********************************************************/
-static void DoNEC_PCE_SAPSP(const uint8 *cdb)
+static void DoNEC_PCE_SAPSP(const uint8_t *cdb)
 {
  uint32 new_read_sec_start;
 
  //printf("Set audio start: %02x %02x %02x %02x %02x %02x %02x\n", cdb[9], cdb[1], cdb[2], cdb[3], cdb[4], cdb[5], cdb[6]);
  switch (cdb[9] & 0xc0)
  {
-  default:
-  //SCSIDBG("Unknown SAPSP 9: %02x\n", cdb[9]);
+  default:  //SCSIDBG("Unknown SAPSP 9: %02x\n", cdb[9]);
   case 0x00:
    new_read_sec_start = (cdb[3] << 16) | (cdb[4] << 8) | cdb[5];
    break;
@@ -26,13 +25,8 @@ static void DoNEC_PCE_SAPSP(const uint8 *cdb)
 
     if(!track)
      track = 1;
-    else if(track == toc.last_track + 1)
+    else if(track >= toc.last_track + 1)
      track = 100;
-    else if(track > toc.last_track)
-    {
-     CommandCCError(SENSEKEY_ILLEGAL_REQUEST, NSE_END_OF_VOLUME);
-     return;
-    }
     new_read_sec_start = toc.tracks[track].lba;
    }
    break;
@@ -79,7 +73,7 @@ static void DoNEC_PCE_SAPSP(const uint8 *cdb)
 *	PC Engine CD Command 0xD9 - SAPEP		*
 *							*
 ********************************************************/
-static void DoNEC_PCE_SAPEP(const uint8 *cdb)
+static void DoNEC_PCE_SAPEP(const uint8_t *cdb)
 {
  uint32 new_read_sec_end;
 
@@ -87,8 +81,7 @@ static void DoNEC_PCE_SAPEP(const uint8 *cdb)
 
  switch (cdb[9] & 0xc0)
  {
-  default:
-  //SCSIDBG("Unknown SAPEP 9: %02x\n", cdb[9]);
+  default: //SCSIDBG("Unknown SAPEP 9: %02x\n", cdb[9]);
 
   case 0x00:
    new_read_sec_end = (cdb[3] << 16) | (cdb[4] << 8) | cdb[5];
@@ -105,13 +98,8 @@ static void DoNEC_PCE_SAPEP(const uint8 *cdb)
 
     if(!track)
      track = 1;
-    else if(track == toc.last_track + 1)
+    else if(track >= toc.last_track + 1)
      track = 100;
-    else if(track > toc.last_track)
-    {
-     CommandCCError(SENSEKEY_ILLEGAL_REQUEST, NSE_END_OF_VOLUME);
-     return;
-    }
     new_read_sec_end = toc.tracks[track].lba;
    }
    break;
@@ -149,7 +137,7 @@ static void DoNEC_PCE_SAPEP(const uint8 *cdb)
 *	PC Engine CD Command 0xDA - Pause		*
 *							*
 ********************************************************/
-static void DoNEC_PCE_PAUSE(const uint8 *cdb)
+static void DoNEC_PCE_PAUSE(const uint8_t *cdb)
 {
  if(cdda.CDDAStatus != CDDASTATUS_STOPPED) // Hmm, should we give an error if it tries to pause and it's already paused?
  {
@@ -169,10 +157,10 @@ static void DoNEC_PCE_PAUSE(const uint8 *cdb)
 *	PC Engine CD Command 0xDD - Read Subchannel Q	*
 *							*
 ********************************************************/
-static void DoNEC_PCE_READSUBQ(const uint8 *cdb)
+static void DoNEC_PCE_READSUBQ(const uint8_t *cdb)
 {
- uint8 *SubQBuf = cd.SubQBuf[QMode_Time];
- uint8 data_in[8192];
+ uint8_t *SubQBuf = cd.SubQBuf[QMode_Time];
+ uint8_t data_in[8192];
 
  memset(data_in, 0x00, 10);
 
@@ -202,21 +190,21 @@ static void DoNEC_PCE_READSUBQ(const uint8 *cdb)
 *	PC Engine CD Command 0xDE - Get Directory Info	*
 *							*
 ********************************************************/
-static void DoNEC_PCE_GETDIRINFO(const uint8 *cdb)
+static void DoNEC_PCE_GETDIRINFO(const uint8_t *cdb)
 {
  // Problems:
  //	Returned data lengths on real PCE are not confirmed.
  //	Mode 0x03 behavior not tested on real PCE
 
- uint8 data_in[2048];
+ uint8_t data_in[2048];
  uint32 data_in_size = 0;
 
  memset(data_in, 0, sizeof(data_in));
 
  switch(cdb[1])
  {
-  default: MDFN_DispMessage("Unknown GETDIRINFO Mode: %02x", cdb[1]);
-	   printf("Unknown GETDIRINFO Mode: %02x", cdb[1]);
+  default: //MDFN_DispMessage("Unknown GETDIRINFO Mode: %02x", cdb[1]);
+	   //printf("Unknown GETDIRINFO Mode: %02x", cdb[1]);
   case 0x0:
    data_in[0] = U8_to_BCD(toc.first_track);
    data_in[1] = U8_to_BCD(toc.last_track);
@@ -226,7 +214,7 @@ static void DoNEC_PCE_GETDIRINFO(const uint8 *cdb)
 
   case 0x1:
    {
-    uint8 m, s, f;
+    uint8_t m, s, f;
 
     LBA_to_AMSF(toc.tracks[100].lba, &m, &s, &f);
 
@@ -240,7 +228,7 @@ static void DoNEC_PCE_GETDIRINFO(const uint8 *cdb)
 
   case 0x2:
    {
-    uint8 m, s, f;
+    uint8_t m, s, f;
     int track = BCD_to_U8(cdb[2]);
 
     if(!track)
