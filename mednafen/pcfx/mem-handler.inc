@@ -1,3 +1,16 @@
+#define HTOLE16 le16toh
+#define HTOLE32 le32toh
+
+#ifdef MSB_FIRST
+#define LE32TOH(l)      ((((l)>>24) & 0xff) | (((l)>>8) & 0xff00) \
+      | (((l)<<8) & 0xff0000) | (((l)<<24) & 0xff000000))
+#define LE16TOH(l)      ((((l)>>8) & 0xff) | (((l)<<8) & 0xff00))
+#else
+#define LE32TOH(l)      (l)
+
+#define LE16TOH(l)      (l)
+#endif
+
 uint8 MDFN_FASTCALL mem_peekbyte(const v810_timestamp_t timestamp, const uint32 A)
 {
  if(A <= 0x001FFFFF)
@@ -16,14 +29,14 @@ uint8 MDFN_FASTCALL mem_peekbyte(const v810_timestamp_t timestamp, const uint32 
 uint16 MDFN_FASTCALL mem_peekhword(const v810_timestamp_t timestamp, const uint32 A) // TODO: Full memory map peeking.
 {
  if(A <= 0x001FFFFF)
-  return(le16toh(*(uint16*)&RAM[A]));
+  return(LE16TOH(*(uint16*)&RAM[A]));
  else if(A <= 0x00FFFFFF)
   return(0xFFFF);
  else if(A >= 0xF0000000)
-  return(le16toh(*(uint16 *)&BIOSROM[A & 0xFFFFF]));
+  return(LE16TOH(*(uint16 *)&BIOSROM[A & 0xFFFFF]));
  else if(FXSCSIROM && A >= 0x80780000 && A <= 0x807FFFFF)
  {
-  return(le16toh(*(uint16*)&FXSCSIROM[A & 0x7FFFF]));
+  return(LE16TOH(*(uint16*)&FXSCSIROM[A & 0x7FFFF]));
  }
  return(0xFFFF);
 }
@@ -80,7 +93,7 @@ static uint16 MDFN_FASTCALL mem_rhword(v810_timestamp_t &timestamp, uint32 A)
  if(A <= 0x001FFFFF)
  {
   RAMLPCHECK;
-  return(le16toh(*(uint16*)&RAM[A]));
+  return(LE16TOH(*(uint16*)&RAM[A]));
  }
  else if(A <= 0x00FFFFFF)
  {
@@ -91,7 +104,7 @@ static uint16 MDFN_FASTCALL mem_rhword(v810_timestamp_t &timestamp, uint32 A)
                                 // is at 0xFFF00000
  {
   timestamp += 2;
-  return(le16toh(*(uint16 *)&BIOSROM[A & 0xFFFFF]));
+  return(LE16TOH(*(uint16 *)&BIOSROM[A & 0xFFFFF]));
  }
  else if(A >= 0xA0000000 && A <= 0xA3FFFFFF)
  {
@@ -159,7 +172,7 @@ static uint32 MDFN_FASTCALL mem_rword(v810_timestamp_t &timestamp, uint32 A)
  if(A <= 0x001FFFFF)
  {
   RAMLPCHECK;
-  return(le32toh(*(uint32*)&RAM[A]));
+  return(LE32TOH(*(uint32*)&RAM[A]));
  }
  else if(A <= 0x00FFFFFF)
  {
@@ -231,7 +244,7 @@ static void MDFN_FASTCALL mem_whword(v810_timestamp_t &timestamp, uint32 A, uint
  if(A <= 0x001FFFFF)
  {
   RAMLPCHECK;
-  *(uint16*)&RAM[A] = htole16(V);
+  *(uint16*)&RAM[A] = HTOLE16(V);
  }
  else if(A <= 0x00FFFFFF)
  {
@@ -305,7 +318,7 @@ static void MDFN_FASTCALL mem_wword(v810_timestamp_t &timestamp, uint32 A, uint3
  if(A <= 0x001FFFFF)
  {
   RAMLPCHECK;
-  *(uint32*)&RAM[A] = htole32(V);
+  *(uint32*)&RAM[A] = HTOLE32(V);
  }
  else if(A <= 0x00FFFFFF)
  {
