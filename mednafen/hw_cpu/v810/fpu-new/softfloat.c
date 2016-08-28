@@ -38,8 +38,65 @@ these four paragraphs for those parts of this code that are retained.
  TODO: Make this configurable, and add it to float64 too(subtract 1536?)
 */
 
+#include <stdint.h>
+#include <retro_inline.h>
 
-#include "milieu.h"
+/*----------------------------------------------------------------------------
+| The macro `BITS64' can be defined to indicate that 64-bit integer types are
+| supported by the compiler.
+*----------------------------------------------------------------------------*/
+#define BITS64
+
+/*----------------------------------------------------------------------------
+| Each of the following `typedef's defines the most convenient type that holds
+| integers of at least as many bits as specified.  For example, `uint8' should
+| be the most convenient type that can hold unsigned integers of as many as
+| 8 bits.  The `flag' type must be able to hold either a 0 or 1.  For most
+| implementations of C, `flag', `uint8', and `int8' should all be `typedef'ed
+| to the same as `int'.
+*----------------------------------------------------------------------------*/
+typedef char flag;
+typedef uint8_t uint8;
+typedef int8_t int8;
+typedef uint16_t uint16;
+typedef int16_t int16;
+typedef uint32_t uint32;
+typedef int32_t int32;
+
+#ifdef BITS64
+typedef uint64_t uint64;
+typedef int64_t int64;
+#endif
+
+/*----------------------------------------------------------------------------
+| Each of the following `typedef's defines a type that holds integers
+| of _exactly_ the number of bits specified.  For instance, for most
+| implementation of C, `bits16' and `sbits16' should be `typedef'ed to
+| `unsigned short int' and `signed short int' (or `short int'), respectively.
+*----------------------------------------------------------------------------*/
+typedef uint8_t bits8;
+typedef int8_t sbits8;
+typedef uint16_t bits16;
+typedef int16_t sbits16;
+typedef uint32_t bits32;
+typedef int32_t sbits32;
+#ifdef BITS64
+typedef uint64_t bits64;
+typedef int64_t sbits64;
+#endif
+
+#ifdef BITS64
+/*----------------------------------------------------------------------------
+| The `LIT64' macro takes as its argument a textual integer literal and
+| if necessary ``marks'' the literal as having a 64-bit integer type.
+| For example, the GNU C Compiler (`gcc') requires that 64-bit literals be
+| appended with the letters `LL' standing for `long long', which is `gcc's
+| name for the 64-bit integer type.  Some compilers may allow `LIT64' to be
+| defined as the identity macro:  `#define LIT64( a ) a'.
+*----------------------------------------------------------------------------*/
+#define LIT64( a ) a##LL
+#endif
+
 #include "softfloat.h"
 
 /*----------------------------------------------------------------------------
@@ -69,7 +126,7 @@ int8 float_exception_flags = 0;
 | Returns the fraction bits of the single-precision floating-point value `a'.
 *----------------------------------------------------------------------------*/
 
-INLINE bits32 extractFloat32Frac( float32 a )
+static INLINE bits32 extractFloat32Frac( float32 a )
 {
 
     return a & 0x007FFFFF;
@@ -80,7 +137,7 @@ INLINE bits32 extractFloat32Frac( float32 a )
 | Returns the exponent bits of the single-precision floating-point value `a'.
 *----------------------------------------------------------------------------*/
 
-INLINE int16 extractFloat32Exp( float32 a )
+static INLINE int16 extractFloat32Exp( float32 a )
 {
 
     return ( a>>23 ) & 0xFF;
@@ -91,7 +148,7 @@ INLINE int16 extractFloat32Exp( float32 a )
 | Returns the sign bit of the single-precision floating-point value `a'.
 *----------------------------------------------------------------------------*/
 
-INLINE flag extractFloat32Sign( float32 a )
+static INLINE flag extractFloat32Sign( float32 a )
 {
 
     return a>>31;
@@ -127,7 +184,7 @@ static void
 | significand.
 *----------------------------------------------------------------------------*/
 
-INLINE float32 packFloat32( flag zSign, int16 zExp, bits32 zSig )
+static INLINE float32 packFloat32( flag zSign, int16 zExp, bits32 zSig )
 {
 
     return ( ( (bits32) zSign )<<31 ) + ( ( (bits32) zExp )<<23 ) + zSig;
@@ -237,7 +294,7 @@ static float32
 | floating-point value `a'.
 *----------------------------------------------------------------------------*/
 
-INLINE bits32 extractFloat64Frac1( float64 a )
+static INLINE bits32 extractFloat64Frac1( float64 a )
 {
 
     return a.low;
@@ -249,7 +306,7 @@ INLINE bits32 extractFloat64Frac1( float64 a )
 | floating-point value `a'.
 *----------------------------------------------------------------------------*/
 
-INLINE bits32 extractFloat64Frac0( float64 a )
+static INLINE bits32 extractFloat64Frac0( float64 a )
 {
 
     return a.high & 0x000FFFFF;
@@ -260,7 +317,7 @@ INLINE bits32 extractFloat64Frac0( float64 a )
 | Returns the exponent bits of the double-precision floating-point value `a'.
 *----------------------------------------------------------------------------*/
 
-INLINE int16 extractFloat64Exp( float64 a )
+static INLINE int16 extractFloat64Exp( float64 a )
 {
 
     return ( a.high>>20 ) & 0x7FF;
@@ -271,7 +328,7 @@ INLINE int16 extractFloat64Exp( float64 a )
 | Returns the sign bit of the double-precision floating-point value `a'.
 *----------------------------------------------------------------------------*/
 
-INLINE flag extractFloat64Sign( float64 a )
+static INLINE flag extractFloat64Sign( float64 a )
 {
 
     return a.high>>31;
@@ -331,7 +388,7 @@ static void
 | `zSig0' and `zSig1' concatenated form a complete, normalized significand.
 *----------------------------------------------------------------------------*/
 
-INLINE float64
+static INLINE float64
  packFloat64( flag zSign, int16 zExp, bits32 zSig0, bits32 zSig1 )
 {
     float64 z;
