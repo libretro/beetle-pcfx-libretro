@@ -42,12 +42,6 @@ these four paragraphs for those parts of this code that are retained.
 #include <retro_inline.h>
 
 /*----------------------------------------------------------------------------
-| The macro `BITS64' can be defined to indicate that 64-bit integer types are
-| supported by the compiler.
-*----------------------------------------------------------------------------*/
-#define BITS64
-
-/*----------------------------------------------------------------------------
 | Each of the following `typedef's defines the most convenient type that holds
 | integers of at least as many bits as specified.  For example, `uint8' should
 | be the most convenient type that can hold unsigned integers of as many as
@@ -63,10 +57,8 @@ typedef int16_t int16;
 typedef uint32_t uint32;
 typedef int32_t int32;
 
-#ifdef BITS64
 typedef uint64_t uint64;
 typedef int64_t int64;
-#endif
 
 /*----------------------------------------------------------------------------
 | Each of the following `typedef's defines a type that holds integers
@@ -80,12 +72,9 @@ typedef uint16_t bits16;
 typedef int16_t sbits16;
 typedef uint32_t bits32;
 typedef int32_t sbits32;
-#ifdef BITS64
 typedef uint64_t bits64;
 typedef int64_t sbits64;
-#endif
 
-#ifdef BITS64
 /*----------------------------------------------------------------------------
 | The `LIT64' macro takes as its argument a textual integer literal and
 | if necessary ``marks'' the literal as having a 64-bit integer type.
@@ -95,7 +84,6 @@ typedef int64_t sbits64;
 | defined as the identity macro:  `#define LIT64( a ) a'.
 *----------------------------------------------------------------------------*/
 #define LIT64( a ) a##LL
-#endif
 
 #include "softfloat.h"
 
@@ -282,9 +270,7 @@ static float32 roundAndPackFloat32( flag zSign, int16 zExp, bits32 zSig )
 static float32
  normalizeRoundAndPackFloat32( flag zSign, int16 zExp, bits32 zSig )
 {
-    int8 shiftCount;
-
-    shiftCount = countLeadingZeros32( zSig ) - 1;
+    int8 shiftCount = countLeadingZeros32( zSig ) - 1;
     return roundAndPackFloat32( zSign, zExp - shiftCount, zSig<<shiftCount );
 
 }
