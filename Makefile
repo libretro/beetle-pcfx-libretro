@@ -214,6 +214,12 @@ else ifneq (,$(findstring hardfloat,$(platform)))
    FLAGS += -mfloat-abi=hard
 endif
    FLAGS += -DARM
+
+# Emscripten
+else ifeq ($(platform), emscripten)
+   TARGET := $(TARGET_NAME)_libretro_$(platform).bc
+   STATIC_LINKING = 1
+
 else
    TARGET := $(TARGET_NAME).dll
    CC = gcc
