@@ -49,10 +49,10 @@ NEED_SCSI_CD = 1
 NEED_THREADING = 1
 CORE_DEFINE := -DWANT_PCFX_EMU
 
-TARGET_NAME := mednafen_$(core)_libretro
+TARGET_NAME := mednafen_$(core)
 
 ifeq ($(platform), unix)
-   TARGET := $(TARGET_NAME).so
+   TARGET := $(TARGET_NAME)_libretro.so
    fpic := -fPIC
    SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
    ifneq ($(shell uname -p | grep -E '((i.|x)86|amd64)'),)
@@ -61,7 +61,7 @@ ifeq ($(platform), unix)
    LDFLAGS += $(PTHREAD_FLAGS)
    FLAGS += $(PTHREAD_FLAGS) -DHAVE_MKDIR
 else ifeq ($(platform), osx)
-   TARGET := $(TARGET_NAME).dylib
+   TARGET := $(TARGET_NAME)_libretro.dylib
    fpic := -fPIC
    SHARED := -dynamiclib
    LDFLAGS += $(PTHREAD_FLAGS)
@@ -77,7 +77,7 @@ endif
 # iOS
 else ifneq (,$(findstring ios,$(platform)))
 
-   TARGET := $(TARGET_NAME)_ios.dylib
+   TARGET := $(TARGET_NAME)_libretro_ios.dylib
    fpic := -fPIC
    SHARED := -dynamiclib
    LDFLAGS += $(PTHREAD_FLAGS)
@@ -100,18 +100,16 @@ endif
    CC += $(IPHONEMINVER)
    CXX += $(IPHONEMINVER)
 else ifeq ($(platform), qnx)
-   TARGET := $(TARGET_NAME)_qnx.so
+   TARGET := $(TARGET_NAME)_libretro_$(platform).so
    fpic := -fPIC
    SHARED := -lcpp -lm -shared -Wl,--no-undefined -Wl,--version-script=link.T
-   #LDFLAGS += $(PTHREAD_FLAGS)
-   #FLAGS += $(PTHREAD_FLAGS) -DHAVE_MKDIR
    FLAGS += -DHAVE_MKDIR
    CC = qcc -Vgcc_ntoarmv7le
    CXX = QCC -Vgcc_ntoarmv7le_cpp
    AR = QCC -Vgcc_ntoarmv7le
    FLAGS += -D__BLACKBERRY_QNX__ -marm -mcpu=cortex-a9 -mfpu=neon -mfloat-abi=softfp
 else ifeq ($(platform), ps3)
-   TARGET := $(TARGET_NAME)_ps3.a
+   TARGET := $(TARGET_NAME)_libretro_$(platform).a
    CC = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-gcc.exe
    CXX = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-g++.exe
    AR = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-ar.exe
@@ -120,7 +118,7 @@ else ifeq ($(platform), ps3)
    FLAGS += -DHAVE_MKDIR -DARCH_POWERPC_ALTIVEC
    STATIC_LINKING = 1
 else ifeq ($(platform), sncps3)
-   TARGET := $(TARGET_NAME)_ps3.a
+   TARGET := $(TARGET_NAME)_libretro_ps3.a
    CC = $(CELL_SDK)/host-win32/sn/bin/ps3ppusnc.exe
    CXX = $(CELL_SDK)/host-win32/sn/bin/ps3ppusnc.exe
    AR = $(CELL_SDK)/host-win32/sn/bin/ps3snarl.exe
@@ -131,7 +129,7 @@ else ifeq ($(platform), sncps3)
    FLAGS += -DHAVE_MKDIR -DARCH_POWERPC_ALTIVEC
    STATIC_LINKING = 1
 else ifeq ($(platform), psl1ght)
-   TARGET := $(TARGET_NAME)_psl1ght.a
+   TARGET := $(TARGET_NAME)_libretro_$(platform).a
    CC = $(PS3DEV)/ppu/bin/ppu-gcc$(EXE_EXT)
    CXX = $(PS3DEV)/ppu/bin/ppu-g++$(EXE_EXT)
    AR = $(PS3DEV)/ppu/bin/ppu-ar$(EXE_EXT)
@@ -141,7 +139,7 @@ else ifeq ($(platform), psl1ght)
 
 # PSP
 else ifeq ($(platform), psp1)
-   TARGET := $(TARGET_NAME)_psp1.a
+   TARGET := $(TARGET_NAME)_libretro_$(platform).a
    CC = psp-gcc$(EXE_EXT)
    CXX = psp-g++$(EXE_EXT)
    AR = psp-ar$(EXE_EXT)
@@ -152,7 +150,7 @@ else ifeq ($(platform), psp1)
 
 # Vita
 else ifeq ($(platform), vita)
-   TARGET := $(TARGET_NAME)_vita.a
+   TARGET := $(TARGET_NAME)_libretro_$(platform).a
 	CC = arm-vita-eabi-gcc$(EXE_EXT)
 	CXX = arm-vita-eabi-g++$(EXE_EXT)
 	AR = arm-vita-eabi-ar$(EXE_EXT)
@@ -161,7 +159,7 @@ else ifeq ($(platform), vita)
    STATIC_LINKING = 1
 
 else ifeq ($(platform), xenon)
-   TARGET := $(TARGET_NAME)_xenon360.a
+   TARGET := $(TARGET_NAME)_libretro_xenon360.a
    CC = xenon-gcc$(EXE_EXT)
    CXX = xenon-g++$(EXE_EXT)
    AR = xenon-ar$(EXE_EXT)
@@ -170,7 +168,7 @@ else ifeq ($(platform), xenon)
    FLAGS += -DHAVE_MKDIR
    STATIC_LINKING = 1
 else ifeq ($(platform), ngc)
-   TARGET := $(TARGET_NAME)_ngc.a
+   TARGET := $(TARGET_NAME)_libretro_$(platform).a
    CC = $(DEVKITPPC)/bin/powerpc-eabi-gcc$(EXE_EXT)
    CXX = $(DEVKITPPC)/bin/powerpc-eabi-g++$(EXE_EXT)
    AR = $(DEVKITPPC)/bin/powerpc-eabi-ar$(EXE_EXT)
@@ -180,7 +178,7 @@ else ifeq ($(platform), ngc)
    FLAGS += -DHAVE_MKDIR
    STATIC_LINKING = 1
 else ifeq ($(platform), wii)
-   TARGET := $(TARGET_NAME)_wii.a
+   TARGET := $(TARGET_NAME)_libretro_$(platform).a
    CC = $(DEVKITPPC)/bin/powerpc-eabi-gcc$(EXE_EXT)
    CXX = $(DEVKITPPC)/bin/powerpc-eabi-g++$(EXE_EXT)
    AR = $(DEVKITPPC)/bin/powerpc-eabi-ar$(EXE_EXT)
@@ -190,7 +188,7 @@ else ifeq ($(platform), wii)
    FLAGS += -DHAVE_MKDIR
    STATIC_LINKING = 1
 else ifneq (,$(findstring armv,$(platform)))
-   TARGET := $(TARGET_NAME).so
+   TARGET := $(TARGET_NAME)_libretro.so
    fpic := -fPIC
    SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
    CC = gcc
