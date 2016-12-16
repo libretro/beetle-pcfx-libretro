@@ -1172,7 +1172,7 @@ static void check_variables(void)
 }
 
 #define MAX_PLAYERS 2
-#define MAX_BUTTONS 14
+#define MAX_BUTTONS 15
 static uint16_t input_buf[MAX_PLAYERS];
 
 
@@ -1513,6 +1513,7 @@ static void update_input(void)
       RETRO_DEVICE_ID_JOYPAD_DOWN,
       RETRO_DEVICE_ID_JOYPAD_LEFT,
       RETRO_DEVICE_ID_JOYPAD_L2,
+      NULL,
       RETRO_DEVICE_ID_JOYPAD_R2,
    };
 
