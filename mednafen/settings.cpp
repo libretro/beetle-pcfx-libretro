@@ -80,7 +80,7 @@ bool MDFN_GetSettingB(const char *name)
    if (!strcmp("pcfx.nospritelimit", name))
       return 0; /* TODO - make configurable */
    if (!strcmp("pcfx.adpcm.suppress_channel_reset_clicks", name))
-      return 0; /* TODO - make configurable */
+      return 1; /* TODO - make configurable */
    if (!strcmp("pcfx.disable_bram", name))
       return 0; /* TODO - make configurable */
    if (!strcmp("pcfx.adpcm.emulate_buggy_codec", name))
