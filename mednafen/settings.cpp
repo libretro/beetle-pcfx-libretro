@@ -105,7 +105,7 @@ extern std::string retro_base_name;
 std::string MDFN_GetSettingS(const char *name)
 {
    if (!strcmp("pcfx.bios", name))
-      return std::string("pcfx.bios");
+      return std::string("pcfx.rom");
    if (!strcmp("pcfx.fxscsi", name))
       return std::string("pcfx.fxscsi");
    /* FILESYS */
