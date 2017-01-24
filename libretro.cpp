@@ -1353,7 +1353,7 @@ static MDFNGI *MDFNI_LoadGame(const char *name)
 
 bool retro_load_game(const struct retro_game_info *info)
 {
-   if (failed_init)
+   if (!info || failed_init)
       return false;
 
    struct retro_input_descriptor desc[] = {
