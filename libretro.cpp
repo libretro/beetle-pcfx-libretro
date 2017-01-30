@@ -2025,19 +2025,21 @@ extern void MDFND_DispMessage(unsigned char *str);
 
 void MDFN_DispMessage(const char *format, ...)
 {
- va_list ap;
- va_start(ap,format);
- char *msg = new char[4096];
+   struct retro_message msg;
+   va_list ap;
+   va_start(ap,format);
+   char *str = new char[4096];
+   const char *strc = NULL;
 
- vsnprintf(msg, 4096, format,ap);
- va_end(ap);
+   vsnprintf(str, 4096, format,ap);
+   va_end(ap);
+   strc = str;
 
- MDFND_DispMessage((UTF8*)msg);
+   msg.frames = 180;
+   msg.msg = strc;
+
+   environ_cb(RETRO_ENVIRONMENT_SET_MESSAGE, &msg);
 }
-
-
-
-
 
 void MDFNI_CloseGame(void)
 {
