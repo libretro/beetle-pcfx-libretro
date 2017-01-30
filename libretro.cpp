@@ -1689,7 +1689,7 @@ void retro_run()
 
 #if defined(WANT_32BPP)
    const uint32_t *pix = surf->pixels;
-   video_cb(pix, width, height, FB_WIDTH << 2);
+   video_cb(pix + surf->pitchinpix * spec.DisplayRect.y, width, height, FB_WIDTH << 2);
 #elif defined(WANT_16BPP)
    const uint16_t *pix = surf->pixels16;
    video_cb(pix, width, height, FB_WIDTH << 1);
