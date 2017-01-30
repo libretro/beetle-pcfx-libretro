@@ -21,6 +21,15 @@
 #include <string>
 #include "settings.h"
 
+int setting_initial_scanline = 0;
+int setting_last_scanline = 239;
+int setting_high_dotclock_width = 1024;
+int setting_nospritelimit = 0;
+int setting_resamp_quality = 3;
+int setting_suppress_channel_reset_clicks = 1;
+int setting_emulate_buggy_codec = 0;
+int setting_rainbow_chromaip = 0;
+
 bool MDFN_SaveSettings(const char *path)
 {
    return(1);
@@ -31,13 +40,13 @@ uint64 MDFN_GetSettingUI(const char *name)
    if (!strcmp("pcfx.cdspeed", name))
       return 2;
    if (!strcmp("pcfx.slend", name))
-      return 239;
+      return setting_last_scanline;
    if (!strcmp("pcfx.slstart", name))
-      return 0;
+      return setting_initial_scanline;
    if (!strcmp("pcfx.high_dotclock_width", name))
-      return 1024; /* TODO - make configurable */
+      return setting_high_dotclock_width;
    if (!strcmp("pcfx.resamp_quality", name))
-      return 3; /* TODO - make configurable */
+      return setting_resamp_quality;
 
    fprintf(stderr, "unhandled setting UI: %s\n", name);
    return 0;
@@ -71,22 +80,20 @@ bool MDFN_GetSettingB(const char *name)
       return 0;
    if (!strcmp("pcfx.disable_softreset", name))
       return 0; /* TODO - make configurable */
-   if (!strcmp("pcfx.disable_softreset", name))
-      return 0; /* TODO - make configurable */
    if (!strcmp("pcfx.input.port1.multitap", name))
       return 0; /* TODO - make configurable */
    if (!strcmp("pcfx.input.port2.multitap", name))
       return 0; /* TODO - make configurable */
    if (!strcmp("pcfx.nospritelimit", name))
-      return 0; /* TODO - make configurable */
+      return setting_nospritelimit;
    if (!strcmp("pcfx.adpcm.suppress_channel_reset_clicks", name))
-      return 1; /* TODO - make configurable */
+      return setting_suppress_channel_reset_clicks;
    if (!strcmp("pcfx.disable_bram", name))
       return 0; /* TODO - make configurable */
    if (!strcmp("pcfx.adpcm.emulate_buggy_codec", name))
-      return 0; /* TODO - make configurable */
+      return setting_emulate_buggy_codec;
    if (!strcmp("pcfx.rainbow.chromaip", name))
-      return 0; /* TODO - make configurable */
+      return setting_rainbow_chromaip;
    /* CDROM */
    if (!strcmp("cdrom.lec_eval", name))
       return 1;

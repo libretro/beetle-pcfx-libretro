@@ -1142,6 +1142,9 @@ void retro_init(void)
    else
       perf_get_cpu_features_cb = NULL;
 
+   setting_initial_scanline = 0;
+   setting_last_scanline = 239;
+
    check_system_specs();
 }
 
@@ -1168,6 +1171,74 @@ static void set_volume (uint32_t *ptr, unsigned number)
 static void check_variables(void)
 {
    struct retro_variable var = {0};
+
+   var.key = "pcfx_high_dotclock_width";
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      setting_high_dotclock_width = atoi(var.value);
+   }
+
+   var.key = "pcfx_nospritelimit";
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "disabled") == 0)
+         setting_nospritelimit = 0;
+      else if (strcmp(var.value, "enabled") == 0)
+         setting_nospritelimit = 1;
+   }
+
+   var.key = "pcfx_initial_scanline";
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      setting_initial_scanline = atoi(var.value);
+   }
+
+   var.key = "pcfx_last_scanline";
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      setting_last_scanline = atoi(var.value);
+   }
+
+   var.key = "pcfx_resamp_quality";
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      setting_resamp_quality = atoi(var.value);
+   }
+
+   var.key = "pcfx_suppress_channel_reset_clicks";
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "disabled") == 0)
+         setting_suppress_channel_reset_clicks = 0;
+      else if (strcmp(var.value, "enabled") == 0)
+         setting_suppress_channel_reset_clicks = 1;
+   }
+
+   var.key = "pcfx_emulate_buggy_codec";
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "disabled") == 0)
+         setting_emulate_buggy_codec = 0;
+      else if (strcmp(var.value, "enabled") == 0)
+         setting_emulate_buggy_codec = 1;
+   }
+
+   var.key = "pcfx_rainbow_chromaip";
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "disabled") == 0)
+         setting_rainbow_chromaip = 0;
+      else if (strcmp(var.value, "enabled") == 0)
+         setting_rainbow_chromaip = 1;
+   }
 
 }
 
@@ -1467,6 +1538,8 @@ bool retro_load_game(const struct retro_game_info *info)
 
    set_basename(info->path);
 
+   check_variables();
+
    game = MDFNI_LoadGame(info->path);
    if (!game)
       return false;
@@ -1482,8 +1555,6 @@ bool retro_load_game(const struct retro_game_info *info)
 #endif
 
    hookup_ports(true);
-
-   check_variables();
 
    return game;
 }
@@ -1537,6 +1608,14 @@ static void update_input(void)
 
 static uint64_t video_frames, audio_frames;
 
+void update_geometry(unsigned width, unsigned height)
+{
+   struct retro_system_av_info system_av_info;
+   system_av_info.geometry.base_width = width;
+   system_av_info.geometry.base_height = height;
+   system_av_info.geometry.aspect_ratio = MEDNAFEN_CORE_GEOMETRY_ASPECT_RATIO;
+   environ_cb(RETRO_ENVIRONMENT_SET_GEOMETRY, &system_av_info);
+}
 
 void retro_run()
 {
@@ -1548,6 +1627,8 @@ void retro_run()
 
    static int16_t sound_buf[0x10000];
    static MDFN_Rect rects[FB_MAX_HEIGHT];
+   static unsigned width, height;
+   bool resolution_changed = false;
    rects[0].w = ~0;
 
    EmulateSpecStruct spec = {0};
@@ -1600,8 +1681,11 @@ void retro_run()
 
    spec.SoundBufSize = spec.SoundBufSizeALMS + SoundBufSize;
 
-   unsigned width  = spec.DisplayRect.w;
-   unsigned height = spec.DisplayRect.h;
+   if (width  != spec.DisplayRect.w || height != spec.DisplayRect.h)
+      resolution_changed = true;
+
+   width  = spec.DisplayRect.w;
+   height = spec.DisplayRect.h;
 
 #if defined(WANT_32BPP)
    const uint32_t *pix = surf->pixels;
@@ -1611,14 +1695,21 @@ void retro_run()
    video_cb(pix, width, height, FB_WIDTH << 1);
 #endif
 
+   bool updated = false;
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
+   {
+      check_variables();
+      update_geometry(width, height);
+   }
+
+   if (resolution_changed)
+	update_geometry(width, height);
+
    video_frames++;
    audio_frames += spec.SoundBufSize;
 
    audio_batch_cb(spec.SoundBuf, spec.SoundBufSize);
 
-   bool updated = false;
-   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
-      check_variables();
 }
 
 void retro_get_system_info(struct retro_system_info *info)
@@ -1687,6 +1778,18 @@ void retro_set_environment(retro_environment_t cb)
 {
    environ_cb = cb;
 
+   static const struct retro_variable vars[] = {
+	  { "pcfx_high_dotclock_width", "High Dotclock Width (Restart); 1024|256|341" },
+	  { "pcfx_suppress_channel_reset_clicks", "Suppress Channel Reset Clicks (Restart); enabled|disabled" },
+	  { "pcfx_emulate_buggy_codec", "Emulate Buggy Codec (Restart); disabled|enabled" },
+	  { "pcfx_resamp_quality", "Sound Quality (Restart); 3|4|5|0|1|2" },
+	  { "pcfx_rainbow_chromaip", "Chroma channel bilinear interpolation  (Restart); disabled|enabled" },
+      { "pcfx_nospritelimit", "No Sprite Limit (Restart); disabled|enabled" },
+      { "pcfx_initial_scanline", "Initial scanline; 4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32|33|34|35|36|37|38|39|40|0|1|2|3" },
+      { "pcfx_last_scanline", "Last scanline; 235|236|237|238|239|208|209|210|211|212|213|214|215|216|217|218|219|220|221|222|223|224|225|226|227|228|229|230|231|232|233|234" },
+      { NULL, NULL },
+   };
+
    static const struct retro_controller_description pads[] = {
       { "PCFX Joypad", RETRO_DEVICE_JOYPAD },
       { "Mouse", RETRO_DEVICE_MOUSE },
@@ -1698,6 +1801,7 @@ void retro_set_environment(retro_environment_t cb)
       { 0 },
    };
 
+   cb(RETRO_ENVIRONMENT_SET_VARIABLES, (void*)vars);
    environ_cb(RETRO_ENVIRONMENT_SET_CONTROLLER_INFO, (void*)ports);
 }
 
