@@ -3,6 +3,15 @@
 
 #include <string>
 
+extern int setting_initial_scanline;
+extern int setting_last_scanline;
+extern int setting_high_dotclock_width;
+extern int setting_nospritelimit;
+extern int setting_resamp_quality;
+extern int setting_suppress_channel_reset_clicks;
+extern int setting_emulate_buggy_codec;
+extern int setting_rainbow_chromaip;
+
 bool MDFN_LoadSettings(const char *path, const char *section = NULL, bool override = false);
 bool MDFN_MergeSettings(const void*);
 bool MDFN_MergeSettings(const std::vector<void> &);
