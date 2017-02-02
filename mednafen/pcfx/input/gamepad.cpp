@@ -73,7 +73,7 @@ class PCFX_Input_Gamepad : public PCFX_Input_Device
    mode_changed = true;
   }
 
-  if((old_raw_buttons ^ new_buttons) & (1 << 14) & new_buttons)
+  if((old_raw_buttons ^ new_buttons) & (1 << 13) & new_buttons)
   {
    mode2 = !mode2;
    mode_changed = true;
@@ -82,9 +82,9 @@ class PCFX_Input_Gamepad : public PCFX_Input_Device
   if(mode_changed)
    MDFN_DispMessage(_("Pad %d - MODE 1: %s, MODE 2: %s"), which + 1, (mode1 ? "B" : "A"), (mode2 ? "B" : "A"));
 
-  buttons = new_buttons & ~( (1 << 12) | (1 << 14));
+  buttons = new_buttons & ~( (1 << 12) | (1 << 13));
   buttons |= mode1 << 12;
-  buttons |= mode2 << 14;
+  buttons |= mode2 << 13;
 
   old_raw_buttons = new_buttons;
   //printf("%d %08x\n", which, buttons);
