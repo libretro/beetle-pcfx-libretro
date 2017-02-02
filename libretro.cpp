@@ -12,6 +12,26 @@
 #include "libretro.h"
 #include <rthreads/rthreads.h>
 
+#include "mednafen/pcfx/pcfx.h"
+#include "mednafen/pcfx/soundbox.h"
+#include "mednafen/pcfx/input.h"
+#include "mednafen/pcfx/king.h"
+#include "mednafen/pcfx/timer.h"
+#include "mednafen/pcfx/interrupt.h"
+#include "mednafen/pcfx/debug.h"
+#include "mednafen/pcfx/rainbow.h"
+#include "mednafen/pcfx/huc6273.h"
+#include "mednafen/pcfx/fxscsi.h"
+#include "mednafen/cdrom/scsicd.h"
+#include "mednafen/mempatcher.h"
+#include "mednafen/cdrom/cdromif.h"
+#include "mednafen/md5.h"
+#include "mednafen/clamp.h"
+
+#include <errno.h>
+#include <string.h>
+#include <math.h>
+
 static MDFNGI *game;
 
 struct retro_perf_callback perf_cb;
@@ -39,7 +59,6 @@ static bool initial_ports_hookup = false;
 std::string retro_base_directory;
 std::string retro_base_name;
 std::string retro_save_directory;
-
 
 class PtrLengthPair
 {
@@ -112,26 +131,6 @@ static bool MDFN_DumpToFile(const char *filename, int compress, const std::vecto
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-#include "mednafen/pcfx/pcfx.h"
-#include "mednafen/pcfx/soundbox.h"
-#include "mednafen/pcfx/input.h"
-#include "mednafen/pcfx/king.h"
-#include "mednafen/pcfx/timer.h"
-#include "mednafen/pcfx/interrupt.h"
-#include "mednafen/pcfx/debug.h"
-#include "mednafen/pcfx/rainbow.h"
-#include "mednafen/pcfx/huc6273.h"
-#include "mednafen/pcfx/fxscsi.h"
-#include "mednafen/cdrom/scsicd.h"
-#include "mednafen/mempatcher.h"
-#include "mednafen/cdrom/cdromif.h"
-#include "mednafen/md5.h"
-#include "mednafen/clamp.h"
-
-#include <errno.h>
-#include <string.h>
-#include <math.h>
 
 /* FIXME:  soundbox, vce, vdc, rainbow, and king store wait states should be 4, not 2, but V810 has write buffers which can mask wait state penalties.
   This is a hack to somewhat address the issue, but to really fix it, we need to handle write buffer emulation in the V810 emulation core itself.
@@ -1246,7 +1245,6 @@ static void check_variables(void)
 #define MAX_BUTTONS 15
 static uint16_t input_buf[MAX_PLAYERS];
 
-
 static void hookup_ports(bool force)
 {
    if (initial_ports_hookup && !force)
@@ -1779,11 +1777,11 @@ void retro_set_environment(retro_environment_t cb)
    environ_cb = cb;
 
    static const struct retro_variable vars[] = {
-	  { "pcfx_high_dotclock_width", "High Dotclock Width (Restart); 1024|256|341" },
-	  { "pcfx_suppress_channel_reset_clicks", "Suppress Channel Reset Clicks (Restart); enabled|disabled" },
-	  { "pcfx_emulate_buggy_codec", "Emulate Buggy Codec (Restart); disabled|enabled" },
-	  { "pcfx_resamp_quality", "Sound Quality (Restart); 3|4|5|0|1|2" },
-	  { "pcfx_rainbow_chromaip", "Chroma channel bilinear interpolation  (Restart); disabled|enabled" },
+      { "pcfx_high_dotclock_width", "High Dotclock Width (Restart); 1024|256|341" },
+      { "pcfx_suppress_channel_reset_clicks", "Suppress Channel Reset Clicks (Restart); enabled|disabled" },
+      { "pcfx_emulate_buggy_codec", "Emulate Buggy Codec (Restart); disabled|enabled" },
+      { "pcfx_resamp_quality", "Sound Quality (Restart); 3|4|5|0|1|2" },
+      { "pcfx_rainbow_chromaip", "Chroma channel bilinear interpolation  (Restart); disabled|enabled" },
       { "pcfx_nospritelimit", "No Sprite Limit (Restart); disabled|enabled" },
       { "pcfx_initial_scanline", "Initial scanline; 4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32|33|34|35|36|37|38|39|40|0|1|2|3" },
       { "pcfx_last_scanline", "Last scanline; 235|236|237|238|239|208|209|210|211|212|213|214|215|216|217|218|219|220|221|222|223|224|225|226|227|228|229|230|231|232|233|234" },
