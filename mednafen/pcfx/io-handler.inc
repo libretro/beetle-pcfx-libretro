@@ -1,3 +1,5 @@
+#include "../mednafen-endian.h"
+
 static uint8 MDFN_FASTCALL port_rbyte(v810_timestamp_t &timestamp, uint32 A)
 {
  if(A >= 0x000 && A <= 0x0FF)
