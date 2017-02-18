@@ -26,6 +26,8 @@
 #include "general.h"
 #include "state.h"
 
+#include "mednafen-endian.h"
+
 #define RLSB 		MDFNSTATE_RLSB	//0x80000000
 
 int32_t smem_read(StateMem *st, void *buffer, uint32_t len)

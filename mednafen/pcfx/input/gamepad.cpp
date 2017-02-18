@@ -19,6 +19,8 @@
 #include "../input.h"
 #include "gamepad.h"
 
+#include "../../mednafen-endian.h"
+
 class PCFX_Input_Gamepad : public PCFX_Input_Device
 {
  public:

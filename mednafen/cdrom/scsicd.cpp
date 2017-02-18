@@ -15,7 +15,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <mednafen/mednafen.h>
 #include <math.h>
 #include <algorithm>
 #include "scsicd.h"
@@ -26,6 +25,9 @@
 #include <xmmintrin.h>
 #include <emmintrin.h>
 #endif
+
+#include "../mednafen.h"
+#include "../mednafen-endian.h"
 
 static uint32_t CD_DATA_TRANSFER_RATE;
 static uint32_t System_Clock;
@@ -125,7 +127,7 @@ typedef struct
 
  uint8_t PlayMode;
  int32_t CDDAVolume[2];		// 65536 = 1.0, the maximum.
- int16 CDDASectorBuffer[1176];
+ int16_t CDDASectorBuffer[1176];
  uint32_t CDDAReadPos;
 
  int8_t CDDAStatus;
@@ -133,10 +135,10 @@ typedef struct
  int64_t CDDADiv;
  int CDDATimeDiv;
 
- int16 OversampleBuffer[2][0x10 * 2];	// *2 so our MAC loop can blast through without masking the index.
+ int16_t OversampleBuffer[2][0x10 * 2];	// *2 so our MAC loop can blast through without masking the index.
  unsigned OversamplePos;
 
- int16 sr[2];
+ int16_t sr[2];
 
  uint8_t OutPortChSelect[2];
  uint32_t OutPortChSelectCache[2];
@@ -1687,8 +1689,8 @@ static void DoNEC_SAPEP(const uint8_t *cdb)
 static void DoPA10(const uint8_t *cdb)
 {
  // Real PC-FX Bug: Error out on LBA >(not >=) leadout sector number
- const uint32_t lba = MDFN_de32msb(cdb + 0x2);
- const uint16 length = MDFN_de16msb(cdb + 0x7);
+ const uint32_t lba    = MDFN_de32msb(cdb + 0x2);
+ const uint16_t length = MDFN_de16msb(cdb + 0x7);
 
  DoPABase(lba, length);
 }
@@ -1822,8 +1824,8 @@ static void DoPATRBase(const uint32_t lba, const uint32_t length)
 static void DoPATR10(const uint8_t *cdb)
 {
  const int32_t rel_lba = MDFN_de32msb(cdb + 0x2);
- const int StartTrack = cdb[6];
- const uint16 length = MDFN_de16msb(cdb + 0x7);
+ const int StartTrack  = cdb[6];
+ const uint16_t length = MDFN_de16msb(cdb + 0x7);
 
  if(!StartTrack || StartTrack < toc.first_track || StartTrack > toc.last_track)
  {
@@ -2414,7 +2416,7 @@ void SCSICD_ResetTS(uint32_t ts_base)
  lastts = ts_base;
 }
 
-void SCSICD_GetCDDAValues(int16 &left, int16 &right)
+void SCSICD_GetCDDAValues(int16_t &left, int16_t &right)
 {
  if(cdda.CDDAStatus)
  {
@@ -2431,12 +2433,12 @@ void SCSICD_GetCDDAValues(int16 &left, int16 &right)
 #define CDDA_FILTER_NUMPHASES_SHIFT		6
 #define CDDA_FILTER_NUMPHASES	       		(1 << CDDA_FILTER_NUMPHASES_SHIFT)
 
-static const int16 CDDA_Filter[1 + CDDA_FILTER_NUMPHASES + 1][CDDA_FILTER_NUMCONVOLUTIONS_PADDED] =
+static const int16_t CDDA_Filter[1 + CDDA_FILTER_NUMPHASES + 1][CDDA_FILTER_NUMCONVOLUTIONS_PADDED] =
 {
  #include "scsicd_cdda_filter.inc"
 };
 
-static const int16 OversampleFilter[2][0x10] =
+static const int16_t OversampleFilter[2][0x10] =
 {
  {    -82,    217,   -463,    877,  -1562,   2783,  -5661,  29464,   9724,  -3844,   2074,  -1176,    645,   -323,    138,    -43,  }, /* sum=32768, sum_abs=59076 */
  {    -43,    138,   -323,    645,  -1176,   2074,  -3844,   9724,  29464,  -5661,   2783,  -1562,    877,   -463,    217,    -82,  }, /* sum=32768, sum_abs=59076 */
@@ -2573,7 +2575,7 @@ static INLINE void RunCDDA(uint32_t system_timestamp, int32_t run_time)
 
 #if 0
     {
-     static int16 wv = 0x7FFF; //0x5000;
+     static int16_t wv = 0x7FFF; //0x5000;
      static unsigned counter = 0;
      static double phase = 0;
      static double phase_inc = 0;
@@ -2603,7 +2605,7 @@ static INLINE void RunCDDA(uint32_t system_timestamp, int32_t run_time)
    } // End if(!(cdda.OversamplePos & 1))
 
    {
-    const int16* f = OversampleFilter[cdda.OversamplePos & 1];
+    const int16_t* f = OversampleFilter[cdda.OversamplePos & 1];
 #if defined(__SSE2__)
     __m128i f0 = _mm_load_si128((__m128i *)&f[0]);
     __m128i f1 = _mm_load_si128((__m128i *)&f[8]);
@@ -2611,7 +2613,7 @@ static INLINE void RunCDDA(uint32_t system_timestamp, int32_t run_time)
       
     for(unsigned lr = 0; lr < 2; lr++)
     {
-     const int16* b = &cdda.OversampleBuffer[lr][((cdda.OversamplePos >> 1) + 1) & 0xF];
+     const int16_t* b = &cdda.OversampleBuffer[lr][((cdda.OversamplePos >> 1) + 1) & 0xF];
 #if defined(__SSE2__)
      union
      {
@@ -2683,8 +2685,8 @@ static INLINE void RunCDDA(uint32_t system_timestamp, int32_t run_time)
      #error "COEFF MULT OVERFLOW"
     #endif
 
-    const int16 mult_a = ((1 << (16 - CDDA_FILTER_NUMPHASES_SHIFT)) - synthtime_phase_fract) << MULT_SHIFT_ADJ;
-    const int16 mult_b = synthtime_phase_fract << MULT_SHIFT_ADJ;
+    const int16_t mult_a = ((1 << (16 - CDDA_FILTER_NUMPHASES_SHIFT)) - synthtime_phase_fract) << MULT_SHIFT_ADJ;
+    const int16_t mult_b = synthtime_phase_fract << MULT_SHIFT_ADJ;
     int32_t coeff[CDDA_FILTER_NUMCONVOLUTIONS];
 
     //if(synthtime_phase_fract == 0)

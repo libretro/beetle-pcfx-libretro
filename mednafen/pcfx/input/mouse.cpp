@@ -19,6 +19,8 @@
 #include "../input.h"
 #include "mouse.h"
 
+#include "../../mednafen-endian.h"
+
 class PCFX_Input_Mouse : public PCFX_Input_Device
 {
  public:
