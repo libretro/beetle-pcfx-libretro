@@ -2,6 +2,7 @@
 #define MDFN_SETTINGS_H
 
 #include <string>
+#include <vector>
 
 extern int setting_initial_scanline;
 extern int setting_last_scanline;
