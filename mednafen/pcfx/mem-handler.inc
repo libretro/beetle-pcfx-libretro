@@ -1,3 +1,5 @@
+#include "../mednafen-endian.h"
+
 uint8 MDFN_FASTCALL mem_peekbyte(const v810_timestamp_t timestamp, const uint32 A)
 {
  if(A <= 0x001FFFFF)
