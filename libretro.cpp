@@ -1582,7 +1582,7 @@ static void update_input(void)
       RETRO_DEVICE_ID_JOYPAD_DOWN,
       RETRO_DEVICE_ID_JOYPAD_LEFT,
       RETRO_DEVICE_ID_JOYPAD_L2,
-      NULL,
+      0,
       RETRO_DEVICE_ID_JOYPAD_R2,
    };
 
