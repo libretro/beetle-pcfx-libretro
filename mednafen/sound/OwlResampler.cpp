@@ -635,82 +635,46 @@ int32 OwlResampler::Resample(OwlBuffer* in, const uint32 in_count, int16* out, c
 	OwlBuffer::I32_F_Pudding* InSamps = in->BufPudding() - in->leftover;
 	int32 leftover;
 
-	if(0)
-	{
+   while(InputIndex < max)
+   {
+      bool handled      = false;
+      float* wave       = &InSamps[InputIndex].f;
+      float* coeffs     = &FIR_Coeffs[InputPhase][0].f;
+      int32 coeff_count = NumCoeffs;
 
-	}
 #ifdef ARCH_X86
-	else if(cpuext & RETRO_SIMD_SSE2)
-	{
-	 //int32* tp = in->Buf();
-	 //for(unsigned c = 0; c < in_count; c++)
-	 // *(float*)(tp + c) = *(int32*)(tp + c);
-
-         while(InputIndex < max)
-         {
-          float* wave = &InSamps[InputIndex].f;
-          float* coeffs = &FIR_Coeffs[InputPhase][0].f;
-          int32 coeff_count = NumCoeffs;
-
-	  DoMAC_SSE(wave, coeffs, coeff_count, I32Out);
-          //DoMAC(wave, coeffs, coeff_count, I32Out);
-
-          I32Out++;
-          count++;
-
-          InputPhase = PhaseNext[InputPhase];
-          InputIndex += PhaseStep[InputPhase];
-         }
-	}
+      if(cpuext & RETRO_SIMD_SSE2)
+      {
+         DoMAC_SSE(wave, coeffs, coeff_count, I32Out);
+         handled = true;
+      }
+#elif defined(ARCH_POWERPC_ALTIVEC)
+      {
+         DoMAC_AltiVec(wave, coeffs, coeff_count, I32Out);
+         handled = true;
+      }
 #endif
 
-#ifdef ARCH_POWERPC_ALTIVEC
-	else if(1)
-	{
-         while(InputIndex < max)
-         {
-          float* wave = &InSamps[InputIndex].f;
-          float* coeffs = &FIR_Coeffs[InputPhase][0].f;
-          int32 coeff_count = NumCoeffs;
+      if (!handled)
+         DoMAC(wave, coeffs, coeff_count, I32Out);;
 
-	  DoMAC_AltiVec(wave, coeffs, coeff_count, I32Out);
+      I32Out++;
+      count++;
 
-          I32Out++;
-          count++;
+      InputPhase = PhaseNext[InputPhase];
+      InputIndex += PhaseStep[InputPhase];
+   }
 
-          InputPhase = PhaseNext[InputPhase];
-          InputIndex += PhaseStep[InputPhase];
-         }
-	}
-#endif
-	else
-	{
-         while(InputIndex < max)
-         {
-          float* wave = &InSamps[InputIndex].f;
-          float* coeffs = &FIR_Coeffs[InputPhase][0].f;
-          int32 coeff_count = NumCoeffs;
-
-	  DoMAC(wave, coeffs, coeff_count, I32Out);
-
-          I32Out++;
-          count++;
-
-          InputPhase = PhaseNext[InputPhase];
-          InputIndex += PhaseStep[InputPhase];
-         }
-	}
-
-        if(InputIndex > in_count_WLO)
-	{
-	 leftover = 0;
-	 InputIndex -= in_count_WLO;
-	}
-	else
-	{
-	 leftover = (int32)in_count_WLO - (int32)InputIndex;
-	 InputIndex = 0;
-	}
+   if(InputIndex > in_count_WLO)
+   {
+      leftover = 0;
+      InputIndex -= in_count_WLO;
+   }
+   else
+   {
+      leftover = (int32)in_count_WLO - (int32)InputIndex;
+      InputIndex = 0;
+   }
 
 #if 0
 	for(uint32 x = 0; x < count; x++)
