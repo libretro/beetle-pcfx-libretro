@@ -1059,7 +1059,7 @@ static Deinterlacer deint;
 #define MEDNAFEN_CORE_NAME_MODULE "pcfx"
 #define MEDNAFEN_CORE_NAME "Mednafen PC-FX"
 #define MEDNAFEN_CORE_VERSION "v0.9.33.3"
-#define MEDNAFEN_CORE_EXTENSIONS "cue|ccd|toc"
+#define MEDNAFEN_CORE_EXTENSIONS "cue|ccd|toc|chd"
 #define MEDNAFEN_CORE_TIMING_FPS 59.94
 #define MEDNAFEN_CORE_GEOMETRY_BASE_W (game->nominal_width)
 #define MEDNAFEN_CORE_GEOMETRY_BASE_H (game->nominal_height)
@@ -1414,7 +1414,7 @@ static MDFNGI *MDFNI_LoadGame(const char *name)
 	std::vector<FileExtensionSpecStruct> valid_iae;
    MDFNGameInfo = &EmulatedPCFX;
 
-   if(strlen(name) > 4 && (!strcasecmp(name + strlen(name) - 4, ".cue") || !strcasecmp(name + strlen(name) - 4, ".ccd") || !strcasecmp(name + strlen(name) - 4, ".toc") || !strcasecmp(name + strlen(name) - 4, ".m3u")))
+   if(strlen(name) > 4 && (!strcasecmp(name + strlen(name) - 4, ".cue") || !strcasecmp(name + strlen(name) - 4, ".ccd") || !strcasecmp(name + strlen(name) - 4, ".chd") || !strcasecmp(name + strlen(name) - 4, ".toc") || !strcasecmp(name + strlen(name) - 4, ".m3u")))
       return(MDFNI_LoadCD(name));
 
    return NULL;
