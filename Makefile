@@ -2,6 +2,7 @@ DEBUG = 0
 FRONTEND_SUPPORTS_RGB565 = 1
 
 CORE_DIR := .
+HAVE_CHD = 1
 
 ifeq ($(platform),)
 platform = unix
