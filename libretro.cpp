@@ -727,9 +727,9 @@ static void DoMD5CDVoodoo(std::vector<CDIF *> *CDInterfaces)
     const char *hash_prefix = "Mednafen PC-FX Multi-Game Set";
     md5_context md5_gameset;
 
-    md5_starts(&md5_gameset);
+    mednafen_md5_starts(&md5_gameset);
 
-    md5_update(&md5_gameset, (uint8_t*)hash_prefix, strlen(hash_prefix));
+    mednafen_md5_update(&md5_gameset, (uint8_t*)hash_prefix, strlen(hash_prefix));
 
     for(unsigned int disc = 0; disc < found_entry->discs; disc++)
     {
@@ -737,26 +737,26 @@ static void DoMD5CDVoodoo(std::vector<CDIF *> *CDInterfaces)
 
      while(et->tracknum)
      {
-      md5_update_u32_as_lsb(&md5_gameset, et->tracknum);
-      md5_update_u32_as_lsb(&md5_gameset, (uint32)et->format);
-      md5_update_u32_as_lsb(&md5_gameset, et->lba);
+      mednafen_md5_update_u32_as_lsb(&md5_gameset, et->tracknum);
+      mednafen_md5_update_u32_as_lsb(&md5_gameset, (uint32)et->format);
+      mednafen_md5_update_u32_as_lsb(&md5_gameset, et->lba);
 
       if(et->tracknum == -1)
        break;
       et++;
      }
     }
-    md5_finish(&md5_gameset, MDFNGameInfo->GameSetMD5);
+    mednafen_md5_finish(&md5_gameset, MDFNGameInfo->GameSetMD5);
     MDFNGameInfo->GameSetMD5Valid = TRUE;
    }
    break;
   }
  } // end: for(unsigned if_disc = 0; if_disc < CDInterfaces->size(); if_disc++)
 
- MDFN_printf(_("CD Layout MD5:   0x%s\n"), md5_asciistr(MDFNGameInfo->MD5));
+ MDFN_printf(_("CD Layout MD5:   0x%s\n"), mednafen_md5_asciistr(MDFNGameInfo->MD5));
 
  if(MDFNGameInfo->GameSetMD5Valid)
-  MDFN_printf(_("GameSet MD5:     0x%s\n"), md5_asciistr(MDFNGameInfo->GameSetMD5));
+  MDFN_printf(_("GameSet MD5:     0x%s\n"), mednafen_md5_asciistr(MDFNGameInfo->GameSetMD5));
 }
 
 // PC-FX BIOS will look at all data tracks(not just the first one), in contrast to the PCE CD BIOS, which only looks
@@ -1362,7 +1362,7 @@ MDFNGI *MDFNI_LoadCD(const char *devicename)
  {
   md5_context layout_md5;
 
-  md5_starts(&layout_md5);
+  mednafen_md5_starts(&layout_md5);
 
   for(unsigned i = 0; i < CDInterfaces.size(); i++)
   {
@@ -1370,18 +1370,18 @@ MDFNGI *MDFNI_LoadCD(const char *devicename)
 
    CDInterfaces[i]->ReadTOC(&toc);
 
-   md5_update_u32_as_lsb(&layout_md5, toc.first_track);
-   md5_update_u32_as_lsb(&layout_md5, toc.last_track);
-   md5_update_u32_as_lsb(&layout_md5, toc.tracks[100].lba);
+   mednafen_md5_update_u32_as_lsb(&layout_md5, toc.first_track);
+   mednafen_md5_update_u32_as_lsb(&layout_md5, toc.last_track);
+   mednafen_md5_update_u32_as_lsb(&layout_md5, toc.tracks[100].lba);
 
    for(uint32 track = toc.first_track; track <= toc.last_track; track++)
    {
-    md5_update_u32_as_lsb(&layout_md5, toc.tracks[track].lba);
-    md5_update_u32_as_lsb(&layout_md5, toc.tracks[track].control & 0x4);
+    mednafen_md5_update_u32_as_lsb(&layout_md5, toc.tracks[track].lba);
+    mednafen_md5_update_u32_as_lsb(&layout_md5, toc.tracks[track].control & 0x4);
    }
   }
 
-  md5_finish(&layout_md5, LayoutMD5);
+  mednafen_md5_finish(&layout_md5, LayoutMD5);
  }
 
  MDFN_printf(_("Using module: pcfx\n\n"));
