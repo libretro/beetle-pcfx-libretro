@@ -12,7 +12,6 @@
 /*************************** HEADER FILES ***************************/
 #include <stdlib.h>
 #include <string.h>
-#include <memory.h>
 #include "sha1.h"
 
 /****************************** MACROS ******************************/
