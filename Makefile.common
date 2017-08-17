@@ -199,7 +199,7 @@ SOURCES_CXX += \
 SOURCES_C += \
 	$(MEDNAFEN_DIR)/file.c \
 	$(MEDNAFEN_DIR)/mednafen-endian.c \
-	$(MEDNAFEN_DIR)/md5.c \
+	$(MEDNAFEN_DIR)/mednafen_md5.c \
 	$(LIBRETRO_DIR)/file/retro_stat.c \
    $(LIBRETRO_DIR)/string/stdstring.c 
 endif
