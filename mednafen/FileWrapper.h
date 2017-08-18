@@ -1,6 +1,9 @@
 #ifndef __MDFN_FILEWRAPPER_H
 #define __MDFN_FILEWRAPPER_H
 
+#include <streams/file_stream.h>
+#include <file/file_path.h>
+
 // A stdio FILE wrapper(with some BSD and POSIXisms, and a little dash of Win32, thrown in for special behaviors)
 class FileWrapper
 {
@@ -41,7 +44,7 @@ class FileWrapper
  FileWrapper & operator=(const FileWrapper &);    // Assignment operator
  FileWrapper(const FileWrapper &);		// Copy constructor
 
- FILE *fp;
+ RFILE *fp;
  const int OpenedMode;
 };
 
