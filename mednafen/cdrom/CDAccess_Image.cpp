@@ -36,6 +36,7 @@
 #include <errno.h>
 #include <time.h>
 #include <memory>
+#include <algorithm>
 
 #include <retro_stat.h>
 
