@@ -1,5 +1,6 @@
 #include	<stdarg.h>
 #include <string/stdstring.h>
+#include <streams/file_stream.h>
 #include "mednafen/mednafen.h"
 #include "mednafen/mempatcher.h"
 #include "mednafen/git.h"
@@ -92,7 +93,7 @@ class PtrLengthPair
 
 static bool MDFN_DumpToFile(const char *filename, int compress, const std::vector<PtrLengthPair> &pearpairs)
 {
-   FILE *fp = fopen(filename, "wb");
+   RFILE *fp = filestream_open(filename, RFILE_MODE_READ, -1);
 
    if (!fp)
       return 0;
@@ -102,14 +103,14 @@ static bool MDFN_DumpToFile(const char *filename, int compress, const std::vecto
       const void *data = pearpairs[i].GetData();
       const uint64 length = pearpairs[i].GetLength();
 
-      if (fwrite(data, 1, length, fp) != length)
+      if (filestream_write(fp, data, length) != length)
       {
-         fclose(fp);
+         filestream_close(fp);
          return 0;
       }
    }
 
-   if (fclose(fp) == EOF)
+   if (filestream_close(fp) == EOF)
       return 0;
 
    return 1;
@@ -1611,6 +1612,8 @@ void update_geometry(unsigned width, unsigned height)
    struct retro_system_av_info system_av_info;
    system_av_info.geometry.base_width = width;
    system_av_info.geometry.base_height = height;
+   system_av_info.geometry.max_width = MEDNAFEN_CORE_GEOMETRY_MAX_W;
+   system_av_info.geometry.max_height = MEDNAFEN_CORE_GEOMETRY_MAX_H;
    system_av_info.geometry.aspect_ratio = MEDNAFEN_CORE_GEOMETRY_ASPECT_RATIO;
    environ_cb(RETRO_ENVIRONMENT_SET_GEOMETRY, &system_av_info);
 }

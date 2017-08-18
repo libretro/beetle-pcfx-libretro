@@ -4,6 +4,10 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#ifdef __LIBRETRO__
+#include <streams/file_stream_transforms.h>
+#endif
+
 #ifdef MSB_FIRST
 #ifndef le32toh
 #define le32toh(l)      ((((l)>>24) & 0xff) | (((l)>>8) & 0xff00) \

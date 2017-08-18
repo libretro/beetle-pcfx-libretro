@@ -29,21 +29,15 @@
 #include <unistd.h>
 #endif
 
-// Some really bad preprocessor abuse follows to handle platforms that don't have fseeko and ftello...and of course
-// for largefile support on Windows:
-
-#define fseeko fseek
-#define ftello ftell
-
 // For special uses, IE in classes that take a path or a FileWrapper & in the constructor, and the FileWrapper non-pointer member
 // is in the initialization list for the path constructor but not the constructor with FileWrapper&
 
 FileWrapper::FileWrapper(const char *path, const int mode, const char *purpose) : OpenedMode(mode)
 {
  if(mode == MODE_WRITE)
-  fp = fopen(path, "wb");
+  fp = filestream_open(path, RFILE_MODE_READ_WRITE, -1);
  else
-  fp = fopen(path, "rb");
+  fp = filestream_open(path, RFILE_MODE_READ, -1);
 
  if(!fp)
  {
@@ -63,29 +57,29 @@ void FileWrapper::close(void)
    if(!fp)
       return;
 
-   FILE *tmp = fp;
+   RFILE *tmp = fp;
    fp = NULL;
-   fclose(tmp);
+   filestream_close(tmp);
 }
 
 uint64 FileWrapper::read(void *data, uint64 count, bool error_on_eof)
 {
-   return fread(data, 1, count, fp);
+   return filestream_read(fp, data, count);
 }
 
 void FileWrapper::flush(void)
 {
-   fflush(fp);
+   filestream_flush(fp);
 }
 
 void FileWrapper::write(const void *data, uint64 count)
 {
-   fwrite(data, 1, count, fp);
+   filestream_write(fp, data, count);
 }
 
 void FileWrapper::put_char(int c)
 {
-   fputc(c, fp);
+   filestream_putc(fp, c);
 }
 
 void FileWrapper::put_string(const char *str)
@@ -102,25 +96,25 @@ void FileWrapper::put_string(const std::string &str)
 
 char *FileWrapper::get_line(char *buf_s, int buf_size)
 {
-   return ::fgets(buf_s, buf_size, fp);
+   return filestream_gets(fp, buf_s, buf_size);
 }
 
 
 void FileWrapper::seek(int64 offset, int whence)
 {
-   fseeko(fp, offset, whence);
+   filestream_seek(fp, offset, whence);
 }
 
 uint64_t FileWrapper::size(void)
 {
-   struct stat buf;
-
-   fstat(fileno(fp), &buf);
-
-   return(buf.st_size);
+   ssize_t curPos = filestream_tell(fp);
+   filestream_seek(fp, 0, SEEK_END);
+   ssize_t output = filestream_tell(fp);
+   filestream_seek(fp, curPos, SEEK_SET);
+   return(output);
 }
 
 uint64_t FileWrapper::tell(void)
 {
-   return ftello(fp);
+   return filestream_tell(fp);
 }

@@ -23,6 +23,7 @@
 #include <math.h>
 #include <assert.h>
 #include <limits.h>
+#include <algorithm>
 #include "OwlResampler.h"
 #include "../../libretro.h"
 

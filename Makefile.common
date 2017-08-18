@@ -200,6 +200,8 @@ SOURCES_C += \
 	$(MEDNAFEN_DIR)/file.c \
 	$(MEDNAFEN_DIR)/mednafen-endian.c \
 	$(MEDNAFEN_DIR)/mednafen_md5.c \
-	$(LIBRETRO_DIR)/file/retro_stat.c \
+	$(LIBRETRO_DIR)/file/file_path.c \
+	$(LIBRETRO_DIR)/streams/file_stream.c \
+	$(LIBRETRO_DIR)/streams/file_stream_transforms.c \
    $(LIBRETRO_DIR)/string/stdstring.c 
 endif
