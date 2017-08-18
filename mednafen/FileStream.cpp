@@ -17,7 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <sys/stat.h>
 #include "mednafen.h"
 #include "Stream.h"
 #include "FileStream.h"
@@ -25,43 +24,37 @@
 #include <stdarg.h>
 #include <string.h>
 
-#ifdef _WIN32
-#include <io.h>
-#else
-#include <unistd.h>
-#endif
-
-#define fseeko fseek
-#define ftello ftell
-
 FileStream::FileStream(const char *path, const int mode): OpenedMode(mode)
 {
- if(mode == MODE_WRITE)
-  fp = fopen(path, "wb");
- else
-  fp = fopen(path, "rb");
+   fp = filestream_open(path, (mode == MODE_WRITE || mode == MODE_WRITE_INPLACE) ? RFILE_MODE_WRITE : RFILE_MODE_READ, -1);
 
- if(!fp)
- {
-  ErrnoHolder ene(errno);
+   if (!fp)
+   {
+      ErrnoHolder ene(errno);
 
-  throw(MDFN_Error(ene.Errno(), _("Error opening file %s"), ene.StrError()));
- }
+      MDFN_Error(ene.Errno(), "Error opening file:\n%s\n%s", path, ene.StrError());
+   }
+
+   original_path = strdup(path);
 }
 
 FileStream::~FileStream()
 {
+   if (original_path)
+      free(original_path);
+   original_path = NULL;
 }
 
-uint64 FileStream::attributes(void)
+uint64_t FileStream::attributes(void)
 {
-   uint64 ret = ATTRIBUTE_SEEKABLE;
+   uint64_t ret = ATTRIBUTE_SEEKABLE;
 
    switch(OpenedMode)
    {
       case MODE_READ:
          ret |= ATTRIBUTE_READABLE;
          break;
+      case MODE_WRITE_INPLACE:
       case MODE_WRITE_SAFE:
       case MODE_WRITE:
          ret |= ATTRIBUTE_WRITEABLE;
@@ -71,33 +64,40 @@ uint64 FileStream::attributes(void)
    return ret;
 }
 
-uint64 FileStream::read(void *data, uint64 count, bool error_on_eos)
+uint64_t FileStream::read(void *data, uint64_t count, bool error_on_eos)
 {
-   return fread(data, 1, count, fp);
+   if (!fp)
+      return 0;
+   return filestream_read(fp, data, count);
 }
 
-void FileStream::write(const void *data, uint64 count)
+void FileStream::write(const void *data, uint64_t count)
 {
-   fwrite(data, 1, count, fp);
+   if (!fp)
+      return;
+   filestream_write(fp, data, count);
 }
 
-void FileStream::seek(int64 offset, int whence)
+void FileStream::seek(int64_t offset, int whence)
 {
-   fseeko(fp, offset, whence);
+   if (!fp)
+      return;
+   filestream_seek(fp, offset, whence);
 }
 
 uint64_t FileStream::tell(void)
 {
-   return ftello(fp);
+   if (!fp)
+      return -1;
+   return filestream_tell(fp);
 }
 
 uint64_t FileStream::size(void)
 {
-   struct stat buf;
+   if (!original_path)
+      return -1;
 
-   fstat(fileno(fp), &buf);
-
-   return(buf.st_size);
+   return path_get_size(original_path);
 }
 
 void FileStream::truncate(uint64_t length)
@@ -110,10 +110,7 @@ void FileStream::flush(void)
 
 void FileStream::close(void)
 {
-   if(!fp)
+   if (!fp)
       return;
-
-   FILE *tmp = fp;
-   fp = NULL;
-   fclose(tmp);
+   filestream_close(fp);
 }
