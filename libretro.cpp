@@ -1241,7 +1241,9 @@ static void check_variables(void)
 
 #define MAX_PLAYERS 2
 #define MAX_BUTTONS 15
+static uint32_t input_type[MAX_PLAYERS];
 static uint16_t input_buf[MAX_PLAYERS];
+static uint32_t mousedata[MAX_PLAYERS][3];
 
 static bool ReadM3U(std::vector<std::string> &file_list, std::string path, unsigned depth = 0)
 {
@@ -1577,19 +1579,37 @@ static void update_input(void)
 
    for (unsigned j = 0; j < MAX_PLAYERS; j++)
    {
-      for (unsigned i = 0; i < MAX_BUTTONS; i++)
-         input_buf[j] |= map[i] != -1u &&
-            input_state_cb(j, RETRO_DEVICE_JOYPAD, 0, map[i]) ? (1 << i) : 0;
+      switch (input_type[j])
+      {
+         case RETRO_DEVICE_JOYPAD:
+            for (unsigned i = 0; i < MAX_BUTTONS; i++)
+               input_buf[j] |= map[i] != -1u &&
+                  input_state_cb(j, RETRO_DEVICE_JOYPAD, 0, map[i]) ? (1 << i) : 0;
 
 #ifdef MSB_FIRST
-      union {
-         uint8_t b[2];
-         uint16_t s;
-      } u;
-      u.s = input_buf[j];
-      input_buf[j] = u.b[0] | u.b[1] << 8;
+            union {
+               uint8_t b[2];
+               uint16_t s;
+            } u;
+            u.s = input_buf[j];
+            input_buf[j] = u.b[0] | u.b[1] << 8;
 #endif
+            break;
+         case RETRO_DEVICE_MOUSE:
+            mousedata[j][2] = 0;
 
+            int _x = input_state_cb(j, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_X);
+            int _y = input_state_cb(j, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_Y);
+
+            mousedata[j][0] = _x;
+            mousedata[j][1] = _y;
+
+            if (input_state_cb(j, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_LEFT))
+               mousedata[j][2] = (1 << 0);
+            if (input_state_cb(j, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_RIGHT))
+               mousedata[j][2] = (1 << 1);
+            break;
+      }
    }
 }
 
@@ -1757,10 +1777,14 @@ void retro_set_controller_port_device(unsigned in_port, unsigned device)
       switch(device)
       {
          case RETRO_DEVICE_JOYPAD:
+            input_type[in_port] = RETRO_DEVICE_JOYPAD;
             FXINPUT_SetInput(in_port, "gamepad", &input_buf[in_port]);
+            log_cb(RETRO_LOG_INFO," Port %d: gamepad\n", in_port +1);
             break;
          case RETRO_DEVICE_MOUSE:
-            FXINPUT_SetInput(in_port, "mouse", &input_buf[in_port]);
+            input_type[in_port] = RETRO_DEVICE_MOUSE;
+            FXINPUT_SetInput(in_port, "mouse", &mousedata[in_port]);
+            log_cb(RETRO_LOG_INFO," Port %d: mouse\n", in_port +1);
             break;
       }
    }
@@ -1784,7 +1808,7 @@ void retro_set_environment(retro_environment_t cb)
 
    static const struct retro_controller_description pads[] = {
       { "PCFX Joypad", RETRO_DEVICE_JOYPAD },
-      { "Mouse", RETRO_DEVICE_MOUSE },
+      { "PCFX Mouse", RETRO_DEVICE_MOUSE },
    };
 
    static const struct retro_controller_info ports[] = {
