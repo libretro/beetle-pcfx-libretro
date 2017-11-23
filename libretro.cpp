@@ -53,9 +53,6 @@ static MDFN_Surface *surf;
 
 static bool failed_init;
 
-static void hookup_ports(bool force);
-
-static bool initial_ports_hookup = false;
 
 std::string retro_base_directory;
 std::string retro_base_name;
@@ -1246,16 +1243,6 @@ static void check_variables(void)
 #define MAX_BUTTONS 15
 static uint16_t input_buf[MAX_PLAYERS];
 
-static void hookup_ports(bool force)
-{
-   if (initial_ports_hookup && !force)
-      return;
-
-   FXINPUT_SetInput(0, "gamepad", &input_buf[0]);
-
-   initial_ports_hookup = true;
-}
-
 static bool ReadM3U(std::vector<std::string> &file_list, std::string path, unsigned depth = 0)
 {
    char linebuf[2048];
@@ -1553,7 +1540,8 @@ bool retro_load_game(const struct retro_game_info *info)
 	deint.ClearState();
 #endif
 
-   hookup_ports(true);
+   for (unsigned i = 0; i < MAX_PLAYERS; i++)
+      FXINPUT_SetInput(i, "gamepad", &input_buf[i]);
 
    return game;
 }
