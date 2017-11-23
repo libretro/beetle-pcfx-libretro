@@ -1752,14 +1752,17 @@ unsigned retro_api_version(void)
 
 void retro_set_controller_port_device(unsigned in_port, unsigned device)
 {
-   switch(device)
+   if (in_port < MAX_PLAYERS)
    {
-      case RETRO_DEVICE_JOYPAD:
-         FXINPUT_SetInput(in_port, "gamepad", &input_buf[in_port]);
-         break;
-      case RETRO_DEVICE_MOUSE:
-         FXINPUT_SetInput(in_port, "mouse", &input_buf[in_port]);
-         break;
+      switch(device)
+      {
+         case RETRO_DEVICE_JOYPAD:
+            FXINPUT_SetInput(in_port, "gamepad", &input_buf[in_port]);
+            break;
+         case RETRO_DEVICE_MOUSE:
+            FXINPUT_SetInput(in_port, "mouse", &input_buf[in_port]);
+            break;
+      }
    }
 }
 
