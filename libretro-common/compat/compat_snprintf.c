@@ -1,7 +1,7 @@
-/* Copyright  (C) 2010-2015 The RetroArch team
+/* Copyright  (C) 2010-2017 The RetroArch team
  *
  * ---------------------------------------------------------------------------------------
- * The following license statement only applies to this file (async_job.h).
+ * The following license statement only applies to this file (compat_snprintf.c).
  * ---------------------------------------------------------------------------------------
  *
  * Permission is hereby granted, free of charge,
@@ -20,16 +20,51 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef __LIBRETRO_SDK_ASYNC_JOB_H
-#define __LIBRETRO_SDK_ASYNC_JOB_H
+/* THIS FILE HAS NOT BEEN VALIDATED ON PLATFORMS BESIDES MSVC */
+#ifdef _MSC_VER
 
-typedef struct async_job async_job_t;
-typedef void (*async_task_t)(void *payload);
+#include <retro_common.h>
 
-async_job_t *async_job_new(void);
+#include <stdio.h>
+#include <stdarg.h>
 
-void async_job_free(async_job_t *ajob);
+/* http://stackoverflow.com/questions/2915672/snprintf-and-visual-studio-2010 */
 
-int async_job_add(async_job_t *ajob, async_task_t task, void *payload);
+int c99_vsnprintf_retro__(char *outBuf, size_t size, const char *format, va_list ap)
+{
+   int count = -1;
 
-#endif /* __LIBRETRO_SDK_ASYNC_JOB_H */
+   if (size != 0)
+#if (_MSC_VER <= 1310)
+       count = _vsnprintf(outBuf, size, format, ap);
+#else
+       count = _vsnprintf_s(outBuf, size, _TRUNCATE, format, ap);
+#endif
+   if (count == -1)
+       count = _vscprintf(format, ap);
+
+   return count;
+}
+
+int c99_snprintf_retro__(char *outBuf, size_t size, const char *format, ...)
+{
+   int count;
+   va_list ap;
+
+   va_start(ap, format);
+   count = c99_vsnprintf_retro__(outBuf, size, format, ap);
+   va_end(ap);
+
+   return count;
+}
+
+int c89_vscprintf_retro__(const char *format, va_list pargs)
+{
+   int retval;
+   va_list argcopy;
+   va_copy(argcopy, pargs);
+   retval = vsnprintf(NULL, 0, format, argcopy);
+   va_end(argcopy);
+   return retval;
+}
+#endif

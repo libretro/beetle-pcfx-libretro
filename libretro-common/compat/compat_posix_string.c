@@ -1,7 +1,7 @@
 /* Copyright  (C) 2010-2017 The RetroArch team
  *
  * ---------------------------------------------------------------------------------------
- * The following license statement only applies to this file (compat_strl.c).
+ * The following license statement only applies to this file (compat_posix_string.c).
  * ---------------------------------------------------------------------------------------
  *
  * Permission is hereby granted, free of charge,
@@ -20,51 +20,85 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <stdlib.h>
 #include <ctype.h>
 
-#include <compat/strl.h>
 #include <compat/posix_string.h>
 
-/* Implementation of strlcpy()/strlcat() based on OpenBSD. */
+#ifdef _WIN32
 
-#ifndef __MACH__
+#undef strcasecmp
+#undef strdup
+#undef isblank
+#undef strtok_r
+#include <ctype.h>
+#include <stdlib.h>
+#include <stddef.h>
+#include <compat/strl.h>
 
-size_t strlcpy(char *dest, const char *source, size_t size)
+#include <string.h>
+
+int retro_strcasecmp__(const char *a, const char *b)
 {
-   size_t src_size = 0;
-   size_t        n = size;
-
-   if (n)
-      while (--n && (*dest++ = *source++)) src_size++;
-
-   if (!n)
+   while (*a && *b)
    {
-      if (size) *dest = '\0';
-      while (*source++) src_size++;
+      int a_ = tolower(*a);
+      int b_ = tolower(*b);
+
+      if (a_ != b_)
+         return a_ - b_;
+
+      a++;
+      b++;
    }
 
-   return src_size;
+   return tolower(*a) - tolower(*b);
 }
 
-size_t strlcat(char *dest, const char *source, size_t size)
+char *retro_strdup__(const char *orig)
 {
-   size_t len = strlen(dest);
+   size_t len = strlen(orig) + 1;
+   char *ret  = (char*)malloc(len);
+   if (!ret)
+      return NULL;
 
-   dest += len;
-
-   if (len > size)
-      size = 0;
-   else
-      size -= len;
-
-   return len + strlcpy(dest, source, size);
+   strlcpy(ret, orig, len);
+   return ret;
 }
+
+int retro_isblank__(int c)
+{
+   return (c == ' ') || (c == '\t');
+}
+
+char *retro_strtok_r__(char *str, const char *delim, char **saveptr)
+{
+   char *first = NULL;
+   if (!saveptr || !delim)
+      return NULL;
+
+   if (str)
+      *saveptr = str;
+
+   do
+   {
+      char *ptr = NULL;
+      first = *saveptr;
+      while (*first && strchr(delim, *first))
+         *first++ = '\0';
+
+      if (*first == '\0')
+         return NULL;
+
+      ptr = first + 1;
+
+      while (*ptr && !strchr(delim, *ptr))
+         ptr++;
+
+      *saveptr = ptr + (*ptr ? 1 : 0);
+      *ptr     = '\0';
+   } while (strlen(first) == 0);
+
+   return first;
+}
+
 #endif
-
-char *strldup(const char *s, size_t n)
-{
-   char *dst = (char*)malloc(sizeof(char) * (n + 1));
-   strlcpy(dst, s, n);
-   return dst;
-}

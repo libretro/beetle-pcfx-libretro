@@ -1,5 +1,6 @@
 #include	<stdarg.h>
 #include <string/stdstring.h>
+#include <retro_timers.h>
 #include <streams/file_stream.h>
 #include "mednafen/mednafen.h"
 #include "mednafen/mempatcher.h"
@@ -32,6 +33,10 @@
 #include <errno.h>
 #include <string.h>
 #include <math.h>
+
+#ifdef _MSC_VER
+#include <compat/msvc.h>
+#endif
 
 static MDFNGI *game;
 
@@ -88,9 +93,11 @@ class PtrLengthPair
       uint64 length;
 };
 
-static bool MDFN_DumpToFile(const char *filename, int compress, const std::vector<PtrLengthPair> &pearpairs)
+static bool MDFN_DumpToFile(const char *filename, int compress,
+      const std::vector<PtrLengthPair> &pearpairs)
 {
-   RFILE *fp = filestream_open(filename, RFILE_MODE_READ, -1);
+   RFILE *fp = filestream_open(filename, RETRO_VFS_FILE_ACCESS_READ, 
+         RETRO_VFS_FILE_ACCESS_HINT_NONE);
 
    if (!fp)
       return 0;
@@ -925,7 +932,7 @@ int StateAction(StateMem *sm, int load, int data_only)
   SFEND
  };
 
- int ret = MDFNSS_StateAction(sm, load, data_only, StateRegs, "MAIN");
+ int ret = MDFNSS_StateAction(sm, load, data_only, StateRegs, "MAIN", false);
 
  for(int i = 0; i < 2; i++)
   ret &= fx_vdc_chips[i]->StateAction(sm, load, data_only, i ? "VDC1" : "VDC0");
@@ -1258,7 +1265,7 @@ static void check_variables(void)
 #define MAX_BUTTONS 15
 static uint32_t input_type[MAX_PLAYERS] = {0};
 static uint16_t input_buf[MAX_PLAYERS] = {0};
-static uint32_t mousedata[MAX_PLAYERS][3] = {{0}};
+static int32_t  mousedata[MAX_PLAYERS][3] = {{0}, {0}};
 
 static bool ReadM3U(std::vector<std::string> &file_list, std::string path, unsigned depth = 0)
 {
@@ -1616,8 +1623,8 @@ static void update_input(void)
             int _x = input_state_cb(j, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_X);
             int _y = input_state_cb(j, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_Y);
 
-            mousedata[j][0] = _x * mouse_sensitivity;
-            mousedata[j][1] = _y * mouse_sensitivity;
+            mousedata[j][0] = (int)roundf(_x * mouse_sensitivity);
+            mousedata[j][1] = (int)roundf(_y * mouse_sensitivity);
 
             if (input_state_cb(j, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_LEFT))
                mousedata[j][2] |= (1 << 0);
@@ -1807,6 +1814,7 @@ void retro_set_controller_port_device(unsigned in_port, unsigned device)
 
 void retro_set_environment(retro_environment_t cb)
 {
+   struct retro_vfs_interface_info vfs_iface_info;
    environ_cb = cb;
 
    static const struct retro_variable vars[] = {
@@ -1835,6 +1843,11 @@ void retro_set_environment(retro_environment_t cb)
 
    cb(RETRO_ENVIRONMENT_SET_VARIABLES, (void*)vars);
    environ_cb(RETRO_ENVIRONMENT_SET_CONTROLLER_INFO, (void*)ports);
+
+   vfs_iface_info.required_interface_version = 1;
+   vfs_iface_info.iface                      = NULL;
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VFS_INTERFACE, &vfs_iface_info))
+	   filestream_vfs_init(&vfs_iface_info);
 }
 
 void retro_set_audio_sample(retro_audio_sample_t cb)
@@ -1867,14 +1880,15 @@ static size_t serialize_size;
 size_t retro_serialize_size(void)
 {
    StateMem st;
-   memset(&st, 0, sizeof(st));
+
+   st.data           = NULL;
+   st.loc            = 0;
+   st.len            = 0;
+   st.malloced       = 0;
+   st.initial_malloc = 0;
 
    if (!MDFNSS_SaveSM(&st, 0, 0, NULL, NULL, NULL))
-   {
-      if (log_cb)
-         log_cb(RETRO_LOG_WARN, "[mednafen]: Module pcfx doesn't support save states.\n");
       return 0;
-   }
 
    free(st.data);
    return serialize_size = st.len;
@@ -1883,19 +1897,34 @@ size_t retro_serialize_size(void)
 bool retro_serialize(void *data, size_t size)
 {
    StateMem st;
-   memset(&st, 0, sizeof(st));
-   st.data     = (uint8_t*)data;
-   st.malloced = size;
+   bool ret          = false;
+   uint8_t *_dat     = (uint8_t*)malloc(size);
 
-   return MDFNSS_SaveSM(&st, 0, 0, NULL, NULL, NULL);
+   if (!_dat)
+      return false;
+
+   st.data           = _dat;
+   st.loc            = 0;
+   st.len            = 0;
+   st.malloced       = size;
+   st.initial_malloc = 0;
+
+   ret = MDFNSS_SaveSM(&st, 0, 0, NULL, NULL, NULL);
+
+   memcpy(data,st.data,size);
+   free(st.data);
+   return ret;
 }
 
 bool retro_unserialize(const void *data, size_t size)
 {
    StateMem st;
-   memset(&st, 0, sizeof(st));
-   st.data = (uint8_t*)data;
-   st.len  = size;
+
+   st.data           = (uint8_t*)data;
+   st.loc            = 0;
+   st.len            = size;
+   st.malloced       = 0;
+   st.initial_malloc = 0;
 
    return MDFNSS_LoadSM(&st, 0, 0);
 }
@@ -1994,15 +2023,11 @@ void MDFND_WaitThread(MDFN_Thread *thr, int *val)
    sthread_join((sthread_t*)thr);
 
    if (val)
-   {
       *val = 0;
-      fprintf(stderr, "WaitThread relies on return value.\n");
-   }
 }
 
 void MDFND_KillThread(MDFN_Thread *)
 {
-   fprintf(stderr, "Killing a thread is a BAD IDEA!\n");
 }
 
 MDFN_Mutex *MDFND_CreateMutex()
@@ -2165,30 +2190,27 @@ void MDFN_printf(const char *format, ...)
 
 void MDFN_PrintError(const char *format, ...)
 {
- char *temp;
+   char *temp;
+   va_list ap;
 
- va_list ap;
+   va_start(ap, format);
+   temp = new char[4096];
+   vsnprintf(temp, 4096, format, ap);
+   MDFND_PrintError(temp);
+   free(temp);
 
- va_start(ap, format);
- temp = new char[4096];
- vsnprintf(temp, 4096, format, ap);
- MDFND_PrintError(temp);
- free(temp);
-
- va_end(ap);
+   va_end(ap);
 }
 
 void MDFN_DebugPrintReal(const char *file, const int line, const char *format, ...)
 {
- char *temp;
+   char *temp;
+   va_list ap;
 
- va_list ap;
+   va_start(ap, format);
+   temp = new char[4096];
+   vsnprintf(temp, 4096, format, ap);
+   free(temp);
 
- va_start(ap, format);
- temp = new char[4096];
- vsnprintf(temp, 4096, format, ap);
- fprintf(stderr, "%s:%d  %s\n", file, line, temp);
- free(temp);
-
- va_end(ap);
+   va_end(ap);
 }

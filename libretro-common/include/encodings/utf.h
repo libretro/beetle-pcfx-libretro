@@ -1,7 +1,7 @@
 /* Copyright  (C) 2010-2017 The RetroArch team
  *
  * ---------------------------------------------------------------------------------------
- * The following license statement only applies to this file (xenon_sdl_threads.c).
+ * The following license statement only applies to this file (utf.h).
  * ---------------------------------------------------------------------------------------
  *
  * Permission is hereby granted, free of charge,
@@ -20,40 +20,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/* libSDLxenon doesn't implement this yet :[. Implement it very stupidly for now. ;) */
+#ifndef _LIBRETRO_ENCODINGS_UTF_H
+#define _LIBRETRO_ENCODINGS_UTF_H
 
-#include "SDL_thread.h"
-#include "SDL_mutex.h"
-#include <stdlib.h>
+#include <stdint.h>
+#include <stddef.h>
+
 #include <boolean.h>
 
-SDL_cond *SDL_CreateCond(void)
+#include <retro_common_api.h>
+
+RETRO_BEGIN_DECLS
+
+enum CodePage
 {
-   bool *sleeping = calloc(1, sizeof(*sleeping));
-   return (SDL_cond*)sleeping;
-}
+   CODEPAGE_LOCAL = 0, /* CP_ACP */
+   CODEPAGE_UTF8 = 65001 /* CP_UTF8 */
+};
 
-void SDL_DestroyCond(SDL_cond *sleeping)
-{
-   free(sleeping);
-}
+size_t utf8_conv_utf32(uint32_t *out, size_t out_chars,
+      const char *in, size_t in_size);
 
-int SDL_CondWait(SDL_cond *cond, SDL_mutex *lock)
-{
-   (void)lock;
-   volatile bool *sleeping = (volatile bool*)cond;
+bool utf16_conv_utf8(uint8_t *out, size_t *out_chars,
+      const uint16_t *in, size_t in_size);
 
-   SDL_mutexV(lock);
-   *sleeping = true;
-   while (*sleeping); /* Yeah, we all love busyloops don't we? ._. */
-   SDL_mutexP(lock);
+size_t utf8len(const char *string);
 
-   return 0;
-}
+size_t utf8cpy(char *d, size_t d_len, const char *s, size_t chars);
 
-int SDL_CondSignal(SDL_cond *cond)
-{
-   *(volatile bool*)cond = false;
-   return 0;
-}
+const char *utf8skip(const char *str, size_t chars);
 
+uint32_t utf8_walk(const char **string);
+
+bool utf16_to_char_string(const uint16_t *in, char *s, size_t len);
+
+char* utf8_to_local_string_alloc(const char *str);
+
+char* local_to_utf8_string_alloc(const char *str);
+
+wchar_t* utf8_to_utf16_string_alloc(const char *str);
+
+char* utf16_to_utf8_string_alloc(const wchar_t *str);
+
+RETRO_END_DECLS
+
+#endif

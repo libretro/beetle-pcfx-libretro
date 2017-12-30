@@ -1,7 +1,7 @@
-/* Copyright  (C) 2010-2015 The RetroArch team
+/* Copyright  (C) 2010-2017 The RetroArch team
  *
  * ---------------------------------------------------------------------------------------
- * The following license statement only applies to this file (rsemaphore.h).
+ * The following license statement only applies to this file (retro_dirent.h).
  * ---------------------------------------------------------------------------------------
  *
  * Permission is hereby granted, free of charge,
@@ -20,35 +20,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef __LIBRETRO_SDK_SEMAPHORE_H
-#define __LIBRETRO_SDK_SEMAPHORE_H
+#ifndef __RETRO_DIRENT_H
+#define __RETRO_DIRENT_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <retro_common_api.h>
+#include <retro_miscellaneous.h>
 
-typedef struct ssem ssem_t;
+#include <boolean.h>
+
+RETRO_BEGIN_DECLS
+
+typedef struct RDIR RDIR;
+
+struct RDIR *retro_opendir(const char *name);
+
+int retro_readdir(struct RDIR *rdir);
+
+bool retro_dirent_error(struct RDIR *rdir);
+
+void retro_dirent_include_hidden(struct RDIR *rdir, bool include_hidden);
+
+const char *retro_dirent_get_name(struct RDIR *rdir);
 
 /**
- * ssem_create:
- * @value                   : initial value for the semaphore
  *
- * Create a new semaphore.
+ * retro_dirent_is_dir:
+ * @rdir         : pointer to the directory entry.
  *
- * Returns: pointer to new semaphore if successful, otherwise NULL.
+ * Is the directory listing entry a directory?
+ *
+ * Returns: true if directory listing entry is
+ * a directory, false if not.
  */
-ssem_t *ssem_new(int value);
+bool retro_dirent_is_dir(struct RDIR *rdir, const char *path);
 
-void ssem_free(ssem_t *semaphore);
+void retro_closedir(struct RDIR *rdir);
 
-int ssem_get(ssem_t *semaphore);
+RETRO_END_DECLS
 
-void ssem_wait(ssem_t *semaphore);
-
-void ssem_signal(ssem_t *semaphore);
-
-#ifdef __cplusplus
-}
 #endif
-
-#endif /* __LIBRETRO_SDK_SEMAPHORE_H */

@@ -17,16 +17,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <stdarg.h>
+#include <string.h>
+
+
 #include "mednafen.h"
 #include "Stream.h"
 #include "FileStream.h"
 
-#include <stdarg.h>
-#include <string.h>
-
-FileStream::FileStream(const char *path, const int mode): OpenedMode(mode)
+FileStream::FileStream(const char *path, const int mode)
 {
-   fp = filestream_open(path, (mode == MODE_WRITE || mode == MODE_WRITE_INPLACE) ? RFILE_MODE_WRITE : RFILE_MODE_READ, -1);
+   fp = filestream_open(path, (mode == MODE_WRITE || mode == MODE_WRITE_INPLACE) ? RETRO_VFS_FILE_ACCESS_WRITE : RETRO_VFS_FILE_ACCESS_READ, RETRO_VFS_FILE_ACCESS_HINT_NONE);
 
    if (!fp)
    {
@@ -34,34 +35,10 @@ FileStream::FileStream(const char *path, const int mode): OpenedMode(mode)
 
       MDFN_Error(ene.Errno(), "Error opening file:\n%s\n%s", path, ene.StrError());
    }
-
-   original_path = strdup(path);
 }
 
 FileStream::~FileStream()
 {
-   if (original_path)
-      free(original_path);
-   original_path = NULL;
-}
-
-uint64_t FileStream::attributes(void)
-{
-   uint64_t ret = ATTRIBUTE_SEEKABLE;
-
-   switch(OpenedMode)
-   {
-      case MODE_READ:
-         ret |= ATTRIBUTE_READABLE;
-         break;
-      case MODE_WRITE_INPLACE:
-      case MODE_WRITE_SAFE:
-      case MODE_WRITE:
-         ret |= ATTRIBUTE_WRITEABLE;
-         break;
-   }
-
-   return ret;
 }
 
 uint64_t FileStream::read(void *data, uint64_t count, bool error_on_eos)
@@ -94,10 +71,9 @@ uint64_t FileStream::tell(void)
 
 uint64_t FileStream::size(void)
 {
-   if (!original_path)
+   if (!fp)
       return -1;
-
-   return path_get_size(original_path);
+   return filestream_get_size(fp);
 }
 
 void FileStream::truncate(uint64_t length)

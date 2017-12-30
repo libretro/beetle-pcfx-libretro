@@ -303,7 +303,7 @@ int CDIF_MT::ReadThreadStart()
                      int how_far_ahead = ra_lba - new_lba;
 
                      if(how_far_ahead <= max_ra)
-                        ra_count = std::min(speedmult_ra, 1 + max_ra - how_far_ahead);
+                        ra_count = MIN(speedmult_ra, 1 + max_ra - how_far_ahead);
                      else
                         ra_count++;
                   }
@@ -630,8 +630,6 @@ class CDIF_Stream_Thing : public Stream
       CDIF_Stream_Thing(CDIF *cdintf_arg, uint32_t lba_arg, uint32_t sector_count_arg);
       ~CDIF_Stream_Thing();
 
-      virtual uint64_t attributes(void);
-
       virtual uint64_t read(void *data, uint64_t count, bool error_on_eos = true);
       virtual void write(const void *data, uint64_t count);
       virtual void truncate(uint64_t length);
@@ -657,11 +655,6 @@ CDIF_Stream_Thing::CDIF_Stream_Thing(CDIF *cdintf_arg, uint32_t start_lba_arg, u
 CDIF_Stream_Thing::~CDIF_Stream_Thing()
 {
 
-}
-
-uint64_t CDIF_Stream_Thing::attributes(void)
-{
-   return(ATTRIBUTE_READABLE | ATTRIBUTE_SEEKABLE);
 }
 
 uint64_t CDIF_Stream_Thing::read(void *data, uint64_t count, bool error_on_eos)

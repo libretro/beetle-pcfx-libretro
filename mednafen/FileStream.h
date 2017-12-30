@@ -21,7 +21,6 @@
 #define __MDFN_FILESTREAM_H
 
 #include <streams/file_stream.h>
-#include <file/file_path.h>
 
 #include "Stream.h"
 
@@ -30,8 +29,6 @@ class FileStream : public Stream
    public:
       FileStream(const char *path, const int mode);
       virtual ~FileStream();
-
-      virtual uint64_t attributes(void);
 
       virtual uint64_t read(void *data, uint64_t count, bool error_on_eos = true);
       virtual void write(const void *data, uint64_t count);
@@ -44,8 +41,6 @@ class FileStream : public Stream
 
    private:
       RFILE *fp;
-      char *original_path;
-      const int OpenedMode;
 };
 
 
