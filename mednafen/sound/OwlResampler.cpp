@@ -100,13 +100,13 @@ static int32 ProcessLoop(unsigned count, int32 a, int32* b, int32* exmix0 = NULL
 
   if(Lowpass)
   {
-   lp_f += (((int64)tmp << 16) - lp_f) >> lp_shift;
+   lp_f += ((int64)((uint64)(int64)tmp << 16) - lp_f) >> lp_shift;
    tmp = lp_f >> 16;
   }
 
   if(Highpass)
   {
-   hp_f += (((int64)tmp << 16) - hp_f) >> hp_shift;
+   hp_f += ((int64)((uint64)(int64)tmp << 16) - hp_f) >> hp_shift;
    tmp = tmp - (hp_f >> 16);
   }
 
@@ -821,6 +821,7 @@ OwlResampler::OwlResampler(double input_rate, double output_rate, double rate_er
  //
  cutoff = std::min<double>(QualityTable[quality].obw * something / input_rate, (std::min<double>(input_rate, output_rate) / input_rate - ((double)k_d / NumCoeffs)));
 
+
  MDFN_printf("Adjusted number of coefficients per phase: %u\n", NumCoeffs);
  MDFN_printf("Adjusted nominal cutoff frequency: %f\n", InputRate * cutoff / 2);
 
@@ -854,8 +855,8 @@ OwlResampler::OwlResampler(double input_rate, double output_rate, double rate_er
 
  for(unsigned int phase = 0; phase < NumPhases; phase++)
  {
-  double sum_d = 0;
-  float sum_f4[4] = { 0, 0, 0, 0 };
+  //double sum_d = 0;
+  //float sum_f4[4] = { 0, 0, 0, 0 };
 
   const unsigned sp = (NumPhases - 1 - (((uint64)phase * Ratio_Dividend) % NumPhases));
   const unsigned tp = phase;
@@ -865,8 +866,8 @@ OwlResampler::OwlResampler(double input_rate, double output_rate, double rate_er
    double tmpcod = FilterBuf[i * NumPhases + sp] * NumPhases;	// Tasty cod.
 
    FIR_Coeffs[tp][i].f = FilterDenormal(tmpcod);
-   sum_d += FIR_Coeffs[tp][i].f;
-   sum_f4[i % 4] += FIR_Coeffs[tp][i].f;
+   //sum_d += FIR_Coeffs[tp][i].f;
+   //sum_f4[i % 4] += FIR_Coeffs[tp][i].f;
   }
 
 #if 0

@@ -21,13 +21,13 @@
 #include "cdromif.h"
 #include "SimpleFIFO.h"
 
+#include "mednafen/mednafen.h"
+#include "mednafen/mednafen-endian.h"
+
 #if defined(__SSE2__)
 #include <xmmintrin.h>
 #include <emmintrin.h>
 #endif
-
-#include "../mednafen.h"
-#include "../mednafen-endian.h"
 
 static uint32_t CD_DATA_TRANSFER_RATE;
 static uint32_t System_Clock;
@@ -2633,7 +2633,12 @@ static INLINE void RunCDDA(uint32_t system_timestamp, int32_t run_time)
       sum = _mm_add_epi32(_mm_madd_epi16(f0, b0), _mm_madd_epi16(f1, b1));
       sum = _mm_add_epi32(sum, _mm_shuffle_epi32(sum, (3 << 0) | (2 << 2) | (1 << 4) | (0 << 6)));
       sum = _mm_add_epi32(sum, _mm_shuffle_epi32(sum, (1 << 0) | (0 << 2) | (3 << 4) | (2 << 6)));
+
+#ifdef _MSC_VER
+      _mm_store_ss(&accum_f, _mm_castsi128_ps(sum));
+#else
       _mm_store_ss(&accum_f, (__m128)sum);
+#endif
       //_mm_store_si128(&accum_m128, sum);
      }
 #else

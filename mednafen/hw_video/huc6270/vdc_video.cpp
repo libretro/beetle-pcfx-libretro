@@ -419,13 +419,13 @@ void VDC::IncRCR(void)
 		    {
 		     if(sat_dma_counter > 0)
 		     {
-		      printf("SAT DMA cancelled???\n");
+		      //printf("SAT DMA cancelled???\n");
 		      sat_dma_counter = 0;
 		      CheckAndCommitPending();
 		     }
 		     if(DMARunning)
 		     {
-		      printf("DMA Running Cancelled\n");
+		      //printf("DMA Running Cancelled\n");
 		      DMARunning = false;
 		      CheckAndCommitPending();
 		     }
@@ -656,6 +656,8 @@ int32 VDC::Run(int32 clocks, uint16 *pixels, bool skip)
          memcpy(SAT, &VRAM[DVSSR], len * sizeof(uint16));
         }
     }
+    else
+     burst_mode = true;
    }
   }
 
@@ -1870,6 +1872,23 @@ int VDC::StateAction(StateMem *sm, int load, int data_only, const char *sname)
 
   if(load)
   {
+   HSW_cache &= 0x1F;
+   HDS_cache &= 0x7F;
+   HDW_cache &= 0x7F;
+   HDE_cache &= 0x7F;
+
+   VSW_cache &= 0x1F;
+   VDS_cache &= 0xFF;
+   VDW_cache &= 0x1FF;
+   VCR_cache &= 0xFF;
+
+   if(HPhaseCounter < 1)
+    HPhaseCounter = 1;
+   else if(HPhaseCounter > (0x7F + 1) * 8)
+    HPhaseCounter = (0x7F + 1) * 8;
+
+   VDMA_CycleCounter &= 0x1;
+   //
    StateExtra(sl_packer, true);
 
    for(int x = 0; x < VRAM_Size; x++)

@@ -1105,8 +1105,10 @@ bool V810::bstr_subop(v810_timestamp_t &timestamp, int sub_op, int arg1)
  else
  {
   printf("BSTR Search: %02x\n", sub_op);
+  return(Do_BSTR_Search(timestamp, ((sub_op & 1) ? -1 : 1), (sub_op & 0x2) >> 1));
  }
- return(Do_BSTR_Search(timestamp, ((sub_op & 1) ? -1 : 1), (sub_op & 0x2) >> 1));
+ assert(0);
+ return(FALSE);
 }
 
 INLINE void V810::SetFPUOPNonFPUFlags(uint32 result)
@@ -1199,6 +1201,7 @@ void V810::FPU_DoException(void)
   S_REG[PSW] |= PSW_FPR;
  }
 
+ //
  // FPR can be set along with overflow, so put the overflow exception handling at the end here(for Exception() messes with PSW).
  //
  if(float_exception_flags & V810_FP_Ops::flag_overflow)

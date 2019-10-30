@@ -31,7 +31,7 @@ void PCE_PSG::SetVolume(double new_volume)
          double flub = 1.0 * new_volume * 8 / 6;
 
          if(vl)
-          flub /= powf(2, (double)1 / 4 * vl);                  // ~1.5dB reduction per increment of vl 
+          flub /= pow(2, (double)1 / 4 * vl);                  // ~1.5dB reduction per increment of vl 
 
 	 if(vl == 0x1F)
 	  flub = 0;
@@ -175,7 +175,7 @@ void PCE_PSG::RecalcFreqCache(int chnum)
  {
   const uint32 shift = (((lfoctrl & 0x3) - 1) << 1);
   uint8 la = channel[1].dda;
-  int32 tmp_freq = ((int32)ch->frequency + ((la - 0x10) << shift)) & 0xFFF;
+  uint32 tmp_freq = (ch->frequency + ((uint32)(la - 0x10) << shift)) & 0xFFF;
 
   ch->freq_cache = (tmp_freq ? tmp_freq : 4096) << 1;
  }
@@ -281,7 +281,7 @@ uint32 PCE_PSG::GetRegister(const unsigned int id, char *special, const uint32 s
 	break;
 
   case PSG_GSREG_CH0_LFSR:
-	value = channel[ch].lfsr & 0x7FFF;
+	value = channel[ch].lfsr & 0x3FFFF;
 	break;
  }
  return(value);
@@ -347,7 +347,7 @@ void PCE_PSG::SetRegister(const unsigned int id, const uint32 value)
 	break;
 
   case PSG_GSREG_CH0_LFSR:
-	channel[ch].lfsr = value & 0x7FFF;
+	channel[ch].lfsr = value & 0x3FFFF;
 	break;
  }
 }
@@ -807,9 +807,9 @@ void PCE_PSG::Power(const int32 timestamp)
   if(ch >= 4)
   {
    RecalcNoiseFreqCache(ch);
-   channel[ch].noisecount = 1;
-   channel[ch].lfsr = 1;
   }
+  channel[ch].noisecount = 1;
+  channel[ch].lfsr = 1;
  }
 
  vol_pending = false;
@@ -854,6 +854,7 @@ int PCE_PSG::StateAction(StateMem *sm, int load, int data_only)
 
   SFVAR(vol_update_counter),
   SFVAR(vol_update_which),
+  SFVAR(vol_update_vllatch),
   SFVAR(vol_pending),
   SFEND
  };
@@ -872,6 +873,10 @@ int PCE_PSG::StateAction(StateMem *sm, int load, int data_only)
 
   for(int ch = 0; ch < 6; ch++)
   {
+   channel[ch].waveform_index &= 0x1F;
+   channel[ch].frequency &= 0xFFF;
+   channel[ch].dda &= 0x1F;
+
    channel[ch].samp_accum = 0;
    for(int wi = 0; wi < 32; wi++)
    {
@@ -882,9 +887,9 @@ int PCE_PSG::StateAction(StateMem *sm, int load, int data_only)
    for(int lr = 0; lr < 2; lr++)
     channel[ch].vl[lr] &= 0x1F;
 
-   if(!channel[ch].noisecount && ch >= 4)
+   if(channel[ch].noisecount <= 0 && ch >= 4)
    {
-    printf("ch=%d, noisecount == 0\n", ch);
+    printf("ch=%d, noisecount <= 0\n", ch);
     channel[ch].noisecount = 1;
    }
 
