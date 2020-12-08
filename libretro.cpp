@@ -589,111 +589,87 @@ static void DoMD5CDVoodoo(std::vector<CDIF *> *CDInterfaces)
  const CDGameEntry *found_entry = NULL;
  TOC toc;
 
-#if 0
- puts("{");
- puts(" ,");
- puts(" ,");
- puts(" 0,");
- puts(" 1,");
- puts(" {");
- puts("  {");
-
- for(int i = CDIF_GetFirstTrack(); i <= CDIF_GetLastTrack(); i++)
- {
-    CDIF_Track_Format tf;
-
-    CDIF_GetTrackFormat(i, tf);
-
-    printf("   { %d, %s, %d },\n", i, (tf == CDIF_FORMAT_AUDIO) ? "CDIF_FORMAT_AUDIO" : "CDIF_FORMAT_MODE1", CDIF_GetTrackStartPositionLBA(i));
- }
- printf("   { -1, (CDIF_Track_Format)-1, %d },\n", CDIF_GetSectorCountLBA());
- puts("  }");
- puts(" }");
- puts("},");
- //exit(1);
-#endif
-
  for(unsigned if_disc = 0; if_disc < CDInterfaces->size(); if_disc++)
  {
-  (*CDInterfaces)[if_disc]->ReadTOC(&toc);
+    (*CDInterfaces)[if_disc]->ReadTOC(&toc);
 
-  if(toc.first_track == 1)
-  {
-   for(unsigned int g = 0; g < sizeof(GameList) / sizeof(CDGameEntry); g++)
-   {
-    const CDGameEntry *entry = &GameList[g];
-
-    assert(entry->discs == 1 || entry->discs == 2);
-
-    for(unsigned int disc = 0; disc < entry->discs; disc++)
+    if(toc.first_track == 1)
     {
-     const CDGameEntryTrack *et = entry->tracks[disc];
-     bool GameFound = TRUE;
+       for(unsigned int g = 0; g < sizeof(GameList) / sizeof(CDGameEntry); g++)
+       {
+          const CDGameEntry *entry = &GameList[g];
 
-     while(et->tracknum != -1 && GameFound)
-     {
-      assert(et->tracknum > 0 && et->tracknum < 100);
+          assert(entry->discs == 1 || entry->discs == 2);
 
-      if(toc.tracks[et->tracknum].lba != et->lba)
-       GameFound = FALSE;
+          for(unsigned int disc = 0; disc < entry->discs; disc++)
+          {
+             const CDGameEntryTrack *et = entry->tracks[disc];
+             bool GameFound = TRUE;
 
-      if( ((et->format == CDGE_FORMAT_DATA) ? 0x4 : 0x0) != (toc.tracks[et->tracknum].control & 0x4))
-       GameFound = FALSE;
+             while(et->tracknum != -1 && GameFound)
+             {
+                assert(et->tracknum > 0 && et->tracknum < 100);
 
-      et++;
-     }
+                if(toc.tracks[et->tracknum].lba != et->lba)
+                   GameFound = FALSE;
 
-     if(et->tracknum == -1)
-     {
-      if((et - 1)->tracknum != toc.last_track)
-       GameFound = FALSE;
- 
-      if(et->lba != toc.tracks[100].lba)
-       GameFound = FALSE;
-     }
+                if( ((et->format == CDGE_FORMAT_DATA) ? 0x4 : 0x0) != (toc.tracks[et->tracknum].control & 0x4))
+                   GameFound = FALSE;
 
-     if(GameFound)
-     {
-      found_entry = entry;
-      goto FoundIt;
-     }
-    } // End disc count loop
-   }
-  }
+                et++;
+             }
 
-  FoundIt: ;
+             if(et->tracknum == -1)
+             {
+                if((et - 1)->tracknum != toc.last_track)
+                   GameFound = FALSE;
 
-  if(found_entry)
-  {
-   EmuFlags = found_entry->flags;
+                if(et->lba != toc.tracks[100].lba)
+                   GameFound = FALSE;
+             }
 
-   if(found_entry->discs > 1)
-   {
-    const char *hash_prefix = "Mednafen PC-FX Multi-Game Set";
-    md5_context md5_gameset;
-
-    mednafen_md5_starts(&md5_gameset);
-
-    mednafen_md5_update(&md5_gameset, (uint8_t*)hash_prefix, strlen(hash_prefix));
-
-    for(unsigned int disc = 0; disc < found_entry->discs; disc++)
-    {
-     const CDGameEntryTrack *et = found_entry->tracks[disc];
-
-     while(et->tracknum)
-     {
-      mednafen_md5_update_u32_as_lsb(&md5_gameset, et->tracknum);
-      mednafen_md5_update_u32_as_lsb(&md5_gameset, (uint32)et->format);
-      mednafen_md5_update_u32_as_lsb(&md5_gameset, et->lba);
-
-      if(et->tracknum == -1)
-       break;
-      et++;
-     }
+             if(GameFound)
+             {
+                found_entry = entry;
+                goto FoundIt;
+             }
+          } // End disc count loop
+       }
     }
-   }
-   break;
-  }
+
+FoundIt: ;
+
+         if(found_entry)
+         {
+            EmuFlags = found_entry->flags;
+
+            if(found_entry->discs > 1)
+            {
+               const char *hash_prefix = "Mednafen PC-FX Multi-Game Set";
+               md5_context md5_gameset;
+
+               mednafen_md5_starts(&md5_gameset);
+
+               mednafen_md5_update(&md5_gameset, (uint8_t*)hash_prefix, strlen(hash_prefix));
+
+               for(unsigned int disc = 0; disc < found_entry->discs; disc++)
+               {
+                  const CDGameEntryTrack *et = found_entry->tracks[disc];
+
+                  while(et->tracknum)
+                  {
+                     mednafen_md5_update_u32_as_lsb(&md5_gameset, et->tracknum);
+                     mednafen_md5_update_u32_as_lsb(&md5_gameset, (uint32)et->format);
+                     mednafen_md5_update_u32_as_lsb(&md5_gameset, et->lba);
+
+                     if(et->tracknum == -1)
+                        break;
+                     et++;
+                  }
+               }
+            }
+            break;
+         }
  } // end: for(unsigned if_disc = 0; if_disc < CDInterfaces->size(); if_disc++)
 
  MDFN_printf("CD Layout MD5:   0x%s\n", mednafen_md5_asciistr(MDFNGameInfo->MD5));
