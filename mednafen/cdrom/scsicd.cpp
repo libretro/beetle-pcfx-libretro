@@ -525,33 +525,30 @@ static void CommandCCError(int key, int asc = 0, int ascq = 0)
 
 static bool ValidateRawDataSector(uint8_t *data, const uint32_t lba)
 {
- if(!Cur_CDIF->ValidateRawSector(data))
- {
-  MDFN_DispMessage("Uncorrectable data at sector %d", lba);
-  MDFN_PrintError("Uncorrectable data at sector %d", lba);
+   if(!Cur_CDIF->ValidateRawSector(data))
+   {
+      din->Flush();
+      cd.data_transfer_done = false;
 
-  din->Flush();
-  cd.data_transfer_done = false;
+      CommandCCError(SENSEKEY_MEDIUM_ERROR, AP_LEC_UNCORRECTABLE_ERROR);
+      return(false);
+   }
 
-  CommandCCError(SENSEKEY_MEDIUM_ERROR, AP_LEC_UNCORRECTABLE_ERROR);
-  return(false);
- }
-
- return(true);
+   return(true);
 }
 
 static void DoMODESELECT6(const uint8_t *cdb)
 {
- if(cdb[4])
- {
-  cd.data_out_pos = 0;
-  cd.data_out_want = cdb[4];
-  //printf("Switch to DATA OUT phase, len: %d\n", cd.data_out_want);
+   if(cdb[4])
+   {
+      cd.data_out_pos = 0;
+      cd.data_out_want = cdb[4];
+      //printf("Switch to DATA OUT phase, len: %d\n", cd.data_out_want);
 
-  ChangePhase(PHASE_DATA_OUT);
- }
- else
-  SendStatusAndMessage(STATUS_GOOD, 0x00);
+      ChangePhase(PHASE_DATA_OUT);
+   }
+   else
+      SendStatusAndMessage(STATUS_GOOD, 0x00);
 }
 
 /*

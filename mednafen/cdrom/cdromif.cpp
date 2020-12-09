@@ -321,10 +321,7 @@ int CDIF_MT::ReadThreadStart()
 
       /* Don't read beyond what the disc (image) readers can handle sanely. */
       if(ra_count && ra_lba == LBA_Read_Maximum)
-      {
          ra_count = 0;
-         //printf("Ephemeral scarabs: %d!\n", ra_lba);
-      }
 
       if(ra_count)
       {
@@ -417,11 +414,9 @@ bool CDIF_MT::ReadRawSector(uint8_t *buf, int32_t lba)
 
    if(lba < LBA_Read_Minimum || lba > LBA_Read_Maximum)
    {
-      printf("Attempt to read sector out of bounds; LBA=%d\n", lba);
       memset(buf, 0, 2352 + 96);
       return(false);
    }
-   //fprintf(stderr, "%d\n", ra_lba - lba);
 
    ReadThreadQueue.Write(CDIF_Message(CDIF_MSG_READ_SECTOR, lba));
 
@@ -458,7 +453,6 @@ bool CDIF_MT::ReadRawSectorPWOnly(uint8_t* pwbuf, int32_t lba, bool hint_fullrea
 
    if(lba < LBA_Read_Minimum || lba > LBA_Read_Maximum)
    {
-      printf("Attempt to read sector out of bounds; LBA=%d\n", lba);
       memset(pwbuf, 0, 96);
       return(false);
    }
@@ -502,21 +496,10 @@ int CDIF::ReadSector(uint8_t* buf, int32_t lba, uint32_t sector_count, bool supp
       uint8_t tmpbuf[2352 + 96];
 
       if(!ReadRawSector(tmpbuf, lba))
-      {
-         puts("CDIF Raw Read error");
          return(false);
-      }
 
       if(!ValidateRawSector(tmpbuf))
-      {
-         if(!suppress_uncorrectable_message)
-         {
-            MDFN_DispMessage("Uncorrectable data at sector %d", lba);
-            log_cb(RETRO_LOG_ERROR, "Uncorrectable data at sector %d", lba);
-         }
-
          return(false);
-      }
 
       const int mode = tmpbuf[12 + 3];
 
@@ -524,18 +507,11 @@ int CDIF::ReadSector(uint8_t* buf, int32_t lba, uint32_t sector_count, bool supp
          ret = mode;
 
       if(mode == 1)
-      {
          memcpy(buf, &tmpbuf[12 + 4], 2048);
-      }
       else if(mode == 2)
-      {
          memcpy(buf, &tmpbuf[12 + 4 + 8], 2048);
-      }
       else
-      {
-         printf("CDIF_ReadSector() invalid sector type at LBA=%u\n", (unsigned int)lba);
          return(false);
-      }
 
       buf += 2048;
       lba++;
@@ -552,8 +528,6 @@ int CDIF::ReadSector(uint8_t* buf, int32_t lba, uint32_t sector_count, bool supp
 
 CDIF_ST::CDIF_ST(CDAccess *cda) : disc_cdaccess(cda)
 {
-   //puts("***WARNING USING SINGLE-THREADED CD READER***");
-
    UnrecoverableError = false;
 
    disc_cdaccess->Read_TOC(&disc_toc);
@@ -584,7 +558,6 @@ bool CDIF_ST::ReadRawSector(uint8_t *buf, int32_t lba)
 
    if(lba < LBA_Read_Minimum || lba > LBA_Read_Maximum)
    {
-      printf("Attempt to read sector out of bounds; LBA=%d\n", lba);
       memset(buf, 0, 2352 + 96);
       return(false);
    }
@@ -604,7 +577,6 @@ bool CDIF_ST::ReadRawSectorPWOnly(uint8_t* pwbuf, int32_t lba, bool hint_fullrea
 
    if(lba < LBA_Read_Minimum || lba > LBA_Read_Maximum)
    {
-      printf("Attempt to read sector out of bounds; LBA=%d\n", lba);
       memset(pwbuf, 0, 96);
       return(false);
    }
