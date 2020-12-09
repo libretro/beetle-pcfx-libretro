@@ -104,27 +104,23 @@ void V810_FP_Ops::fpim_decode(fpim* df, uint32 v)
 
 void V810_FP_Ops::fpim_round(fpim* df)
 {
- int vbc = 64 - clz64(df->f);
+   int vbc = 64 - clz64(df->f);
 
- if(vbc > 24)
- {
-  const unsigned sa = vbc - 24;
-
-  if(1) // round to nearest
-  {
-   uint64 old_f = df->f;
-
-   df->f = (df->f + ((df->f >> sa) & 1) + ((1ULL << (sa - 1)) - 1)) & ~((1ULL << sa) - 1);
-
-   if(df->f != old_f)
+   if(vbc > 24)
    {
-    //printf("Inexact mr\n");
-    exception_flags |= flag_inexact;
+      const unsigned sa = vbc - 24;
+
+      /* round to nearest */
+      uint64      old_f = df->f;
+
+      df->f = (df->f + ((df->f >> sa) & 1) + ((1ULL << (sa - 1)) - 1)) & ~((1ULL << sa) - 1);
+
+      if(df->f != old_f)
+      {
+         //printf("Inexact mr\n");
+         exception_flags |= flag_inexact;
+      }
    }
-  }
-  else
-   abort();
- }
 }
 
 void V810_FP_Ops::fpim_round_int(fpim* df, bool truncate)
@@ -168,34 +164,17 @@ uint32 V810_FP_Ops::fpim_encode(fpim* df)
 
  if(tmp_walrus == 0)
   tmp_exp = -127;
- else if(tmp_exp <= -127)
+ else if(tmp_exp <= -127) /* Subnormal */
  {
-  exception_flags |= flag_underflow | flag_inexact;
-  //printf("Subnormal: %lld. %d\n", tmp_walrus, tmp_exp);
-  if(1)
-  {
-   tmp_exp = -127;
-   tmp_walrus = 0;
-  }
-  else
-  {
-   tmp_walrus >>= -(tmp_exp + 126);
-   tmp_exp = -127;
-  }
+    exception_flags |= flag_underflow | flag_inexact;
+    tmp_exp = -127;
+    tmp_walrus = 0;
  }
- else if(tmp_exp >= 128)
+ else if(tmp_exp >= 128) /* Overflow */
  {
-  exception_flags |= flag_overflow;
-  //printf("Overflow!\n");
+    exception_flags |= flag_overflow;
 
-  if(1)
-   tmp_exp -= 192;
-  else
-  {
-   tmp_exp = 128;
-   tmp_walrus = 0;
-  }
-
+    tmp_exp -= 192;
  }
  return (tmp_sign << 31) | ((tmp_exp + 127) << 23) | (tmp_walrus & 0x7FFFFF);
 }
