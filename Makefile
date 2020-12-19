@@ -144,26 +144,6 @@ else ifeq ($(platform), qnx)
    CXX = QCC -Vgcc_ntoarmv7le_cpp
    AR = QCC -Vgcc_ntoarmv7le
    FLAGS += -D__BLACKBERRY_QNX__ -marm -mcpu=cortex-a9 -mfpu=neon -mfloat-abi=softfp
-else ifeq ($(platform), ps3)
-   TARGET := $(TARGET_NAME)_libretro_$(platform).a
-   CC = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-gcc.exe
-   CXX = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-g++.exe
-   AR = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-ar.exe
-   ENDIANNESS_DEFINES := -DMSB_FIRST
-   OLD_GCC := 1
-   FLAGS += -DARCH_POWERPC_ALTIVEC
-   STATIC_LINKING = 1
-else ifeq ($(platform), sncps3)
-   TARGET := $(TARGET_NAME)_libretro_ps3.a
-   CC = $(CELL_SDK)/host-win32/sn/bin/ps3ppusnc.exe
-   CXX = $(CELL_SDK)/host-win32/sn/bin/ps3ppusnc.exe
-   AR = $(CELL_SDK)/host-win32/sn/bin/ps3snarl.exe
-   ENDIANNESS_DEFINES := -DMSB_FIRST
-   CXXFLAGS += -Xc+=exceptions
-   OLD_GCC := 1
-   NO_GCC := 1
-   FLAGS += -DARCH_POWERPC_ALTIVEC
-   STATIC_LINKING = 1
 else ifeq ($(platform), psl1ght)
    TARGET := $(TARGET_NAME)_libretro_$(platform).a
    CC = $(PS3DEV)/ppu/bin/ppu-gcc$(EXE_EXT)
