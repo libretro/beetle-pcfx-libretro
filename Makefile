@@ -98,6 +98,54 @@ else
 	fpic += -stdlib=libc++
 endif
 
+# Odroid-N2 / VIM3
+else ifneq (,$(findstring CortexA73_G12B,$(platform)))
+   TARGET := $(TARGET_NAME)_libretro.so
+   fpic := -fPIC
+   SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
+   CC = gcc
+   LDFLAGS += $(PTHREAD_FLAGS)
+   FLAGS += $(PTHREAD_FLAGS)
+   IS_X86 = 0
+   FLAGS += -mcpu=cortex-a73
+   ASFLAGS += -mcpu=cortex-a73
+
+# Odroid-C2 / S905 based boards
+else ifneq (,$(findstring S905,$(platform)))
+   TARGET := $(TARGET_NAME)_libretro.so
+   fpic := -fPIC
+   SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
+   CC = gcc
+   LDFLAGS += $(PTHREAD_FLAGS)
+   FLAGS += $(PTHREAD_FLAGS)
+   IS_X86 = 0
+   FLAGS += -mcpu=cortex-a53
+   ASFLAGS += -mcpu=cortex-a53
+
+# Odroid-C4 / SM1 based boards
+else ifneq (,$(findstring SM1,$(platform)))
+   TARGET := $(TARGET_NAME)_libretro.so
+   fpic := -fPIC
+   SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
+   CC = gcc
+   LDFLAGS += $(PTHREAD_FLAGS)
+   FLAGS += $(PTHREAD_FLAGS)
+   IS_X86 = 0
+   FLAGS += -mcpu=cortex-a55
+   ASFLAGS += -mcpu=cortex-a55
+
+# Raspberry Pi 4 64-bit
+else ifneq (,$(findstring rpi4,$(platform)))
+   TARGET := $(TARGET_NAME)_libretro.so
+   fpic := -fPIC
+   SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
+   CC = gcc
+   LDFLAGS += $(PTHREAD_FLAGS)
+   FLAGS += $(PTHREAD_FLAGS)
+   IS_X86 = 0
+   FLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
+   ASFLAGS += -mcpu=cortex-a72 -mtune=cortex-a72
+
 # iOS
 else ifneq (,$(findstring ios,$(platform)))
 
