@@ -27,17 +27,19 @@ endif
 
 # system platform
 system_platform = unix
-ifeq ($(shell uname -s),)
+ifeq ($(shell uname -a),)
 	EXE_EXT = .exe
 	system_platform = win
-else ifneq ($(findstring Darwin,$(shell uname -s)),)
+else ifneq ($(findstring Darwin,$(shell uname -a)),)
 	system_platform = osx
-ifeq ($(shell uname -p),powerpc)
-	arch = ppc
-else
 	arch = intel
-endif
-else ifneq ($(findstring MINGW,$(shell uname -s)),)
+	ifeq ($(shell uname -p),powerpc)
+		arch = ppc
+	endif
+	ifeq ($(shell uname -p),arm)
+		arch = arm64
+	endif
+else ifneq ($(findstring MINGW,$(shell uname -a)),)
 	system_platform = win
 endif
 
@@ -92,6 +94,13 @@ ifeq ($(arch),ppc)
 endif
    OSXVER = `sw_vers -productVersion | cut -d. -f 2`
    OSX_LT_MAVERICKS = `(( $(OSXVER) <= 9)) && echo "YES"`
+   
+   ifeq ($(arch),arm64)
+	        TARGET_RULE = -arch arm64
+		CFLAGS   += $(TARGET_RULE)
+		CPPFLAGS += $(TARGET_RULE)
+		CXXFLAGS += $(TARGET_RULE)
+   endif
 ifeq ($(OSX_LT_MAVERICKS),"YES")
    fpic += -mmacosx-version-min=10.1
 else
