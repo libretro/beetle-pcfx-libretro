@@ -112,7 +112,10 @@ endif
    FLAGS += -DNEED_CD
 
 ifeq ($(HAVE_CHD), 1)
-   FLAGS += -DHAVE_CHD -D_7ZIP_ST -DPACKAGE_VERSION=\"1.3.3\" -DFLAC_API_EXPORTS -DFLAC__HAS_OGG=0 -DHAVE_LROUND -DHAVE_STDINT_H -DHAVE_STDLIB_H -DHAVE_SYS_PARAM_H
+   FLAGS += -DHAVE_CHD -D_7ZIP_ST -DPACKAGE_VERSION=\"1.3.3\" -DFLAC_API_EXPORTS -DFLAC__HAS_OGG=0 -DHAVE_LROUND -DHAVE_STDINT_H -DHAVE_STDLIB_H
+ifeq (,$(findstring msvc,$(platform)))
+	FLAGS += -DHAVE_SYS_PARAM_H
+endif
    INCFLAGS += -I$(DEPS_DIR)/flac-1.3.3/include -I$(DEPS_DIR)/flac-1.3.3/src/include -I$(DEPS_DIR)/lzma-19.00/include -I$(DEPS_DIR)/libchdr/include
 
    ifeq ($(platform), win)

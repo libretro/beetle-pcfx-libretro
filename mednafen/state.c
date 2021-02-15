@@ -148,7 +148,7 @@ static bool SubWrite(StateMem *st, SFORMAT *sf, const char *name_prefix)
       }
 
       bytesize = sf->size;
-      slen     = snprintf(nameo + 1, 256, "%s%s", name_prefix ? name_prefix : "", sf->name);
+      slen     = sprintf(nameo + 1, "%s%s", name_prefix ? name_prefix : "", sf->name);
       nameo[0] = slen;
 
       if(slen >= 255)

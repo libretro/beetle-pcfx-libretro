@@ -501,16 +501,32 @@ OBJECTS := $(SOURCES_CXX:.cpp=.o) $(SOURCES_C:.c=.o)
 
 all: $(TARGET)
 
-ifeq ($(DEBUG),0)
-   FLAGS += -O2 $(EXTRA_GCC_FLAGS)
-else
+ifeq ($(DEBUG),1)
    FLAGS += -O0 -g
+else
+   FLAGS += -O2 -DNDEBUG $(EXTRA_GCC_FLAGS)
+endif
+
+ifneq (,$(findstring msvc,$(platform)))
+ifeq ($(DEBUG), 1)
+   CFLAGS += -MTd
+   CXXFLAGS += -MTd
+else
+   CFLAGS += -MT
+   CXXFLAGS += -MT
+endif
 endif
 
 LDFLAGS += $(fpic) $(SHARED)
 FLAGS += $(fpic) $(NEW_GCC_FLAGS) $(INCFLAGS)
 
-FLAGS += $(ENDIANNESS_DEFINES) -DSIZEOF_DOUBLE=8 $(WARNINGS) -DMEDNAFEN_VERSION=\"0.9.36.5\" -DPACKAGE=\"mednafen\" -DMEDNAFEN_VERSION_NUMERIC=9365 -DMPC_FIXED_POINT $(CORE_DEFINE) -DSTDC_HEADERS -D__STDC_LIMIT_MACROS -D__LIBRETRO__ -D_LOW_ACCURACY_ $(EXTRA_INCLUDES) $(SOUND_DEFINE)
+FLAGS += $(ENDIANNESS_DEFINES) $(WARNINGS) -DMEDNAFEN_VERSION=\"0.9.36.5\" -DPACKAGE=\"mednafen\" -DMEDNAFEN_VERSION_NUMERIC=9365 -DMPC_FIXED_POINT $(CORE_DEFINE) -DSTDC_HEADERS -D__STDC_LIMIT_MACROS -D__LIBRETRO__ -D_LOW_ACCURACY_ $(EXTRA_INCLUDES) $(SOUND_DEFINE)
+
+ifneq (,$(findstring msvc,$(platform)))
+FLAGS += -DINLINE="_inline"
+else
+FLAGS += -DINLINE="inline"
+endif
 
 ifeq ($(HAVE_CDROM), 1)
    FLAGS += -DHAVE_CDROM
@@ -531,24 +547,8 @@ ifneq (,$(findstring msvc,$(platform)))
 ifeq ($(STATIC_LINKING),1)
 	LD ?= lib.exe
 	STATIC_LINKING=0
-
-	ifeq ($(DEBUG), 1)
-		CFLAGS += -MTd
-		CXXFLAGS += -MTd
-	else
-		CFLAGS += -MT
-		CXXFLAGS += -MT
-	endif
 else
 	LD = link.exe
-
-	ifeq ($(DEBUG), 1)
-		CFLAGS += -MDd
-		CXXFLAGS += -MDd
-	else
-		CFLAGS += -MD
-		CXXFLAGS += -MD
-	endif
 endif
 else
 	LD = $(CXX)
