@@ -44,8 +44,8 @@ endif
 ifeq ($(HAVE_HES), 1)
 	SOURCES_CXX += $(CORE_EMU_DIR)/hes.cpp
 endif
-ifeq ($(NEED_THREADING), 1)
-   FLAGS += -DWANT_THREADING
+ifeq ($(HAVE_THREADS), 1)
+   FLAGS += -DHAVE_THREADS
 	SOURCES_C += $(LIBRETRO_COMM_DIR)/rthreads/rthreads.c
 endif
 

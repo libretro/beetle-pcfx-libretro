@@ -2621,17 +2621,16 @@ static INLINE void RunCDDA(uint32_t system_timestamp, int32_t run_time)
      };
 
      {
-      __m128i b0;
-      __m128i b1;
-      __m128i sum;
-
-      b0 = _mm_loadu_si128((__m128i *)&b[0]);
-      b1 = _mm_loadu_si128((__m128i *)&b[8]);
-
-      sum = _mm_add_epi32(_mm_madd_epi16(f0, b0), _mm_madd_epi16(f1, b1));
-      sum = _mm_add_epi32(sum, _mm_shuffle_epi32(sum, (3 << 0) | (2 << 2) | (1 << 4) | (0 << 6)));
-      sum = _mm_add_epi32(sum, _mm_shuffle_epi32(sum, (1 << 0) | (0 << 2) | (3 << 4) | (2 << 6)));
+      __m128i b0  = _mm_loadu_si128((__m128i *)&b[0]);
+      __m128i b1  = _mm_loadu_si128((__m128i *)&b[8]);
+      __m128i sum = _mm_add_epi32(_mm_madd_epi16(f0, b0), _mm_madd_epi16(f1, b1));
+      sum         = _mm_add_epi32(sum, _mm_shuffle_epi32(sum, (3 << 0) | (2 << 2) | (1 << 4) | (0 << 6)));
+      sum         = _mm_add_epi32(sum, _mm_shuffle_epi32(sum, (1 << 0) | (0 << 2) | (3 << 4) | (2 << 6)));
+#ifdef _MSC_VER
+      _mm_store_ss(&accum_f, _mm_castsi128_ps(sum));
+#else
       _mm_store_ss(&accum_f, (__m128)sum);
+#endif
       //_mm_store_si128(&accum_m128, sum);
      }
 #else
