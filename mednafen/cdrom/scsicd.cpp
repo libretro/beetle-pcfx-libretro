@@ -899,8 +899,6 @@ static void DoMODESENSE6(const uint8_t *cdb)
  uint8_t PageMatchOR = 0x00;
  bool AnyPageMatch = false;
 
- //SCSIDBG("Mode sense 6: %02x %d %d %d", PageCode, PC, DBD, AllocSize);
-
  if(!AllocSize)
  {
   SendStatusAndMessage(STATUS_GOOD, 0x00);
@@ -2243,44 +2241,43 @@ static void DoNEC_PAUSE(const uint8_t *cdb)
 
 static void DoNEC_SCAN(const uint8_t *cdb)
 {
- uint32_t sector_tmp = 0;
+   uint32_t sector_tmp = 0;
 
- // 0: 0xD2
- // 1: 0x03 = reverse scan, 0x02 = forward scan
- // 2: End M
- // 3: End S
- // 4: End F
+   // 0: 0xD2
+   // 1: 0x03 = reverse scan, 0x02 = forward scan
+   // 2: End M
+   // 3: End S
+   // 4: End F
 
- switch (cdb[9] & 0xc0)
- {
-  default:
-   //SCSIDBG("Unknown NECSCAN format");
-   break;
+   switch (cdb[9] & 0xc0)
+   {
+      default:
+         break;
 
-  case 0x00:
-   sector_tmp = (cdb[3] << 16) | (cdb[4] << 8) | cdb[5];
-   break;
+      case 0x00:
+         sector_tmp = (cdb[3] << 16) | (cdb[4] << 8) | cdb[5];
+         break;
 
-  case 0x40:
-   sector_tmp = AMSF_to_LBA(BCD_to_U8(cdb[2]), BCD_to_U8(cdb[3]), BCD_to_U8(cdb[4]));
-   break;
+      case 0x40:
+         sector_tmp = AMSF_to_LBA(BCD_to_U8(cdb[2]), BCD_to_U8(cdb[3]), BCD_to_U8(cdb[4]));
+         break;
 
-  case 0x80:	// FIXME: error on invalid track number???
-   sector_tmp = toc.tracks[BCD_to_U8(cdb[2])].lba;
-   break;
- }
+      case 0x80:	// FIXME: error on invalid track number???
+         sector_tmp = toc.tracks[BCD_to_U8(cdb[2])].lba;
+         break;
+   }
 
- cdda.ScanMode = cdb[1] & 0x3;
- cdda.scan_sec_end = sector_tmp;
+   cdda.ScanMode = cdb[1] & 0x3;
+   cdda.scan_sec_end = sector_tmp;
 
- if(cdda.CDDAStatus != CDDASTATUS_STOPPED)
- {
-  if(cdda.ScanMode)
-  {
-   cdda.CDDAStatus = CDDASTATUS_SCANNING;
-  }
- }
- SendStatusAndMessage(STATUS_GOOD, 0x00);
+   if(cdda.CDDAStatus != CDDASTATUS_STOPPED)
+   {
+      if(cdda.ScanMode)
+      {
+         cdda.CDDAStatus = CDDASTATUS_SCANNING;
+      }
+   }
+   SendStatusAndMessage(STATUS_GOOD, 0x00);
 }
 
 
@@ -2299,12 +2296,6 @@ static void DoPREVENTALLOWREMOVAL(const uint8_t *cdb)
 
  CommandCCError(SENSEKEY_ILLEGAL_REQUEST, NSE_INVALID_REQUEST_IN_CDB);
 }
-
-//
-//
-//
-#include "scsicd-pce-commands.inc"
-
 
 #define SCF_REQUIRES_MEDIUM	0x0001
 #define SCF_INCOMPLETE		0x4000
@@ -2390,21 +2381,6 @@ static SCSICH PCFXCommandDefs[] =
  { 0xDC, SCF_REQUIRES_MEDIUM, DoNEC_EJECT, "Eject" },
  { 0xDD, SCF_REQUIRES_MEDIUM, DoNEC_READSUBQ, "Read Subchannel Q" },
  { 0xDE, SCF_REQUIRES_MEDIUM, DoNEC_GETDIRINFO, "Get Dir Info" },
-
- { 0xFF, 0, 0, NULL, NULL },
-};
-
-static SCSICH PCECommandDefs[] = 
-{
- { 0x00, SCF_REQUIRES_MEDIUM, DoTESTUNITREADY, "Test Unit Ready" },
- { 0x03, 0, DoREQUESTSENSE, "Request Sense" },
- { 0x08, SCF_REQUIRES_MEDIUM, DoREAD6, "Read(6)" },
- //{ 0x15, DoMODESELECT6, "Mode Select(6)" },
- { 0xD8, SCF_REQUIRES_MEDIUM, DoNEC_PCE_SAPSP, "Set Audio Playback Start Position" },
- { 0xD9, SCF_REQUIRES_MEDIUM, DoNEC_PCE_SAPEP, "Set Audio Playback End Position" },
- { 0xDA, SCF_REQUIRES_MEDIUM, DoNEC_PCE_PAUSE, "Pause" },
- { 0xDD, SCF_REQUIRES_MEDIUM, DoNEC_PCE_READSUBQ, "Read Subchannel Q" },
- { 0xDE, SCF_REQUIRES_MEDIUM, DoNEC_PCE_GETDIRINFO, "Get Dir Info" },
 
  { 0xFF, 0, 0, NULL, NULL },
 };
@@ -2720,7 +2696,7 @@ static INLINE void RunCDRead(uint32_t system_timestamp, int32_t run_time)
 
   if(CDReadTimer <= 0)
   {
-   if(din->CanWrite() < ((WhichSystem == SCSICD_PCFX) ? 2352 : 2048))	// +96 if we find out the PC-FX can read subchannel data along with raw data too. ;)
+   if(din->CanWrite() < (2352))	// +96 if we find out the PC-FX can read subchannel data along with raw data too. ;)
    {
     //printf("Carp: %d %d %d\n", din->CanWrite(), SectorCount, CDReadTimer);
     //CDReadTimer = (cd.data_in_size - cd.data_in_pos) * 10;
@@ -2820,17 +2796,7 @@ uint32_t SCSICD_Run(scsicd_timestamp_t system_timestamp)
  {
   if(SEL_signal)
   {
-   if(WhichSystem == SCSICD_PCFX)
-   {
-    //if(cd_bus.DB == 0x84)
-    {
      ChangePhase(PHASE_COMMAND);
-    }
-   }
-   else // PCE
-   {
-    ChangePhase(PHASE_COMMAND);
-   }
   }
  }
  else if(ATN_signal && !REQ_signal && !ACK_signal)
@@ -2852,12 +2818,7 @@ uint32_t SCSICD_Run(scsicd_timestamp_t system_timestamp)
     {
      if(cd.command_buffer_pos == RequiredCDBLen[cd.command_buffer[0] >> 4])
      {
-      const SCSICH *cmd_info_ptr;
-
-      if(WhichSystem == SCSICD_PCFX)
-       cmd_info_ptr = PCFXCommandDefs;
-      else
-       cmd_info_ptr = PCECommandDefs;
+      const SCSICH *cmd_info_ptr = PCFXCommandDefs;
 
       while(cmd_info_ptr->pretty_name && cmd_info_ptr->cmd != cd.command_buffer[0])
        cmd_info_ptr++;
@@ -3094,11 +3055,7 @@ void SCSICD_Init(int type, int cdda_time_div, int32_t* left_hrbuf, int32_t* righ
  lastts = 0;
 
  SCSILog = NULL;
-
- if(type == SCSICD_PCFX)
-  din = new SimpleFIFO<uint8_t>(65536);	//4096);
- else
-  din = new SimpleFIFO<uint8_t>(2048); //8192); //1024); /2048);
+ din = new SimpleFIFO<uint8_t>(65536);	//4096);
 
  WhichSystem = type;
 
