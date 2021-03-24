@@ -1611,6 +1611,16 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
 
 void retro_deinit()
 {
+#if defined(WANT_32BPP)
+   if (surf->pixels)
+      free(surf->pixels);
+#elif defined(WANT_16BPP)
+   if (surf->pixels16)
+      free(surf->pixels16);
+#elif defined(WANT_8BPP)
+   if (surf->pixels8)
+      free(surf->pixels8);
+#endif
    delete surf;
    surf = NULL;
 

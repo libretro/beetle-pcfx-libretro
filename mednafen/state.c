@@ -93,12 +93,6 @@ int32_t smem_seek(StateMem *st, uint32_t offset, int whence)
       return(-1);
    }
 
-   if(st->loc < 0)
-   {
-      st->loc = 0;
-      return(-1);
-   }
-
    return(0);
 }
 
@@ -179,9 +173,6 @@ static bool SubWrite(StateMem *st, SFORMAT *sf, const char *name_prefix)
          for(bool_monster = 0; bool_monster < bytesize; bool_monster++)
          {
             uint8_t tmp_bool = ((bool *)sf->v)[bool_monster];
-#if 0
-            printf("Bool write: %.31s\n", sf->name);
-#endif
             smem_write(st, &tmp_bool, 1);
          }
       }
@@ -336,7 +327,6 @@ static int ReadStateChunk(StateMem *st, SFORMAT *sf, int size)
 
          if(recorded_size != expected_size)
          {
-            printf("Variable in save state wrong size: %s.  Need: %d, got: %d\n", toa + 1, expected_size, recorded_size);
             if(smem_seek(st, recorded_size, SEEK_CUR) < 0)
                return(0);
          }
@@ -366,7 +356,6 @@ static int ReadStateChunk(StateMem *st, SFORMAT *sf, int size)
       }
       else
       {
-         printf("Unknown variable in save state: %s\n", toa + 1);
          if(smem_seek(st, recorded_size, SEEK_CUR) < 0)
             return(0);
       }
@@ -400,10 +389,7 @@ static int MDFNSS_StateAction_internal(void *st_p, int load,
          if(!strncmp(sname, section->name, 32))
          {
             if(!ReadStateChunk(st, section->sf, tmp_size))
-            {
-               printf("Error reading chunk: %s\n", section->name);
                return(0);
-            }
             found = 1;
             break;
          } 
@@ -416,10 +402,7 @@ static int MDFNSS_StateAction_internal(void *st_p, int load,
       if(smem_seek(st, -total, SEEK_CUR) < 0)
          return(0);
       if(!found && !section->optional) /* Not found.  We are sad! */
-      {
-         printf("Section missing:  %.32s\n", section->name);
          return(0);
-      }
    }
    else
    {
