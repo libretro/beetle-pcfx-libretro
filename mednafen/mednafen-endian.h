@@ -5,7 +5,6 @@
 #include <stdint.h>
 
 #include <retro_inline.h>
-#include <streams/file_stream_transforms.h>
 
 #ifdef MSB_FIRST
 #ifndef le32toh
