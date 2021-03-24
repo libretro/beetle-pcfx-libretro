@@ -1187,6 +1187,7 @@ MDFNGI *MDFNI_LoadCD(const char *devicename)
       CDInterfaces.push_back(cdif);
    }
 
+#ifdef DEBUG
    //
    // Print out a track list for all discs.
    //
@@ -1206,6 +1207,7 @@ MDFNGI *MDFNI_LoadCD(const char *devicename)
       MDFN_printf("Leadout: %6d\n", toc.tracks[100].lba);
       MDFN_printf("\n");
    }
+#endif
 
    // Calculate layout MD5.  The system emulation LoadCD() code is free to ignore this value and calculate
    // its own, or to use it to look up a game in its database.
@@ -1233,8 +1235,6 @@ MDFNGI *MDFNI_LoadCD(const char *devicename)
 
       mednafen_md5_finish(&layout_md5, LayoutMD5);
    }
-
-   MDFN_printf("Using module: pcfx\n\n");
 
    // TODO: include module name in hash
    memcpy(MDFNGameInfo->MD5, LayoutMD5, 16);
