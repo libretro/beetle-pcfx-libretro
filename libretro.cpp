@@ -908,6 +908,8 @@ static Deinterlacer deint;
 
 #define FB_MAX_HEIGHT FB_HEIGHT
 
+static bool cdimagecache = false;
+
 const char *mednafen_core_str = MEDNAFEN_CORE_NAME;
 
 static void check_system_specs(void)
@@ -1006,9 +1008,19 @@ static void set_volume (uint32_t *ptr, unsigned number)
 
 static float mouse_sensitivity = 1.25f;
 
-static void check_variables(void)
+static void check_variables(bool loaded)
 {
    struct retro_variable var = {0};
+
+   if (!loaded)
+   {
+      var.key      = "pcfx_cdimagecache";
+      cdimagecache = false;
+
+      if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+         if (strcmp(var.value, "enabled") == 0)
+            cdimagecache = true;
+   }
 
    var.key = "pcfx_high_dotclock_width";
 
@@ -1153,98 +1165,98 @@ void MDFN_ResetMessages(void)
 
 MDFNGI *MDFNI_LoadCD(const char *devicename)
 {
- uint8 LayoutMD5[16];
+   uint8 LayoutMD5[16];
 
- MDFN_printf("Loading %s...\n", devicename);
+   log_cb(RETRO_LOG_INFO, "Loading %s...\n", devicename);
 
-  if(devicename && strlen(devicename) > 4 && !strcasecmp(devicename + strlen(devicename) - 4, ".m3u"))
-  {
-   std::vector<std::string> file_list;
-
-   ReadM3U(file_list, devicename);
-
-   for(unsigned i = 0; i < file_list.size(); i++)
+   if(devicename && strlen(devicename) > 4 && !strcasecmp(devicename + strlen(devicename) - 4, ".m3u"))
    {
-      CDIF *cdif   = CDIF_Open(file_list[i].c_str(), false /* cdimage_memcache */);
+      std::vector<std::string> file_list;
+
+      ReadM3U(file_list, devicename);
+
+      for(unsigned i = 0; i < file_list.size(); i++)
+      {
+         CDIF *cdif   = CDIF_Open(file_list[i].c_str(), cdimagecache);
+         CDInterfaces.push_back(cdif);
+      }
+   }
+   else
+   {
+      CDIF *cdif   = CDIF_Open(devicename, cdimagecache);
       CDInterfaces.push_back(cdif);
    }
-  }
-  else
-  {
-     CDIF *cdif   = CDIF_Open(devicename, false /* cdimage_memcache */);
-   CDInterfaces.push_back(cdif);
-  }
 
- //
- // Print out a track list for all discs.
- //
- for(unsigned i = 0; i < CDInterfaces.size(); i++)
- {
-  TOC toc;
-
-  CDInterfaces[i]->ReadTOC(&toc);
-
-  MDFN_printf("CD %d Layout:\n", i + 1);
-
-  for(int32 track = toc.first_track; track <= toc.last_track; track++)
-  {
-   MDFN_printf("Track %2d, LBA: %6d  %s\n", track, toc.tracks[track].lba, (toc.tracks[track].control & 0x4) ? "DATA" : "AUDIO");
-  }
-
-  MDFN_printf("Leadout: %6d\n", toc.tracks[100].lba);
-  MDFN_printf("\n");
- }
-
- // Calculate layout MD5.  The system emulation LoadCD() code is free to ignore this value and calculate
- // its own, or to use it to look up a game in its database.
- {
-  md5_context layout_md5;
-
-  mednafen_md5_starts(&layout_md5);
-
-  for(unsigned i = 0; i < CDInterfaces.size(); i++)
-  {
-   TOC toc;
-
-   CDInterfaces[i]->ReadTOC(&toc);
-
-   mednafen_md5_update_u32_as_lsb(&layout_md5, toc.first_track);
-   mednafen_md5_update_u32_as_lsb(&layout_md5, toc.last_track);
-   mednafen_md5_update_u32_as_lsb(&layout_md5, toc.tracks[100].lba);
-
-   for(uint32 track = toc.first_track; track <= toc.last_track; track++)
+   //
+   // Print out a track list for all discs.
+   //
+   for(unsigned i = 0; i < CDInterfaces.size(); i++)
    {
-    mednafen_md5_update_u32_as_lsb(&layout_md5, toc.tracks[track].lba);
-    mednafen_md5_update_u32_as_lsb(&layout_md5, toc.tracks[track].control & 0x4);
+      TOC toc;
+
+      CDInterfaces[i]->ReadTOC(&toc);
+
+      MDFN_printf("CD %d Layout:\n", i + 1);
+
+      for(int32 track = toc.first_track; track <= toc.last_track; track++)
+      {
+         MDFN_printf("Track %2d, LBA: %6d  %s\n", track, toc.tracks[track].lba, (toc.tracks[track].control & 0x4) ? "DATA" : "AUDIO");
+      }
+
+      MDFN_printf("Leadout: %6d\n", toc.tracks[100].lba);
+      MDFN_printf("\n");
    }
-  }
 
-  mednafen_md5_finish(&layout_md5, LayoutMD5);
- }
+   // Calculate layout MD5.  The system emulation LoadCD() code is free to ignore this value and calculate
+   // its own, or to use it to look up a game in its database.
+   {
+      md5_context layout_md5;
 
- MDFN_printf("Using module: pcfx\n\n");
+      mednafen_md5_starts(&layout_md5);
 
- // TODO: include module name in hash
- memcpy(MDFNGameInfo->MD5, LayoutMD5, 16);
+      for(unsigned i = 0; i < CDInterfaces.size(); i++)
+      {
+         TOC toc;
 
- if(!(LoadCD(&CDInterfaces)))
- {
-  for(unsigned i = 0; i < CDInterfaces.size(); i++)
-   delete CDInterfaces[i];
-  CDInterfaces.clear();
+         CDInterfaces[i]->ReadTOC(&toc);
 
-  MDFNGameInfo = NULL;
-  return(0);
- }
+         mednafen_md5_update_u32_as_lsb(&layout_md5, toc.first_track);
+         mednafen_md5_update_u32_as_lsb(&layout_md5, toc.last_track);
+         mednafen_md5_update_u32_as_lsb(&layout_md5, toc.tracks[100].lba);
 
- //MDFNI_SetLayerEnableMask(~0ULL);
+         for(uint32 track = toc.first_track; track <= toc.last_track; track++)
+         {
+            mednafen_md5_update_u32_as_lsb(&layout_md5, toc.tracks[track].lba);
+            mednafen_md5_update_u32_as_lsb(&layout_md5, toc.tracks[track].control & 0x4);
+         }
+      }
 
- MDFN_ResetMessages();   // Save state, status messages, etc.
+      mednafen_md5_finish(&layout_md5, LayoutMD5);
+   }
 
- MDFN_LoadGameCheats(NULL);
- MDFNMP_InstallReadPatches();
+   MDFN_printf("Using module: pcfx\n\n");
 
- return(MDFNGameInfo);
+   // TODO: include module name in hash
+   memcpy(MDFNGameInfo->MD5, LayoutMD5, 16);
+
+   if(!(LoadCD(&CDInterfaces)))
+   {
+      for(unsigned i = 0; i < CDInterfaces.size(); i++)
+         delete CDInterfaces[i];
+      CDInterfaces.clear();
+
+      MDFNGameInfo = NULL;
+      return(0);
+   }
+
+   //MDFNI_SetLayerEnableMask(~0ULL);
+
+   MDFN_ResetMessages();   // Save state, status messages, etc.
+
+   MDFN_LoadGameCheats(NULL);
+   MDFNMP_InstallReadPatches();
+
+   return(MDFNGameInfo);
 }
 
 static MDFNGI *MDFNI_LoadGame(const char *name)
@@ -1371,7 +1383,7 @@ bool retro_load_game(const struct retro_game_info *info)
    overscan = false;
    environ_cb(RETRO_ENVIRONMENT_GET_OVERSCAN, &overscan);
 
-   check_variables();
+   check_variables(false);
 
    game = MDFNI_LoadGame(info->path);
    if (!game)
@@ -1570,7 +1582,7 @@ void retro_run()
    bool updated = false;
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
    {
-      check_variables();
+      check_variables(true);
       update_geometry(width, height);
    }
 

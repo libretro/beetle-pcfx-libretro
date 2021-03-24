@@ -30,6 +30,17 @@ extern "C" {
 
 struct retro_core_option_definition option_defs_us[] = {
    {
+      "pcfx_cdimagecache",
+      "CD Image Cache (Restart)",
+      "Keep the CD image in memory.",
+      {
+         { "disabled", NULL },
+         { "enabled", NULL },
+         { NULL, NULL},
+      },
+      "disabled"
+   },
+   {
       "pcfx_high_dotclock_width",
       "High Dotclock Width (Restart)",
       "Emulated width for 7.16MHz dot-clock mode. Lower values are faster, but will cause some degree of pixel distortion.",
