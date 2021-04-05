@@ -16,7 +16,6 @@
 #include "mednafen/git.h"
 #include "mednafen/general.h"
 #include "mednafen/md5.h"
-#include	"FileWrapper.h"
 #ifdef NEED_DEINTERLACER
 #include	"mednafen/video/Deinterlacer.h"
 #endif
@@ -1105,16 +1104,20 @@ static uint32_t input_type[MAX_PLAYERS] = {0};
 static uint16_t input_buf[MAX_PLAYERS] = {0};
 static int32_t  mousedata[MAX_PLAYERS][3] = {{0}, {0}};
 
-static bool ReadM3U(std::vector<std::string> &file_list, std::string path, unsigned depth = 0)
+static void ReadM3U(std::vector<std::string> &file_list, std::string path, unsigned depth = 0)
 {
    char linebuf[2048];
    std::string dir_path;
    std::vector<std::string> ret;
-   FileWrapper m3u_file(path.c_str(), MODE_READ, "M3U CD Set");
+   RFILE *fp = filestream_open(path.c_str(), RETRO_VFS_FILE_ACCESS_READ,
+         RETRO_VFS_FILE_ACCESS_HINT_NONE);
+
+   if (fp == NULL)
+      return;
 
    MDFN_GetFilePathComponents(path, &dir_path);
 
-   while(m3u_file.get_line(linebuf, sizeof(linebuf)))
+   while(filestream_gets(fp, linebuf, sizeof(linebuf)) != NULL)
    {
       std::string efp;
 
@@ -1131,13 +1134,13 @@ static bool ReadM3U(std::vector<std::string> &file_list, std::string path, unsig
          if(efp == path)
          {
             MDFN_Error(0, "M3U at \"%s\" references self.", efp.c_str());
-            return false;
+            goto end;
          }
 
          if(depth == 99)
          {
             MDFN_Error(0, "M3U load recursion too deep!");
-            return false;
+            goto end;
          }
 
          ReadM3U(file_list, efp, depth++);
@@ -1146,7 +1149,8 @@ static bool ReadM3U(std::vector<std::string> &file_list, std::string path, unsig
          file_list.push_back(efp);
    }
 
-   return true;
+end:
+   filestream_close(fp);
 }
 
 void MDFND_DispMessage(unsigned char *str)
