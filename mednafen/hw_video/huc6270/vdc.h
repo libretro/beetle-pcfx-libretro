@@ -1,6 +1,7 @@
 #ifndef __PCE_VDC_H
 #define __PCE_VDC_H
 
+#include <assert.h>
 #include "mednafen/lepacker.h"
 
 #define VDC_PIXEL_OUT_MASK	0x01FF

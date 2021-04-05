@@ -4,6 +4,7 @@
 #ifndef V810_CPU_H_
 #define V810_CPU_H_
 
+#include <assert.h>
 #include <vector>
 
 #include "v810_fp_ops.h"

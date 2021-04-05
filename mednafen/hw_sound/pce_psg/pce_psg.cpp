@@ -14,6 +14,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#include <assert.h>
 #include <math.h>
 #include <string.h>
 
@@ -26,39 +27,39 @@
 
 void PCE_PSG::SetVolume(double new_volume)
 {
-        for(int vl = 0; vl < 32; vl++)
-        {
-         double flub = 1.0 * new_volume * 8 / 6;
+   for(int vl = 0; vl < 32; vl++)
+   {
+      double flub = 1.0 * new_volume * 8 / 6;
 
-         if(vl)
-          flub /= powf(2, (double)1 / 4 * vl);                  // ~1.5dB reduction per increment of vl 
+      if(vl)
+         flub /= powf(2, (double)1 / 4 * vl);                  // ~1.5dB reduction per increment of vl 
 
-	 if(vl == 0x1F)
-	  flub = 0;
+      if(vl == 0x1F)
+         flub = 0;
 
-         for(int samp = 0; samp < 32; samp++)
-         {
-	  int eff_samp;
+      for(int samp = 0; samp < 32; samp++)
+      {
+         int eff_samp;
 
-	  if(revision == REVISION_HUC6280)
-	   eff_samp = samp * 2;
-	  else
-	   eff_samp = samp * 2 - 0x1F;
+         if(revision == REVISION_HUC6280)
+            eff_samp = samp * 2;
+         else
+            eff_samp = samp * 2 - 0x1F;
 
-	  dbtable[vl][samp] = (int32)(flub * eff_samp * 128); // * 256);
-	  dbtable_volonly[vl] = (int32)(flub * 65536);
+         dbtable[vl][samp] = (int32)(flub * eff_samp * 128); // * 256);
+         dbtable_volonly[vl] = (int32)(flub * 65536);
 
-	  // dbtable[vl][samp] = (int32)(flub * eff_samp * 128);
-	  // dbtable_volonly[vl] = (int32)(flub * 65536);
-	 }
-	}
+         // dbtable[vl][samp] = (int32)(flub * eff_samp * 128);
+         // dbtable_volonly[vl] = (int32)(flub * 65536);
+      }
+   }
 }
 
 // Note: Changing the 0x1F(not that there should be) would require changing the channel pseudo-off volume check logic later on.
 static const int scale_tab[] = 
 {
-        0x00, 0x03, 0x05, 0x07, 0x09, 0x0B, 0x0D, 0x0F,
-        0x10, 0x13, 0x15, 0x17, 0x19, 0x1B, 0x1D, 0x1F
+   0x00, 0x03, 0x05, 0x07, 0x09, 0x0B, 0x0D, 0x0F,
+   0x10, 0x13, 0x15, 0x17, 0x19, 0x1B, 0x1D, 0x1F
 };
 
 #define CLOCK_LFSR(lfsr) { unsigned int newbit = ((lfsr >> 0) ^ (lfsr >> 1) ^ (lfsr >> 11) ^ (lfsr >> 12) ^ (lfsr >> 17)) & 1; lfsr = (lfsr >> 1) | (newbit << 17); }

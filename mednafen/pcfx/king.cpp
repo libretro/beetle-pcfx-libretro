@@ -37,6 +37,7 @@
 #include <mmintrin.h>
 #endif
 
+#include <assert.h>
 #include <math.h>
 
 #include "pcfx.h"

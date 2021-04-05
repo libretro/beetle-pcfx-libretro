@@ -21,7 +21,6 @@
 
 #include "../mednafen.h"
 #include <math.h>
-#include <assert.h>
 #include <limits.h>
 #include <algorithm>
 
@@ -45,9 +44,6 @@ extern retro_get_cpu_features_t perf_get_cpu_features_cb;
 
 OwlBuffer::OwlBuffer()
 {
- assert(sizeof(I32_F_Pudding) == 4);
- assert(sizeof(float) == 4);
-
  memset(HRBuf, 0, sizeof(HRBuf));
 
  accum = 0;
@@ -258,8 +254,6 @@ static void kaiser_window( double* io, int count, double beta )
 
 static void gen_sinc( double* out, int size, double cutoff, double kaiser )
 {
-	assert( size % 2 == 0 ); // size must be enev
- 
 	int const half_size = size / 2;
 	double* const mid = &out [half_size];
  
@@ -659,17 +653,6 @@ OwlResampler::OwlResampler(double input_rate, double output_rate, double rate_er
  double k_beta;
  double k_d;
 
- for(int i = 0; i < 256; i++)
- {
-  int a = SDP2<int32, 3>(i);
-  int b = SDP2<int32, 3>(-i);
-  int c = i / (1 << 3);
-
-  assert(a == -b && a == c);
- }
-
- assert(sizeof(OwlBuffer::I32_F_Pudding) == 4);
-
  InputRate = input_rate;
  OutputRate = output_rate;
  RateError = rate_error;
@@ -739,8 +722,6 @@ OwlResampler::OwlResampler(double input_rate, double output_rate, double rate_er
 
   { 10.056, 6.40,  0.9333 }, // 1.0 - (6.40 / 96)
  };
-
- assert(quality >= 0 && quality <= 6);
 
  k_beta = QualityTable[quality].beta;
  k_d = QualityTable[quality].d;
@@ -822,8 +803,6 @@ OwlResampler::OwlResampler(double input_rate, double output_rate, double rate_er
  MDFN_printf("Adjusted number of coefficients per phase: %u\n", NumCoeffs);
  MDFN_printf("Adjusted nominal cutoff frequency: %f\n", InputRate * cutoff / 2);
 
- assert(NumCoeffs <= OwlBuffer::HRBUF_LEFTOVER_PADDING);
-
  FIR_Coeffs = (OwlBuffer::I32_F_Pudding **)malloc(sizeof(int32 **) * NumPhases);
  FIR_Coeffs_Real = (OwlBuffer::I32_F_Pudding **)malloc(sizeof(int32 **) * NumPhases);
 
@@ -880,7 +859,6 @@ OwlResampler::OwlResampler(double input_rate, double output_rate, double rate_er
  free(FilterBuf);
  FilterBuf = NULL;
 
- assert(debias_corner < (output_rate / 16));
  debias_multiplier = (uint32)(((uint64)1 << 16) * debias_corner / output_rate);
 
  //abort();

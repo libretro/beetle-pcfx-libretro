@@ -1,7 +1,6 @@
 #ifndef __MDFN_TYPES
 #define __MDFN_TYPES
 
-#include <assert.h>
 #include <stdint.h>
 
 typedef int8_t int8;
@@ -113,10 +112,5 @@ typedef unsigned char   Boolean; /* 0 or 1 */
 #endif
 
 #define MDFN_COLD
-
-#undef require
-#define require( expr ) assert( expr )
-
-#include "error.h"
 
 #endif

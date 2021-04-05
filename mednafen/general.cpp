@@ -26,6 +26,7 @@
 
 #include <string>
 
+#include "error.h"
 #include "general.h"
 #include "state.h"
 

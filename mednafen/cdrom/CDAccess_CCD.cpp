@@ -21,6 +21,7 @@
 
 #include <mednafen/mednafen.h>
 #include <mednafen/general.h>
+#include <mednafen/error.h>
 
 #include "CDAccess_CCD.h"
 

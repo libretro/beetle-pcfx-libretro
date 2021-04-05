@@ -1210,7 +1210,6 @@ static void DoNEC_GETDIRINFO(const uint8_t *cdb)
      offset += 0x14;
     }
 
-    assert((unsigned int)offset <= sizeof(data_in));
     data_in_size = offset;
     MDFN_en16msb(&data_in[0], offset - 2);
    }
@@ -2770,9 +2769,6 @@ uint32_t SCSICD_Run(scsicd_timestamp_t system_timestamp)
 {
  int32_t run_time = system_timestamp - lastts;
 
- if(system_timestamp < lastts)
-  assert(system_timestamp >= lastts);
-
  monotonic_timestamp += run_time;
 
  lastts = system_timestamp;
@@ -3020,8 +3016,6 @@ uint32_t SCSICD_Run(scsicd_timestamp_t system_timestamp)
    next_time = cdda_div_sexytime;
  }
 
- assert(next_time >= 0);
-
  return(next_time);
 }
 
@@ -3048,8 +3042,6 @@ void SCSICD_Init(int type, int cdda_time_div, int32_t* left_hrbuf, int32_t* righ
 {
  Cur_CDIF = NULL;
  TrayOpen = true;
-
- assert(SystemClock < 30000000);	// 30 million, sanity check.
 
  monotonic_timestamp = 0;
  lastts = 0;

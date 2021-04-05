@@ -11,6 +11,7 @@
 #include <retro_timers.h>
 #include <streams/file_stream.h>
 
+#include "mednafen/error.h"
 #include "mednafen/mednafen.h"
 #include "mednafen/mempatcher.h"
 #include "mednafen/git.h"

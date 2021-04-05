@@ -20,6 +20,7 @@
 #include <sys/types.h>
 #include "cdromif.h"
 #include "CDAccess.h"
+#include "../error.h"
 #include "../general.h"
 
 #include <algorithm>
@@ -298,8 +299,6 @@ int CDIF_MT::ReadThreadStart()
                   static const int initial_ra = 1;
                   static const int speedmult_ra = 2;
                   int32_t new_lba = msg.args[0];
-
-                  assert((unsigned int)max_ra < (SBSize / 4));
 
                   if(new_lba == (last_read_lba + 1))
                   {
