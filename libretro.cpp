@@ -912,6 +912,82 @@ static bool cdimagecache = false;
 
 const char *mednafen_core_str = MEDNAFEN_CORE_NAME;
 
+static std::vector<CDIF *> CDInterfaces;	// FIXME: Cleanup on error out.
+// TODO: LoadCommon()
+
+//
+// Disk Interface
+//
+
+static bool cd_eject_state;
+
+static bool disk_set_eject_state( bool ejected )
+{
+   if ( ejected == cd_eject_state )
+      return false;
+
+   cd_eject_state = ejected;
+   DoSimpleCommand(ejected ? MDFN_MSC_EJECT_DISK : MDFN_MSC_INSERT_DISK);
+   return true;
+}
+
+static bool disk_get_eject_state(void)
+{
+   return cd_eject_state;
+}
+
+static bool disk_set_image_index(unsigned index)
+{
+   // only listen if the tray is open
+   if ( cd_eject_state == true )
+   {
+      CD_SelectedDisc = index;
+      if (CD_SelectedDisc > CDInterfaces.size())
+         CD_SelectedDisc = CDInterfaces.size();
+
+      // Very hacky. CDSelect command will want to increment first.
+      CD_SelectedDisc--;
+
+      DoSimpleCommand(MDFN_MSC_SELECT_DISK);
+      return true;
+   }
+
+   return false;
+}
+
+static unsigned disk_get_num_images(void)
+{
+   return CDInterfaces.size();
+}
+
+unsigned disk_get_image_index(void)
+{
+   return CD_SelectedDisc;
+}
+
+static bool disk_replace_image_index(unsigned index, const struct retro_game_info *info)
+{
+   log_cb(RETRO_LOG_INFO, "disk_replace_image_index(%d,*info) called.\n", index);
+   return false;
+}
+
+static bool disk_add_image_index(void)
+{
+   log_cb(RETRO_LOG_INFO, "disk_add_image_index called.\n");
+   return true;
+}
+
+static struct retro_disk_control_callback disk_interface =
+{
+   disk_set_eject_state,
+   disk_get_eject_state,
+   disk_get_image_index,
+   disk_set_image_index,
+   disk_get_num_images,
+   disk_replace_image_index,
+   disk_add_image_index,
+};
+
 static void check_system_specs(void)
 {
    unsigned level = 15;
@@ -925,6 +1001,8 @@ void retro_init(void)
       log_cb = log.log;
    else 
       log_cb = NULL;
+
+   environ_cb(RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE, &disk_interface);
 
    CDUtility_Init();
 
@@ -1164,9 +1242,6 @@ void MDFN_ResetMessages(void)
 {
  MDFND_DispMessage(NULL);
 }
-
- static std::vector<CDIF *> CDInterfaces;	// FIXME: Cleanup on error out.
-// TODO: LoadCommon()
 
 MDFNGI *MDFNI_LoadCD(const char *devicename)
 {
