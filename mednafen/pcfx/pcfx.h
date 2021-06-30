@@ -33,9 +33,9 @@ extern V810 PCFX_V810;
 uint8 MDFN_FASTCALL mem_peekbyte(const v810_timestamp_t timestamp, const uint32 A);
 uint16 MDFN_FASTCALL mem_peekhword(const v810_timestamp_t timestamp, const uint32 A);
 
-int32 MDFN_FASTCALL pcfx_event_handler(const v810_timestamp_t timestamp);
+// int32 MDFN_FASTCALL pcfx_event_handler(const v810_timestamp_t timestamp);
 
-void ForceEventUpdates(const uint32 timestamp);
+// void ForceEventUpdates(const uint32 timestamp);
 
 extern VDC *fx_vdc_chips[2];
 

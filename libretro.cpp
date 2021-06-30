@@ -138,7 +138,7 @@ static bool BRAMDisabled;	// Cached at game load, don't remove this caching beha
 
 static v810_timestamp_t next_pad_ts, next_timer_ts, next_adpcm_ts, next_king_ts;
 
-void PCFX_FixNonEvents(void)
+static void PCFX_FixNonEvents(void)
 {
  if(next_pad_ts & 0x40000000)
   next_pad_ts = PCFX_EVENT_NONONO;
@@ -153,7 +153,7 @@ void PCFX_FixNonEvents(void)
   next_king_ts = PCFX_EVENT_NONONO;
 }
 
-void PCFX_Event_Reset(void)
+static void PCFX_Event_Reset(void)
 {
  next_pad_ts = PCFX_EVENT_NONONO;
  next_timer_ts = PCFX_EVENT_NONONO;
@@ -210,7 +210,7 @@ void PCFX_SetEvent(const int type, const v810_timestamp_t next_timestamp)
   PCFX_V810.SetEventNT(next_timestamp);
 }
 
-int32 MDFN_FASTCALL pcfx_event_handler(const v810_timestamp_t timestamp)
+static int32 MDFN_FASTCALL pcfx_event_handler(const v810_timestamp_t timestamp)
 {
      if(timestamp >= next_king_ts)
       next_king_ts = KING_Update(timestamp);
@@ -234,7 +234,7 @@ int32 MDFN_FASTCALL pcfx_event_handler(const v810_timestamp_t timestamp)
 }
 
 // Called externally from debug.cpp
-void ForceEventUpdates(const uint32 timestamp)
+static void ForceEventUpdates(const uint32 timestamp)
 {
  next_king_ts = KING_Update(timestamp);
  next_pad_ts = FXINPUT_Update(timestamp);
@@ -1019,7 +1019,7 @@ static unsigned disk_get_num_images(void)
    return CDInterfaces.size();
 }
 
-unsigned disk_get_image_index(void)
+static unsigned disk_get_image_index(void)
 {
    return CD_SelectedDisc;
 }
@@ -1380,7 +1380,7 @@ void MDFND_DispMessage(unsigned char *str)
       log_cb(RETRO_LOG_INFO, "%s\n", str);
 }
 
-void MDFN_ResetMessages(void)
+static void MDFN_ResetMessages(void)
 {
  MDFND_DispMessage(NULL);
 }
@@ -2021,11 +2021,9 @@ size_t retro_get_memory_size(unsigned type)
    return 0;
 }
 
-void retro_cheat_reset(void)
-{}
+void retro_cheat_reset(void) {}
 
-void retro_cheat_set(unsigned, bool, const char *)
-{}
+void retro_cheat_set(unsigned, bool, const char *) {}
 
 #ifdef _WIN32
 static void sanitize_path(std::string &path)
@@ -2037,8 +2035,7 @@ static void sanitize_path(std::string &path)
 }
 #endif
 
-void MDFND_MidSync(const EmulateSpecStruct *)
-{}
+void MDFND_MidSync(const EmulateSpecStruct *) {}
 
 void MDFN_MidLineUpdate(EmulateSpecStruct *espec, int y)
 {
