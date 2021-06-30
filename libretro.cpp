@@ -393,13 +393,21 @@ static void VDCB_IRQHook(bool asserted)
  PCFXIRQ_Assert(PCFXIRQ_SOURCE_VDCB, asserted);
 }
 
-static void SetRegGroups(void);
+#ifdef _WIN32
+   char slash = '\\';
+#else
+   char slash = '/';
+#endif
 
 static bool LoadCommon(std::vector<CDIF *> *CDInterfaces)
 {
-   V810_Emu_Mode cpu_mode;
-   std::string biospath    = MDFN_MakeFName(MDFNMKF_FIRMWARE, 0, MDFN_GetSettingS("pcfx.bios"));
-   MDFNFILE *BIOSFile      = file_open(biospath.c_str());
+   V810_Emu_Mode cpu_mode  = _V810_EMU_MODE_COUNT;
+   std::string biospath    = retro_base_directory + slash + MDFN_GetSettingS("pcfx.bios");
+   MDFNFILE *BIOSFile      = NULL;
+
+   log_cb(RETRO_LOG_INFO, "Loading bios: %s\n", biospath.c_str());
+
+   BIOSFile = file_open(biospath.c_str());
 
    if(!BIOSFile)
       return(0);
@@ -819,15 +827,15 @@ static void DoSimpleCommand(int cmd)
  switch(cmd)
  {
    case MDFN_MSC_INSERT_DISK:
-		PCFX_CDInsertEject();
+      PCFX_CDInsertEject();
                 break;
 
    case MDFN_MSC_SELECT_DISK:
-		PCFX_CDSelect();
+      PCFX_CDSelect();
                 break;
 
    case MDFN_MSC_EJECT_DISK:
-		PCFX_CDEject();
+      PCFX_CDEject();
                 break;
 
   case MDFN_MSC_RESET: PCFX_Reset(); break;
@@ -1033,49 +1041,49 @@ static bool disk_add_image_index(void)
 
 static bool disk_set_initial_image(unsigned index, const char *path)
 {
-	if (string_is_empty(path))
-		return false;
+   if (string_is_empty(path))
+      return false;
 
-	disk_control_ext_info.initial_index = index;
-	disk_control_ext_info.initial_path  = path;
+   disk_control_ext_info.initial_index = index;
+   disk_control_ext_info.initial_path  = path;
 
-	return true;
+   return true;
 }
 
 static bool disk_get_image_path(unsigned index, char *path, size_t len)
 {
-	if (len < 1)
-		return false;
+   if (len < 1)
+      return false;
 
-	if ((index < disk_get_num_images()) &&
-		 (index < disk_control_ext_info.image_paths.size()))
-	{
-		if (!string_is_empty(disk_control_ext_info.image_paths[index].c_str()))
-		{
-			strlcpy(path, disk_control_ext_info.image_paths[index].c_str(), len);
-			return true;
-		}
-	}
+   if ((index < disk_get_num_images()) &&
+       (index < disk_control_ext_info.image_paths.size()))
+   {
+      if (!string_is_empty(disk_control_ext_info.image_paths[index].c_str()))
+      {
+         strlcpy(path, disk_control_ext_info.image_paths[index].c_str(), len);
+         return true;
+      }
+   }
 
-	return false;
+   return false;
 }
 
 static bool disk_get_image_label(unsigned index, char *label, size_t len)
 {
-	if (len < 1)
-		return false;
+   if (len < 1)
+      return false;
 
-	if ((index < disk_get_num_images()) &&
-		 (index < disk_control_ext_info.image_labels.size()))
-	{
-		if (!string_is_empty(disk_control_ext_info.image_labels[index].c_str()))
-		{
-			strlcpy(label, disk_control_ext_info.image_labels[index].c_str(), len);
-			return true;
-		}
-	}
+   if ((index < disk_get_num_images()) &&
+       (index < disk_control_ext_info.image_labels.size()))
+   {
+      if (!string_is_empty(disk_control_ext_info.image_labels[index].c_str()))
+      {
+         strlcpy(label, disk_control_ext_info.image_labels[index].c_str(), len);
+         return true;
+      }
+   }
 
-	return false;
+   return false;
 }
 
 static struct retro_disk_control_callback disk_interface =
@@ -1091,16 +1099,16 @@ static struct retro_disk_control_callback disk_interface =
 
 static struct retro_disk_control_ext_callback disk_interface_ext =
 {
-	disk_set_eject_state,
-	disk_get_eject_state,
-	disk_get_image_index,
-	disk_set_image_index,
-	disk_get_num_images,
-	disk_replace_image_index,
-	disk_add_image_index,
-	disk_set_initial_image,
-	disk_get_image_path,
-	disk_get_image_label,
+   disk_set_eject_state,
+   disk_get_eject_state,
+   disk_get_image_index,
+   disk_set_image_index,
+   disk_get_num_images,
+   disk_replace_image_index,
+   disk_add_image_index,
+   disk_set_initial_image,
+   disk_get_image_path,
+   disk_get_image_label,
 };
 
 static void disc_clear(void)
@@ -1167,7 +1175,7 @@ void retro_init(void)
    
    if (environ_cb(RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY, &dir) && dir)
    {
-	  // If save directory is defined use it, otherwise use system directory
+     // If save directory is defined use it, otherwise use system directory
       retro_save_directory = *dir ? dir : retro_base_directory;
       // Make sure that we don't have any lingering slashes, etc, as they break Windows.
       size_t last = retro_save_directory.find_last_not_of("/\\");
@@ -1181,7 +1189,7 @@ void retro_init(void)
       /* TODO: Add proper fallback */
       if (log_cb)
          log_cb(RETRO_LOG_WARN, "Save directory is not defined. Fallback on using SYSTEM directory ...\n");
-	  retro_save_directory = retro_base_directory;
+     retro_save_directory = retro_base_directory;
    }      
 
 #if defined(WANT_16BPP) && defined(FRONTEND_SUPPORTS_RGB565)
@@ -1628,8 +1636,8 @@ bool retro_load_game(const struct retro_game_info *info)
    surf = new MDFN_Surface(NULL, FB_WIDTH, FB_HEIGHT, FB_WIDTH, pix_fmt);
 
 #ifdef NEED_DEINTERLACER
-	PrevInterlaced = false;
-	deint.ClearState();
+   PrevInterlaced = false;
+   deint.ClearState();
 #endif
 
    for (unsigned i = 0; i < MAX_PLAYERS; i++)
@@ -1822,7 +1830,7 @@ void retro_run()
    }
 
    if (resolution_changed)
-	update_geometry(width, height);
+   update_geometry(width, height);
 
    video_frames++;
    audio_frames += spec.SoundBufSize;
@@ -1923,7 +1931,7 @@ void retro_set_environment(retro_environment_t cb)
    vfs_iface_info.required_interface_version = 1;
    vfs_iface_info.iface                      = NULL;
    if (environ_cb(RETRO_ENVIRONMENT_GET_VFS_INTERFACE, &vfs_iface_info))
-	   filestream_vfs_init(&vfs_iface_info);
+      filestream_vfs_init(&vfs_iface_info);
 }
 
 void retro_set_audio_sample(retro_audio_sample_t cb)
@@ -2050,33 +2058,6 @@ static void sanitize_path(std::string &path)
          path[i] = '\\';
 }
 #endif
-
-// Use a simpler approach to make sure that things go right for libretro.
-std::string MDFN_MakeFName(MakeFName_Type type, int id1, const char *cd1)
-{
-#ifdef _WIN32
-   char slash = '\\';
-#else
-   char slash = '/';
-#endif
-   std::string ret;
-
-   switch (type)
-   {
-      case MDFNMKF_FIRMWARE:
-         ret = retro_base_directory + slash + std::string(cd1);
-#ifdef _WIN32
-         sanitize_path(ret); // Because Windows path handling is mongoloid.
-#endif
-         break;
-      default:	  
-         break;
-   }
-
-   if (log_cb)
-      log_cb(RETRO_LOG_INFO, "MDFN_MakeFName: %s\n", ret.c_str());
-   return ret;
-}
 
 void MDFND_MidSync(const EmulateSpecStruct *)
 {}
