@@ -65,6 +65,18 @@ static bool failed_init;
 std::string retro_base_directory;
 std::string retro_save_directory;
 
+static bool cd_eject_state;
+
+typedef struct
+{
+   unsigned initial_index;
+   std::string initial_path;
+   std::vector<std::string> image_paths;
+   std::vector<std::string> image_labels;
+} disk_control_ext_info_t;
+
+static disk_control_ext_info_t disk_control_ext_info;
+
 /* Mednafen - Multi-system Emulator
  *
  * This program is free software; you can redistribute it and/or modify
@@ -491,8 +503,18 @@ static bool LoadCommon(std::vector<CDIF *> *CDInterfaces)
    CD_TrayOpen = false;
    CD_SelectedDisc = 0;
 
+   /* Attempt to set initial disk index */
+   if ((disk_control_ext_info.initial_index > 0) &&
+         (disk_control_ext_info.initial_index < (*CDInterfaces).size()))
+      if (disk_control_ext_info.initial_index <
+            disk_control_ext_info.image_paths.size())
+         if (string_is_equal(
+               disk_control_ext_info.image_paths[disk_control_ext_info.initial_index].c_str(),
+               disk_control_ext_info.initial_path.c_str()))
+            CD_SelectedDisc = (int)disk_control_ext_info.initial_index;
+
    SCSICD_SetDisc(true, NULL, true);
-   SCSICD_SetDisc(false, (*CDInterfaces)[0], true);
+   SCSICD_SetDisc(false, (*CDInterfaces)[CD_SelectedDisc], true);
 
 
 
@@ -912,6 +934,197 @@ static bool cdimagecache = false;
 
 const char *mednafen_core_str = MEDNAFEN_CORE_NAME;
 
+static std::vector<CDIF *> CDInterfaces;	// FIXME: Cleanup on error out.
+// TODO: LoadCommon()
+
+static void extract_basename(char *buf, const char *path, size_t size)
+{
+   const char *base = strrchr(path, '/');
+   if (!base)
+      base = strrchr(path, '\\');
+   if (!base)
+      base = path;
+
+   if (*base == '\\' || *base == '/')
+      base++;
+
+   strncpy(buf, base, size - strlen(buf) - 1);
+   buf[size - 1] = '\0';
+
+   char *ext = strrchr(buf, '.');
+   if (ext)
+      *ext = '\0';
+}
+
+static void extract_directory(char *buf, const char *path, size_t size)
+{
+   strncpy(buf, path, size - 1);
+   buf[size - 1] = '\0';
+
+   char *base = strrchr(buf, '/');
+   if (!base)
+      base = strrchr(buf, '\\');
+
+   if (base)
+      *base = '\0';
+   else
+      buf[0] = '\0';
+}
+
+//
+// Disk Interface
+//
+
+static bool disk_set_eject_state( bool ejected )
+{
+   if ( ejected == cd_eject_state )
+      return false;
+
+   cd_eject_state = ejected;
+   DoSimpleCommand(ejected ? MDFN_MSC_EJECT_DISK : MDFN_MSC_INSERT_DISK);
+   return true;
+}
+
+static bool disk_get_eject_state(void)
+{
+   return cd_eject_state;
+}
+
+static bool disk_set_image_index(unsigned index)
+{
+   // only listen if the tray is open
+   if ( cd_eject_state == true )
+   {
+      CD_SelectedDisc = index;
+      if (CD_SelectedDisc > CDInterfaces.size())
+         CD_SelectedDisc = CDInterfaces.size();
+
+      // Very hacky. CDSelect command will want to increment first.
+      CD_SelectedDisc--;
+
+      DoSimpleCommand(MDFN_MSC_SELECT_DISK);
+      return true;
+   }
+
+   return false;
+}
+
+static unsigned disk_get_num_images(void)
+{
+   return CDInterfaces.size();
+}
+
+unsigned disk_get_image_index(void)
+{
+   return CD_SelectedDisc;
+}
+
+static bool disk_replace_image_index(unsigned index, const struct retro_game_info *info)
+{
+   log_cb(RETRO_LOG_INFO, "disk_replace_image_index(%d,*info) called.\n", index);
+   return false;
+}
+
+static bool disk_add_image_index(void)
+{
+   log_cb(RETRO_LOG_INFO, "disk_add_image_index called.\n");
+   return true;
+}
+
+static bool disk_set_initial_image(unsigned index, const char *path)
+{
+	if (string_is_empty(path))
+		return false;
+
+	disk_control_ext_info.initial_index = index;
+	disk_control_ext_info.initial_path  = path;
+
+	return true;
+}
+
+static bool disk_get_image_path(unsigned index, char *path, size_t len)
+{
+	if (len < 1)
+		return false;
+
+	if ((index < disk_get_num_images()) &&
+		 (index < disk_control_ext_info.image_paths.size()))
+	{
+		if (!string_is_empty(disk_control_ext_info.image_paths[index].c_str()))
+		{
+			strlcpy(path, disk_control_ext_info.image_paths[index].c_str(), len);
+			return true;
+		}
+	}
+
+	return false;
+}
+
+static bool disk_get_image_label(unsigned index, char *label, size_t len)
+{
+	if (len < 1)
+		return false;
+
+	if ((index < disk_get_num_images()) &&
+		 (index < disk_control_ext_info.image_labels.size()))
+	{
+		if (!string_is_empty(disk_control_ext_info.image_labels[index].c_str()))
+		{
+			strlcpy(label, disk_control_ext_info.image_labels[index].c_str(), len);
+			return true;
+		}
+	}
+
+	return false;
+}
+
+static struct retro_disk_control_callback disk_interface =
+{
+   disk_set_eject_state,
+   disk_get_eject_state,
+   disk_get_image_index,
+   disk_set_image_index,
+   disk_get_num_images,
+   disk_replace_image_index,
+   disk_add_image_index,
+};
+
+static struct retro_disk_control_ext_callback disk_interface_ext =
+{
+	disk_set_eject_state,
+	disk_get_eject_state,
+	disk_get_image_index,
+	disk_set_image_index,
+	disk_get_num_images,
+	disk_replace_image_index,
+	disk_add_image_index,
+	disk_set_initial_image,
+	disk_get_image_path,
+	disk_get_image_label,
+};
+
+static void disc_clear(void)
+{
+   disk_control_ext_info.initial_index = 0;
+   disk_control_ext_info.initial_path.clear();
+   disk_control_ext_info.image_paths.clear();
+   disk_control_ext_info.image_labels.clear();
+}
+
+static void disc_init(void)
+{
+   unsigned dci_version = 0;
+
+   cd_eject_state  = false;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_DISK_CONTROL_INTERFACE_VERSION, &dci_version) && (dci_version >= 1))
+      environ_cb(RETRO_ENVIRONMENT_SET_DISK_CONTROL_EXT_INTERFACE, &disk_interface_ext);
+   else
+      environ_cb(RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE, &disk_interface);
+
+   disc_clear();
+}
+
 static void check_system_specs(void)
 {
    unsigned level = 15;
@@ -925,6 +1138,8 @@ void retro_init(void)
       log_cb = log.log;
    else 
       log_cb = NULL;
+
+   disc_init(); // Initialize disc control interface
 
    CDUtility_Init();
 
@@ -1165,9 +1380,6 @@ void MDFN_ResetMessages(void)
  MDFND_DispMessage(NULL);
 }
 
- static std::vector<CDIF *> CDInterfaces;	// FIXME: Cleanup on error out.
-// TODO: LoadCommon()
-
 MDFNGI *MDFNI_LoadCD(const char *devicename)
 {
    uint8 LayoutMD5[16];
@@ -1176,20 +1388,33 @@ MDFNGI *MDFNI_LoadCD(const char *devicename)
 
    if(devicename && strlen(devicename) > 4 && !strcasecmp(devicename + strlen(devicename) - 4, ".m3u"))
    {
-      std::vector<std::string> file_list;
+      ReadM3U(disk_control_ext_info.image_paths, devicename);
 
-      ReadM3U(file_list, devicename);
-
-      for(unsigned i = 0; i < file_list.size(); i++)
+      for(unsigned i = 0; i < disk_control_ext_info.image_paths.size(); i++)
       {
-         CDIF *cdif   = CDIF_Open(file_list[i].c_str(), cdimagecache);
+         char image_label[4096];
+
+         image_label[0] = '\0';
+
+         CDIF *cdif   = CDIF_Open(disk_control_ext_info.image_paths[i].c_str(), cdimagecache);
          CDInterfaces.push_back(cdif);
+
+         extract_basename(
+            image_label, disk_control_ext_info.image_paths[i].c_str(),
+            sizeof(image_label));
+         disk_control_ext_info.image_labels.push_back(image_label);
       }
    }
    else
    {
+      char image_label[4096];
+      image_label[0] = '\0';
       CDIF *cdif   = CDIF_Open(devicename, cdimagecache);
       CDInterfaces.push_back(cdif);
+
+      disk_control_ext_info.image_paths.push_back(devicename);
+      extract_basename(image_label, devicename, sizeof(image_label));
+      disk_control_ext_info.image_labels.push_back(image_label);
    }
 
 #ifdef DEBUG
@@ -1251,6 +1476,9 @@ MDFNGI *MDFNI_LoadCD(const char *devicename)
       CDInterfaces.clear();
 
       MDFNGameInfo = NULL;
+
+      disc_clear();
+
       return(0);
    }
 
@@ -1434,6 +1662,8 @@ void retro_unload_game(void)
       return;
 
    MDFNI_CloseGame();
+
+   disc_clear();
 }
 
 static void update_input(void)
