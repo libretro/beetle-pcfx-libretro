@@ -1894,11 +1894,12 @@ void retro_set_environment(retro_environment_t cb)
    static const struct retro_controller_description pads[] = {
       { "PCFX Joypad", RETRO_DEVICE_JOYPAD },
       { "PCFX Mouse", RETRO_DEVICE_MOUSE },
+      { NULL, 0 },
    };
 
    static const struct retro_controller_info ports[] = {
-      { pads, 2 },
-      { pads, 2 },
+      { pads, 3 },
+      { pads, 3 },
       { 0 },
    };
 
