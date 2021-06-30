@@ -1639,7 +1639,7 @@ bool retro_load_game(const struct retro_game_info *info)
    return true;
 }
 
-static void MDFNI_CloseGame(void)
+void retro_unload_game(void)
 {
    if(!MDFNGameInfo)
       return;
@@ -1655,14 +1655,6 @@ static void MDFNI_CloseGame(void)
    for(unsigned i = 0; i < CDInterfaces.size(); i++)
       delete CDInterfaces[i];
    CDInterfaces.clear();
-}
-
-void retro_unload_game(void)
-{
-   if (!MDFNGameInfo)
-      return;
-
-   MDFNI_CloseGame();
 
    disc_clear();
 }
