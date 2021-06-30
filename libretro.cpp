@@ -41,8 +41,6 @@
 
 #include "libretro_core_options.h"
 
-static MDFNGI *game;
-
 struct retro_perf_callback perf_cb;
 retro_get_cpu_features_t perf_get_cpu_features_cb = NULL;
 retro_log_printf_t log_cb;
@@ -927,8 +925,8 @@ static Deinterlacer deint;
 #define MEDNAFEN_CORE_VERSION "v0.9.36.5"
 #define MEDNAFEN_CORE_EXTENSIONS "cue|ccd|toc|chd"
 #define MEDNAFEN_CORE_TIMING_FPS 59.94
-#define MEDNAFEN_CORE_GEOMETRY_BASE_W (game->nominal_width)
-#define MEDNAFEN_CORE_GEOMETRY_BASE_H (game->nominal_height)
+#define MEDNAFEN_CORE_GEOMETRY_BASE_W (MDFNGameInfo->nominal_width)
+#define MEDNAFEN_CORE_GEOMETRY_BASE_H (MDFNGameInfo->nominal_height)
 #define MEDNAFEN_CORE_GEOMETRY_MAX_W 1024
 #define MEDNAFEN_CORE_GEOMETRY_MAX_H 480
 #define MEDNAFEN_CORE_GEOMETRY_ASPECT_RATIO (4.0 / 3.0)
@@ -1387,7 +1385,7 @@ void MDFN_ResetMessages(void)
  MDFND_DispMessage(NULL);
 }
 
-MDFNGI *MDFNI_LoadCD(const char *devicename)
+static bool MDFNI_LoadCD(const char *devicename)
 {
    uint8 LayoutMD5[16];
 
@@ -1486,7 +1484,7 @@ MDFNGI *MDFNI_LoadCD(const char *devicename)
 
       disc_clear();
 
-      return(0);
+      return false;
    }
 
    //MDFNI_SetLayerEnableMask(~0ULL);
@@ -1496,17 +1494,17 @@ MDFNGI *MDFNI_LoadCD(const char *devicename)
    MDFN_LoadGameCheats(NULL);
    MDFNMP_InstallReadPatches();
 
-   return(MDFNGameInfo);
+   return true;
 }
 
-static MDFNGI *MDFNI_LoadGame(const char *name)
+static bool MDFNI_LoadGame(const char *name)
 {
    MDFNGameInfo = &EmulatedPCFX;
 
    if(strlen(name) > 4 && (!strcasecmp(name + strlen(name) - 4, ".cue") || !strcasecmp(name + strlen(name) - 4, ".ccd") || !strcasecmp(name + strlen(name) - 4, ".chd") || !strcasecmp(name + strlen(name) - 4, ".toc") || !strcasecmp(name + strlen(name) - 4, ".m3u")))
       return(MDFNI_LoadCD(name));
 
-   return NULL;
+   return false;
 }
 
 bool retro_load_game(const struct retro_game_info *info)
@@ -1622,8 +1620,7 @@ bool retro_load_game(const struct retro_game_info *info)
 
    check_variables(false);
 
-   game = MDFNI_LoadGame(info->path);
-   if (!game)
+   if (!MDFNI_LoadGame(info->path))
       return false;
 
    MDFN_PixelFormat pix_fmt(MDFN_COLORSPACE_RGB, 16, 8, 0, 24);
@@ -1639,7 +1636,7 @@ bool retro_load_game(const struct retro_game_info *info)
    for (unsigned i = 0; i < MAX_PLAYERS; i++)
       FXINPUT_SetInput(i, "gamepad", &input_buf[i]);
 
-   return game;
+   return true;
 }
 
 static void MDFNI_CloseGame(void)
@@ -1662,7 +1659,7 @@ static void MDFNI_CloseGame(void)
 
 void retro_unload_game(void)
 {
-   if (!game)
+   if (!MDFNGameInfo)
       return;
 
    MDFNI_CloseGame();
@@ -1742,8 +1739,6 @@ void update_geometry(unsigned width, unsigned height)
 
 void retro_run()
 {
-   MDFNGI *curgame = game;
-
    input_poll_cb();
 
    update_input();
@@ -1798,7 +1793,7 @@ void retro_run()
       PrevInterlaced = false;
 #endif
 
-   int16 *const SoundBuf = spec.SoundBuf + spec.SoundBufSizeALMS * curgame->soundchan;
+   int16 *const SoundBuf = spec.SoundBuf + spec.SoundBufSizeALMS * MDFNGameInfo->soundchan;
    int32 SoundBufSize = spec.SoundBufSize - spec.SoundBufSizeALMS;
    const int32 SoundBufMaxSize = spec.SoundBufMaxSize - spec.SoundBufSizeALMS;
 
@@ -2063,7 +2058,7 @@ void MDFN_MidLineUpdate(EmulateSpecStruct *espec, int y)
  //MDFND_MidLineUpdate(espec, y);
 }
 
-MDFNGI *MDFNGameInfo = &EmulatedPCFX;
+MDFNGI *MDFNGameInfo = NULL;
 
 /* forward declarations */
 extern void MDFND_DispMessage(unsigned char *str);
