@@ -64,6 +64,8 @@ static std::string retro_save_directory;
 
 static bool cd_eject_state;
 
+static bool libretro_supports_bitmasks = false;
+
 typedef struct
 {
    unsigned initial_index;
@@ -1181,6 +1183,9 @@ void retro_init(void)
    setting_last_scanline = 239;
 
    check_system_specs();
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_INPUT_BITMASKS, NULL))
+      libretro_supports_bitmasks = true;
 }
 
 void retro_reset(void)
@@ -1652,10 +1657,19 @@ static void update_input(void)
       switch (input_type[j])
       {
          case RETRO_DEVICE_JOYPAD:
-            for (unsigned i = 0; i < MAX_BUTTONS; i++)
-               input_buf[j] |= map[i] != -1u &&
-                  input_state_cb(j, RETRO_DEVICE_JOYPAD, 0, map[i]) ? (1 << i) : 0;
-
+            if (libretro_supports_bitmasks)
+            {
+               int16_t ret = input_state_cb(j, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_MASK);
+               for (unsigned i = 0; i < MAX_BUTTONS; i++)
+                  input_buf[j] |= (map[i] != -1u) &&
+                     (ret & (1 << map[i])) ? (1 << i) : 0;
+            }
+            else
+            {
+               for (unsigned i = 0; i < MAX_BUTTONS; i++)
+                  input_buf[j] |= (map[i] != -1u) &&
+                     (input_state_cb(j, RETRO_DEVICE_JOYPAD, 0, i)) ? (1 << i) : 0;
+            }
 #ifdef MSB_FIRST
             union {
                uint8_t b[2];
