@@ -1138,8 +1138,6 @@ void retro_init(void)
          last++;
 
       retro_base_directory = retro_base_directory.substr(0, last);
-
-      return;
    }
    else
    {
