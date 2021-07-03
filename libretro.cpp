@@ -518,15 +518,15 @@ static bool LoadCommon(std::vector<CDIF *> *CDInterfaces)
    SCSICD_SetDisc(true, NULL, true);
    SCSICD_SetDisc(false, (*CDInterfaces)[CD_SelectedDisc], true);
 
-   MDFNGameInfo->fps = (uint32)((double)7159090.90909090 / 455 / 263 * 65536 * 256);
+   EmulatedPCFX.fps = (uint32)((double)7159090.90909090 / 455 / 263 * 65536 * 256);
 
-   MDFNGameInfo->nominal_height = MDFN_GetSettingUI("pcfx.slend") - MDFN_GetSettingUI("pcfx.slstart") + 1;
+   EmulatedPCFX.nominal_height = MDFN_GetSettingUI("pcfx.slend") - MDFN_GetSettingUI("pcfx.slstart") + 1;
 
    // Emulation raw framebuffer image should always be of 256 width when the pcfx.high_dotclock_width setting is set to "256",
    // but it could be either 256 or 341 when the setting is set to "341", so stay with 1024 in that case so we won't have
    // a messed up aspect ratio in our recorded QuickTime movies.
-   MDFNGameInfo->lcm_width = (MDFN_GetSettingUI("pcfx.high_dotclock_width") == 256) ? 256 : 1024;
-   MDFNGameInfo->lcm_height = MDFNGameInfo->nominal_height;
+   EmulatedPCFX.lcm_width = (MDFN_GetSettingUI("pcfx.high_dotclock_width") == 256) ? 256 : 1024;
+   EmulatedPCFX.lcm_height = EmulatedPCFX.nominal_height;
 
    MDFNMP_Init(1024 * 1024, ((uint64)1 << 32) / (1024 * 1024));
    MDFNMP_AddRAM(2048 * 1024, 0x00000000, RAM);
@@ -689,7 +689,7 @@ FoundIt: ;
       }
    } // end: for (unsigned if_disc = 0; if_disc < CDInterfaces->size(); if_disc++)
 
-   MDFN_printf("CD Layout MD5:   0x%s\n", mednafen_md5_asciistr(MDFNGameInfo->MD5));
+   MDFN_printf("CD Layout MD5:   0x%s\n", mednafen_md5_asciistr(EmulatedPCFX.MD5));
 }
 
 // PC-FX BIOS will look at all data tracks(not just the first one), in contrast to the PCE CD BIOS, which only looks
@@ -732,7 +732,7 @@ static int LoadCD(std::vector<CDIF *> *CDInterfaces)
 
    MDFN_printf("Emulated CD-ROM drive speed: %ux\n", (unsigned int)MDFN_GetSettingUI("pcfx.cdspeed"));
 
-   MDFNGameInfo->GameType = GMT_CDROM;
+   EmulatedPCFX.GameType = GMT_CDROM;
 
    PCFX_Power();
 
@@ -904,8 +904,8 @@ static Deinterlacer deint;
 #define MEDNAFEN_CORE_VERSION "v0.9.36.5"
 #define MEDNAFEN_CORE_EXTENSIONS "cue|ccd|toc|chd"
 #define MEDNAFEN_CORE_TIMING_FPS 59.94
-#define MEDNAFEN_CORE_GEOMETRY_BASE_W (MDFNGameInfo->nominal_width)
-#define MEDNAFEN_CORE_GEOMETRY_BASE_H (MDFNGameInfo->nominal_height)
+#define MEDNAFEN_CORE_GEOMETRY_BASE_W (EmulatedPCFX.nominal_width)
+#define MEDNAFEN_CORE_GEOMETRY_BASE_H (EmulatedPCFX.nominal_height)
 #define MEDNAFEN_CORE_GEOMETRY_MAX_W 1024
 #define MEDNAFEN_CORE_GEOMETRY_MAX_H 480
 #define MEDNAFEN_CORE_GEOMETRY_ASPECT_RATIO (4.0 / 3.0)
@@ -1442,15 +1442,13 @@ static bool MDFNI_LoadCD(const char *devicename)
    }
 
    // TODO: include module name in hash
-   memcpy(MDFNGameInfo->MD5, LayoutMD5, 16);
+   memcpy(EmulatedPCFX.MD5, LayoutMD5, 16);
 
    if (!(LoadCD(&CDInterfaces)))
    {
       for (unsigned i = 0; i < CDInterfaces.size(); i++)
          delete CDInterfaces[i];
       CDInterfaces.clear();
-
-      MDFNGameInfo = NULL;
 
       disc_clear();
 
@@ -1469,8 +1467,6 @@ static bool MDFNI_LoadCD(const char *devicename)
 
 static bool MDFNI_LoadGame(const char *name)
 {
-   MDFNGameInfo = &EmulatedPCFX;
-
    if (strlen(name) > 4 && (!strcasecmp(name + strlen(name) - 4, ".cue") || !strcasecmp(name + strlen(name) - 4, ".ccd") || !strcasecmp(name + strlen(name) - 4, ".chd") || !strcasecmp(name + strlen(name) - 4, ".toc") || !strcasecmp(name + strlen(name) - 4, ".m3u")))
       return(MDFNI_LoadCD(name));
 
@@ -1611,16 +1607,11 @@ bool retro_load_game(const struct retro_game_info *info)
 
 void retro_unload_game(void)
 {
-   if (!MDFNGameInfo)
-      return;
-
    MDFN_FlushGameCheats(0);
 
    CloseGame();
 
    MDFNMP_Kill();
-
-   MDFNGameInfo = NULL;
 
    for (unsigned i = 0; i < CDInterfaces.size(); i++)
       delete CDInterfaces[i];
@@ -2018,8 +2009,6 @@ void MDFN_MidLineUpdate(EmulateSpecStruct *espec, int y)
 {
  //MDFND_MidLineUpdate(espec, y);
 }
-
-MDFNGI *MDFNGameInfo = NULL;
 
 /* forward declarations */
 extern void MDFND_DispMessage(unsigned char *str);

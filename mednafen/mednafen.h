@@ -18,7 +18,7 @@
 #define strcasecmp _stricmp
 #endif
 
-extern MDFNGI *MDFNGameInfo;
+extern MDFNGI EmulatedPCFX;
 
 void MDFN_PrintError(const char *format, ...);
 void MDFN_printf(const char *format, ...);
