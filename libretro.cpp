@@ -1465,16 +1465,10 @@ static bool MDFNI_LoadCD(const char *devicename)
    return true;
 }
 
-static bool MDFNI_LoadGame(const char *name)
-{
-   if (strlen(name) > 4 && (!strcasecmp(name + strlen(name) - 4, ".cue") || !strcasecmp(name + strlen(name) - 4, ".ccd") || !strcasecmp(name + strlen(name) - 4, ".chd") || !strcasecmp(name + strlen(name) - 4, ".toc") || !strcasecmp(name + strlen(name) - 4, ".m3u")))
-      return(MDFNI_LoadCD(name));
-
-   return false;
-}
-
 bool retro_load_game(const struct retro_game_info *info)
 {
+   bool ret = false;
+
    if (!info || failed_init)
       return false;
 
@@ -1586,7 +1580,15 @@ bool retro_load_game(const struct retro_game_info *info)
 
    check_variables(false);
 
-   if (!MDFNI_LoadGame(info->path))
+   if ((strlen(info->path) > 4) && (
+         (!strcasecmp(info->path + strlen(info->path) - 4, ".cue")) ||
+         (!strcasecmp(info->path + strlen(info->path) - 4, ".ccd")) ||
+         (!strcasecmp(info->path + strlen(info->path) - 4, ".chd")) ||
+         (!strcasecmp(info->path + strlen(info->path) - 4, ".toc")) ||
+         (!strcasecmp(info->path + strlen(info->path) - 4, ".m3u"))))
+      ret = MDFNI_LoadCD(info->path);
+
+   if (!ret)
       return false;
 
    MDFN_PixelFormat pix_fmt(MDFN_COLORSPACE_RGB, 16, 8, 0, 24);
