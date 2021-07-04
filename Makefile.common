@@ -169,6 +169,11 @@ SOURCES_CXX += \
 	$(MEDNAFEN_DIR)/mempatcher.cpp \
 	$(CORE_DIR)/libretro.cpp
 
+ifeq ($(NEED_DEINTERLACER), 1)
+SOURCES_CXX += \
+	$(MEDNAFEN_DIR)/video/Deinterlacer.cpp
+endif
+
 SOURCES_C += \
 	$(MEDNAFEN_DIR)/file.c \
 	$(MEDNAFEN_DIR)/settings.c \

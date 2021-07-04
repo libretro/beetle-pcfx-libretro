@@ -7,7 +7,19 @@
 
 Deinterlacer::Deinterlacer()
 {
- FieldBuffer = NULL;
+ if(FieldBuffer.pixels)
+   free (FieldBuffer.pixels);
+
+ FieldBuffer.pixels            = NULL;
+ FieldBuffer.w                 = 0;
+ FieldBuffer.h                 = 0;
+ FieldBuffer.pitchinpix        = 0;
+ FieldBuffer.format.bpp        = 0;
+ FieldBuffer.format.colorspace = 0;
+ FieldBuffer.format.Rshift     = 0;
+ FieldBuffer.format.Gshift     = 0;
+ FieldBuffer.format.Bshift     = 0;
+ FieldBuffer.format.Ashift     = 0;
 
  StateValid = false;
  PrevHeight = 0;
@@ -15,22 +27,35 @@ Deinterlacer::Deinterlacer()
 
 Deinterlacer::~Deinterlacer()
 {
- if(FieldBuffer)
- {
-  delete FieldBuffer;
-  FieldBuffer = NULL;
- }
+ if(FieldBuffer.pixels)
+   free (FieldBuffer.pixels);
+
+ FieldBuffer.pixels            = NULL;
+ FieldBuffer.w                 = 0;
+ FieldBuffer.h                 = 0;
+ FieldBuffer.pitchinpix        = 0;
+ FieldBuffer.format.bpp        = 0;
+ FieldBuffer.format.colorspace = 0;
+ FieldBuffer.format.Rshift     = 0;
+ FieldBuffer.format.Gshift     = 0;
+ FieldBuffer.format.Bshift     = 0;
+ FieldBuffer.format.Ashift     = 0;
 }
 
 void Deinterlacer::Process(MDFN_Surface *surface, const MDFN_Rect &DisplayRect, int32 *LineWidths, const bool field)
 {
- if(!FieldBuffer || FieldBuffer->w < surface->w || FieldBuffer->h < (surface->h / 2))
+ if(!FieldBuffer.pixels || FieldBuffer.w < surface->w || FieldBuffer.h < (surface->h / 2))
  {
-  if(FieldBuffer)
-   delete FieldBuffer;
+  if(FieldBuffer.pixels)
+   free (FieldBuffer.pixels);
 
-  FieldBuffer = new MDFN_Surface(NULL, surface->w, surface->h / 2, surface->w, surface->format);
-  LWBuffer.resize(FieldBuffer->h);
+  //FieldBuffer = new MDFN_Surface(NULL, surface->w, surface->h / 2, surface->w, surface->format);
+  FieldBuffer.format                  = surface->format;
+  FieldBuffer.pixels                  = (uint32 *)calloc(1, surface->w * (surface->h / 2) * (surface->format.bpp / 8));
+  FieldBuffer.w                       = surface->w;
+  FieldBuffer.h                       = (surface->h / 2);
+  FieldBuffer.pitchinpix              = surface->w;
+  LWBuffer.resize(FieldBuffer.h);
  }
 
  //
@@ -53,7 +78,7 @@ void Deinterlacer::Process(MDFN_Surface *surface, const MDFN_Rect &DisplayRect, 
 
   if(StateValid && PrevHeight == DisplayRect.h)
   {
-   const uint32 *src = FieldBuffer->pixels + y * FieldBuffer->pitch32;
+   const uint32 *src = FieldBuffer.pixels + y * FieldBuffer.pitch32;
    uint32 *dest = surface->pixels + ((y * 2) + (field ^ 1) + DisplayRect.y) * surface->pitch32;
    int32 *dest_lw = &LineWidths[(y * 2) + (field ^ 1) + DisplayRect.y];
 
@@ -90,7 +115,7 @@ void Deinterlacer::Process(MDFN_Surface *surface, const MDFN_Rect &DisplayRect, 
   {
    const int32 *src_lw = &LineWidths[(y * 2) + field + DisplayRect.y];
    const uint32 *src = surface->pixels + ((y * 2) + field + DisplayRect.y) * surface->pitch32 + DisplayRect.x;
-   uint32 *dest = FieldBuffer->pixels + y * FieldBuffer->pitch32;
+   uint32 *dest = FieldBuffer.pixels + y * FieldBuffer.pitch32;
 
    memcpy(dest, src, *src_lw * sizeof(uint32));
    LWBuffer[y] = *src_lw;
