@@ -165,8 +165,6 @@ SOURCES_CXX += \
 	$(MEDNAFEN_DIR)/general.cpp \
 	$(MEDNAFEN_DIR)/FileStream.cpp \
 	$(MEDNAFEN_DIR)/MemoryStream.cpp \
-	$(MEDNAFEN_DIR)/video/Deinterlacer.cpp \
-	$(MEDNAFEN_DIR)/video/surface.cpp \
 	$(MEDNAFEN_DIR)/Stream.cpp \
 	$(MEDNAFEN_DIR)/mempatcher.cpp \
 	$(CORE_DIR)/libretro.cpp
