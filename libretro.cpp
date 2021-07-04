@@ -54,7 +54,7 @@ static retro_input_state_t input_state_cb;
 static double last_sound_rate;
 static MDFN_PixelFormat last_pixel_format;
 
-static MDFN_Surface *surf;
+static MDFN_Surface surf;
 
 static bool failed_init;
 
@@ -1167,12 +1167,6 @@ void retro_init(void)
      retro_save_directory = retro_base_directory;
    }
 
-#if defined(WANT_16BPP) && defined(FRONTEND_SUPPORTS_RGB565)
-   enum retro_pixel_format rgb565 = RETRO_PIXEL_FORMAT_RGB565;
-   if (environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &rgb565) && log_cb)
-      log_cb(RETRO_LOG_INFO, "Frontend supports RGB565 - will use that instead of XRGB1555.\n");
-#endif
-
    if (environ_cb(RETRO_ENVIRONMENT_GET_PERF_INTERFACE, &perf_cb))
       perf_get_cpu_features_cb = perf_cb.get_cpu_features;
    else
@@ -1509,7 +1503,6 @@ bool retro_load_game(const struct retro_game_info *info)
 
    environ_cb(RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS, desc);
 
-#ifdef WANT_32BPP
    enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_XRGB8888;
    if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
    {
@@ -1517,7 +1510,6 @@ bool retro_load_game(const struct retro_game_info *info)
          log_cb(RETRO_LOG_ERROR, "Pixel format XRGB8888 not supported by platform, cannot use %s.\n", MEDNAFEN_CORE_NAME);
       return false;
    }
-#endif
 
    check_variables(false);
 
@@ -1532,10 +1524,31 @@ bool retro_load_game(const struct retro_game_info *info)
    if (!ret)
       return false;
 
-   MDFN_PixelFormat pix_fmt(MDFN_COLORSPACE_RGB, 16, 8, 0, 24);
-   last_pixel_format = MDFN_PixelFormat();
+   struct MDFN_PixelFormat pix_fmt;
 
-   surf = new MDFN_Surface(NULL, FB_WIDTH, FB_HEIGHT, FB_WIDTH, pix_fmt);
+   pix_fmt.bpp        = 32;
+   pix_fmt.colorspace = MDFN_COLORSPACE_RGB;
+   pix_fmt.Rshift     = 16;
+   pix_fmt.Gshift     = 8;
+   pix_fmt.Bshift     = 0;
+   pix_fmt.Ashift     = 24;
+
+   last_pixel_format.bpp        = 0;
+   last_pixel_format.colorspace = 0;
+   last_pixel_format.Rshift     = 0;
+   last_pixel_format.Gshift     = 0;
+   last_pixel_format.Bshift     = 0;
+   last_pixel_format.Ashift     = 0;
+
+   surf.format                  = pix_fmt;
+   surf.pixels                  = (uint32 *)calloc(1, FB_WIDTH * FB_HEIGHT * (pix_fmt.bpp / 8));
+
+   if (!surf.pixels)
+      return false;
+
+   surf.w                       = FB_WIDTH;
+   surf.h                       = FB_HEIGHT;
+   surf.pitchinpix              = FB_WIDTH;
 
 #ifdef NEED_DEINTERLACER
    PrevInterlaced = false;
@@ -1655,7 +1668,7 @@ void retro_run()
    rects[0] = ~0;
 
    EmulateSpecStruct spec  = {0};
-   spec.surface            = surf;
+   spec.surface            = &surf;
    spec.SoundRate          = 44100.0;
    spec.SoundBuf           = sound_buf;
    spec.LineWidths         = rects;
@@ -1703,13 +1716,7 @@ void retro_run()
    width  = spec.DisplayRect.w;
    height = spec.DisplayRect.h;
 
-#if defined(WANT_32BPP)
-   const uint32_t *pix = surf->pixels;
-   video_cb(pix + surf->pitchinpix * spec.DisplayRect.y, width, height, FB_WIDTH << 2);
-#elif defined(WANT_16BPP)
-   const uint16_t *pix = surf->pixels16;
-   video_cb(pix, width, height, FB_WIDTH << 1);
-#endif
+   video_cb(surf.pixels + surf.pitchinpix * spec.DisplayRect.y, width, height, FB_WIDTH << 2);
 
    bool updated = false;
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
@@ -1754,9 +1761,19 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
 
 void retro_deinit()
 {
-   if (surf)
-      delete surf;
-   surf = NULL;
+   if(surf.pixels)
+      free(surf.pixels);
+
+   surf.pixels            = NULL;
+   surf.w                 = 0;
+   surf.h                 = 0;
+   surf.pitchinpix        = 0;
+   surf.format.bpp        = 0;
+   surf.format.colorspace = 0;
+   surf.format.Rshift     = 0;
+   surf.format.Gshift     = 0;
+   surf.format.Bshift     = 0;
+   surf.format.Ashift     = 0;
 
    if (log_cb)
    {

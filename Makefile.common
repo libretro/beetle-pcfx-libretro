@@ -165,11 +165,14 @@ SOURCES_CXX += \
 	$(MEDNAFEN_DIR)/general.cpp \
 	$(MEDNAFEN_DIR)/FileStream.cpp \
 	$(MEDNAFEN_DIR)/MemoryStream.cpp \
-	$(MEDNAFEN_DIR)/video/Deinterlacer.cpp \
-	$(MEDNAFEN_DIR)/video/surface.cpp \
 	$(MEDNAFEN_DIR)/Stream.cpp \
 	$(MEDNAFEN_DIR)/mempatcher.cpp \
 	$(CORE_DIR)/libretro.cpp
+
+ifeq ($(NEED_DEINTERLACER), 1)
+SOURCES_CXX += \
+	$(MEDNAFEN_DIR)/video/Deinterlacer.cpp
+endif
 
 SOURCES_C += \
 	$(MEDNAFEN_DIR)/file.c \

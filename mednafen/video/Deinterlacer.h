@@ -16,7 +16,7 @@ class Deinterlacer
 
  private:
 
- MDFN_Surface *FieldBuffer;
+ MDFN_Surface FieldBuffer;
  std::vector<int32> LWBuffer;
  bool StateValid;
  int32 PrevHeight;

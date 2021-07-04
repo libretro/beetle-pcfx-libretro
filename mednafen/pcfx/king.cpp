@@ -2218,8 +2218,8 @@ static void RebuildUVLUT(const MDFN_PixelFormat &format)
    UVLUT[vr + ur * 256][1] = g;
    UVLUT[vr + ur * 256][2] = b;
  
-   CbCrLUT[vr + ur * 256] = clamp_to_u8(128 + ((r * -9699 + g * -19071 + b * 28770) >> 16)) << format.Cbshift;
-   CbCrLUT[vr + ur * 256] |= clamp_to_u8(128 + ((r * 28770 + g * -24117 + b * -4653) >> 16)) << format.Crshift;
+   // CbCrLUT[vr + ur * 256] = clamp_to_u8(128 + ((r * -9699 + g * -19071 + b * 28770) >> 16)) << format.Cbshift;
+   // CbCrLUT[vr + ur * 256] |= clamp_to_u8(128 + ((r * 28770 + g * -24117 + b * -4653) >> 16)) << format.Crshift;
 
    //printf("%d %d %d, %08x\n", r, g, b, CbCrLUT[vr + ur * 256]);
   }
@@ -2751,13 +2751,13 @@ static void MixLayers(void)
       target[x] = YUV888_TO_xxx(zeout);	\
      }
 
-    if(surface->format.colorspace == MDFN_COLORSPACE_YCbCr)
+    /*if(surface->format.colorspace == MDFN_COLORSPACE_YCbCr)
     {
      #define YUV888_TO_xxx YUV888_TO_YCbCr888
      #include "king_mix_body.inc"
      #undef YUV888_TO_xxx
     }
-    else
+    else*/
     {
      #define YUV888_TO_xxx YUV888_TO_RGB888
      #include "king_mix_body.inc"
@@ -2881,6 +2881,9 @@ static void MDFN_FASTCALL KING_RunGfx(int32 clocks)
 			  fx_vce.odd_field = 0;
 
 			 PCFX_V810.Exit();
+
+                         if (previous_interlaced != fx_vce.frame_interlaced)
+                                MDFN_printf("interlaced = %d", fx_vce.frame_interlaced);
 			}
 
 			if(fx_vce.raster_counter == king->RasterIRQLine && (king->RAINBOWTransferControl & 0x2))
