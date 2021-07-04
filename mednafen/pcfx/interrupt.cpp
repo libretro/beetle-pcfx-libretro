@@ -122,7 +122,7 @@ int PCFXIRQ_StateAction(StateMem *sm, int load, int data_only)
    {
       SFVAR(InterruptAsserted),
       SFVAR(InterruptMask),
-      SFARRAY16(InterruptPriority, 2),
+      SFVAR(InterruptPriority),
       SFEND
    };
 

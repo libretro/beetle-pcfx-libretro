@@ -97,9 +97,9 @@ typedef struct
 				bit 15-12: KING BG3 priority
 			*/
 
- bool odd_field;	/* TRUE if interlaced mode is enabled and we're in the odd field, FALSE otherwise. */
+ bool odd_field;	/* true if interlaced mode is enabled and we're in the odd field, false otherwise. */
 
- bool in_hblank;	/* TRUE if we're in H-blank */
+ bool in_hblank;	/* true if we're in H-blank */
  bool in_vdc_hsync;
 
  bool frame_interlaced;
@@ -199,7 +199,7 @@ enum
 
 static int32 HPhase;
 static int32 HPhaseCounter;
-static int32 vdc_lb_pos;
+static uint32 vdc_lb_pos;
 
 static MDFN_ALIGN(8) uint16 vdc_linebuffers[2][512];
 static MDFN_ALIGN(8) uint32 vdc_linebuffer[512];
@@ -425,11 +425,8 @@ typedef struct
 	uint8 BGCGAddr[4];
         uint8 BG0SubBATAddr, BG0SubCGAddr;
 
-	uint16 BGXScroll[4];
+        uint16 BGXScroll[4];
 	uint16 BGYScroll[4];
-	
-        uint16 BGXScrollCache[4];
-        uint16 BGYScrollCache[4];
 
 	uint16 BGAffinA, BGAffinB, BGAffinC, BGAffinD;
 	uint16 BGAffinCenterX, BGAffinCenterY;
@@ -1776,18 +1773,15 @@ static INLINE int32 max(int32 a, int32 b)
 
 static void DrawBG(uint32 *target, int n, bool sub)
 {
- // TODO: Verify behavior when size is out of bounds on BG1-3.
- // With BG0 at least, it behaves as if the size is at its minimum, with caveats(TO BE INVESTIGATED).
- const uint32 bg_ss_table[2][0x10] = 
- {
-  { 0x3, 0x3, 0x3, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xA, 0x3, 0x3, 0x3, 0x3, 0x3 },
-  { 0x3, 0x3, 0x3, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0x3, 0x3, 0x3, 0x3, 0x3, 0x3 },
+ // Size out-of-bounds behaves as if the size is at its minimum, with caveats(TO BE INVESTIGATED).
+ const uint32 bg_ss_table[0x10] = 
+ { 
+  0x3, 0x3, 0x3, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xA, 0x3, 0x3, 0x3, 0x3, 0x3 
  };
 
- const bool bg_ss_invalid_table[2][0x10] =
+ const bool bg_ss_invalid_table[0x10] =
  {
-  { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1 },
-  { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1 },
+  1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1
  };
 
 #if 0
@@ -1811,8 +1805,8 @@ static void DrawBG(uint32 *target, int n, bool sub)
 
  const uint16 bgmode = (king->bgmode >> (n * 4)) & 0xF;
  const bool endless = (king->BGScrollMode >> n) & 0x1;
- const uint32 XScroll = king->BGXScroll[n];
- const uint32 YScroll = king->BGYScroll[n];
+ const uint32 XScroll = sign_x_to_s32((n ? 10 : 11), king->BGXScroll[n]);
+ const uint32 YScroll = sign_x_to_s32((n ? 10 : 11), king->BGYScroll[n]);
 
  const uint32 YOffset = (YScroll + (fx_vce.raster_counter - 22)) & 0xFFFF;
 
@@ -1826,23 +1820,23 @@ static void DrawBG(uint32 *target, int n, bool sub)
  const uint16 *cg_base = &king->KRAM[bat_and_cg_page][cg_offset & 0x20000];
  const uint16 *cg_sub_base = &king->KRAM[bat_and_cg_page][cg_sub_offset & 0x20000];
 
- const int bat_bitsize_mask = (n ? 0x3FF : 0x7FF) >> 3;
+ const int bat_bitsize_mask = 0x7FF >> 3;
 
- const uint32 bat_width_shift = bg_ss_table[(bool)n][(king->BGSize[n] & 0xF0) >> 4];
- const bool bat_width_invalid = bg_ss_invalid_table[(bool)n][(king->BGSize[n] & 0xF0) >> 4];
+ const uint32 bat_width_shift = bg_ss_table[(king->BGSize[n] & 0xF0) >> 4];
+ const bool bat_width_invalid = bg_ss_invalid_table[(king->BGSize[n] & 0xF0) >> 4];
  const uint32 bat_width = (1 << bat_width_shift) >> 3;
 
- const int32 bat_height_shift = bg_ss_table[(bool)n][king->BGSize[n] & 0x0F];
- //const bool bat_height_invalid = bg_ss_invalid_table[(bool)n][king->BGSize[n] & 0x0F];
+ const int32 bat_height_shift = bg_ss_table[king->BGSize[n] & 0x0F];
+ //const bool bat_height_invalid = bg_ss_invalid_table[king->BGSize[n] & 0x0F];
  const int32 bat_height = (1 << bat_height_shift) >> 3;
 
- const bool bat_sub_width_invalid = n ? bat_width_invalid : bg_ss_invalid_table[(bool)n][(king->BGSize[n] & 0xF000) >> 12];
- const uint32 bat_sub_width_shift = n ? bat_width_shift : bg_ss_table[(bool)n][(king->BGSize[n] & 0xF000) >> 12];
+ const bool bat_sub_width_invalid = n ? bat_width_invalid : bg_ss_invalid_table[(king->BGSize[n] & 0xF000) >> 12];
+ const uint32 bat_sub_width_shift = n ? bat_width_shift : bg_ss_table[(king->BGSize[n] & 0xF000) >> 12];
  const uint32 bat_sub_width = (1 << bat_sub_width_shift) >> 3;
  const uint32 bat_sub_width_mask = bat_sub_width - 1;
  const uint32 bat_sub_width_test = endless ? (bat_bitsize_mask + 1) : max(bat_width, bat_sub_width);
 
- const int32 bat_sub_height_shift = n ? bat_height_shift : bg_ss_table[(bool)n][(king->BGSize[n] & 0x0F00) >> 8];
+ const int32 bat_sub_height_shift = n ? bat_height_shift : bg_ss_table[(king->BGSize[n] & 0x0F00) >> 8];
  const int32 bat_sub_height = (1 << bat_sub_height_shift) >> 3;
  const int32 bat_sub_height_mask = bat_sub_height - 1;
  const int32 bat_sub_height_test = endless ? (bat_bitsize_mask + 1) : max(bat_height, bat_sub_height);
@@ -2984,8 +2978,8 @@ int KING_StateAction(StateMem *sm, int load, int data_only)
  SFORMAT KINGStateRegs[] =
  {
   SFVARN(king->AR, "AR"),
-  SFARRAY16N(king->KRAM[0], 262144, "KRAM0"),
-  SFARRAY16N(king->KRAM[1], 262144, "KRAM1"),
+  SFVARN(king->KRAM[0], "KRAM0"),
+  SFVARN(king->KRAM[1], "KRAM1"),
   SFVARN(king->KRAMWA, "KRAMWA"),
   SFVARN(king->KRAMRA, "KRAMRA"),
   SFVARN(king->KRAM_Mode, "KRAM_Mode"),
@@ -2993,15 +2987,15 @@ int KING_StateAction(StateMem *sm, int load, int data_only)
   SFVARN(king->bgmode, "bgmode"),
   SFVARN(king->priority, "priority"),
   SFVARN(king->BGScrollMode, "BGScrollMode"),
-  SFARRAY16N(king->BGSize, 4, "BGSize"),
+  SFVARN(king->BGSize, "BGSize"),
 
-  SFARRAYN(king->BGBATAddr, 4, "BGBATAddr"),
-  SFARRAYN(king->BGCGAddr, 4, "BGCGAddr"),
+  SFVARN(king->BGBATAddr, "BGBATAddr"),
+  SFVARN(king->BGCGAddr, "BGCGAddr"),
   SFVARN(king->BG0SubBATAddr, "BG0SubBATAddr"),
   SFVARN(king->BG0SubCGAddr, "BG0SubCGAddr"),
 
-  SFARRAY16N(king->BGXScroll, 4, "BGXScroll"),
-  SFARRAY16N(king->BGYScroll, 4, "BGYScroll"),
+  SFVARN(king->BGXScroll, "BGXScroll"),
+  SFVARN(king->BGYScroll, "BGYScroll"),
   SFVARN(king->BGAffinA, "BGAffinA"),
   SFVARN(king->BGAffinB, "BGAffinB"),
   SFVARN(king->BGAffinC, "BGAffinC"),
@@ -3010,12 +3004,12 @@ int KING_StateAction(StateMem *sm, int load, int data_only)
   SFVARN(king->BGAffinCenterY, "BGAffinCenterY"),
 
   SFVARN(king->ADPCMControl, "ADPCMControl"),
-  SFARRAY16N(king->ADPCMBufferMode, 2, "ADPCMBufferMode"),
-  SFARRAY16N(king->ADPCMSAL, 2, "ADPCMSAL"),
-  SFARRAY32N(king->ADPCMEndAddress, 2, "ADPCMEndAddress"),
-  SFARRAY32N(king->ADPCMPlayAddress, 2, "ADPCMPlayAddress"),
-  SFARRAY16N(king->ADPCMIntermediateAddress, 2, "ADPCMIntermediateAddress"),
-  SFARRAY16N(king->ADPCMStatus, 2, "ADPCMStatus"),
+  SFVARN(king->ADPCMBufferMode, "ADPCMBufferMode"),
+  SFVARN(king->ADPCMSAL, "ADPCMSAL"),
+  SFVARN(king->ADPCMEndAddress, "ADPCMEndAddress"),
+  SFVARN(king->ADPCMPlayAddress, "ADPCMPlayAddress"),
+  SFVARN(king->ADPCMIntermediateAddress, "ADPCMIntermediateAddress"),
+  SFVARN(king->ADPCMStatus, "ADPCMStatus"),
   SFVARN(king->ADPCMIRQPending, "ADPCMIRQPending"),
   SFVARN(king->RAINBOWTransferControl, "RAINBOWTransferControl"),
   SFVARN(king->RAINBOWKRAMA, "RAINBOWKRAMA"),
@@ -3037,7 +3031,7 @@ int KING_StateAction(StateMem *sm, int load, int data_only)
   SFVARN(king->DMALatch, "DMALatch"),
   SFVARN(king->MPROGControl, "MPROGControl"),
   SFVARN(king->MPROGAddress, "MPROGAddress"),
-  SFARRAY16N(king->MPROGData, 16, "MPROGData"),
+  SFVARN(king->MPROGData, "MPROGData"),
   SFVARN(king->Reg00, "Port00"),
   SFVARN(king->Reg01, "Port01"),
   SFVARN(king->Reg02, "Port02"),
@@ -3061,7 +3055,7 @@ int KING_StateAction(StateMem *sm, int load, int data_only)
  SFORMAT VCEStateRegs[] =
  {
   SFVARN(fx_vce.AR, "AR"),
-  SFARRAY16N(fx_vce.priority, 2, "priority"),
+  SFVARN(fx_vce.priority, "priority"),
   SFVARN(fx_vce.odd_field, "odd_field"),
   SFVARN(fx_vce.in_hblank, "in_hblank"),
   SFVARN(fx_vce.in_vdc_hsync, "in_vdc_hsync"),
@@ -3074,34 +3068,34 @@ int KING_StateAction(StateMem *sm, int load, int data_only)
   SFVARN(fx_vce.dot_clock, "dot_clock"),
   SFVARN(fx_vce.clock_divider, "clock_divider"),
 
-  SFARRAY32N(fx_vce.vdc_event, 2, "vdc_event"),
+  SFVARN(fx_vce.vdc_event, "vdc_event"),
 
   SFVARN(fx_vce.raster_counter, "raster_counter"),
   SFVARN(fx_vce.palette_rw_offset, "palette_rw_offset"),
   SFVARN(fx_vce.palette_rw_latch, "palette_rw_latch"),
-  SFARRAY16N(fx_vce.palette_offset, 4, "palette_offset"),
-  SFARRAY16N(fx_vce.palette_table, 512, "palette_table"),
+  SFVARN(fx_vce.palette_offset, "palette_offset"),
+  SFVARN(fx_vce.palette_table, "palette_table"),
   SFVARN(fx_vce.ChromaKeyY, "ChromaKeyY"),
   SFVARN(fx_vce.ChromaKeyU, "ChromaKeyU"),
   SFVARN(fx_vce.ChromaKeyV, "ChromaKeyV"),
   SFVARN(fx_vce.CCR, "CCR"),
   SFVARN(fx_vce.BLE, "BLE"),
   SFVARN(fx_vce.SPBL, "SPBL"),
-  SFARRAY16N(fx_vce.coefficients, 6, "coefficients"),
+  SFVARN(fx_vce.coefficients, "coefficients"),
 
 
   // HB render cache:
   // FIXME
-  SFARRAY16N(vce_rendercache.priority, 2, "rc_priority"),
+  SFVARN(vce_rendercache.priority, "rc_priority"),
   SFVARN(vce_rendercache.picture_mode, "rc_picture_mode"),
-  SFARRAY16N(vce_rendercache.palette_offset, 4, "rc_palette_offset"),
+  SFVARN(vce_rendercache.palette_offset, "rc_palette_offset"),
   SFVARN(vce_rendercache.ChromaKeyY, "rc_ChromaKeyY"),
   SFVARN(vce_rendercache.ChromaKeyU, "rc_ChromaKeyU"),
   SFVARN(vce_rendercache.ChromaKeyV, "rc_ChromaKeyV"),
   SFVARN(vce_rendercache.CCR, "rc_CCR"),
   SFVARN(vce_rendercache.BLE, "rc_BLE"),
   SFVARN(vce_rendercache.SPBL, "rc_SPBL"),
-  SFARRAY16N(vce_rendercache.coefficients, 6, "rc_coefficients"),
+  SFVARN(vce_rendercache.coefficients, "rc_coefficients"),
 
   SFEND
  };
@@ -3116,6 +3110,12 @@ int KING_StateAction(StateMem *sm, int load, int data_only)
 
   fx_vce.dot_clock_ratio = fx_vce.dot_clock ? 3 : 4;
 
+  if(fx_vce.clock_divider < 0)
+   fx_vce.clock_divider = 0;
+  else if(fx_vce.clock_divider > 3)
+   fx_vce.clock_divider = 3;
+
+
   fx_vce.palette_rw_offset &= 0x1FF;
   fx_vce.palette_offset[3] &= 0x00FF;
   fx_vce.priority[0] &= 0x0777;
@@ -3128,7 +3128,16 @@ int KING_StateAction(StateMem *sm, int load, int data_only)
    RedoPaletteCache(x);
 
   vdc_lb_pos &= 0x1FF; // FIXME: Better checks(in case we remove the assert() elsewhere)?
+  //
+  if(king->dma_cycle_counter < 1)
+   king->dma_cycle_counter = 1;
 
+  if(scsicd_ne < 1)
+   scsicd_ne = 1;
+
+  if(HPhaseCounter < 1)
+   HPhaseCounter = 1;
+  //
   RedoKINGIRQCheck();
   SoundBox_SetKINGADPCMControl(king->ADPCMControl);
  }

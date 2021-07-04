@@ -527,25 +527,25 @@ int SoundBox_StateAction(StateMem *sm, int load, int data_only)
    SFORMAT SoundBox_StateRegs[] =
    {
       SFVARN(sbox.ADPCMControl, "ADPCMControl"),
-      SFARRAYN(&sbox.ADPCMVolume[0][0], 2 * 2, "ADPCMVolume"),
-      SFARRAYN(sbox.CDDAVolume, 2, "CDDAVolume"),
+      SFVARN(sbox.ADPCMVolume, "ADPCMVolume"),
+      SFVARN(sbox.CDDAVolume, "CDDAVolume"),
       SFVARN(sbox.bigdiv, "bigdiv"),
       SFVARN(sbox.smalldiv, "smalldiv"),
 
-      SFARRAY64N(&sbox.ResetAntiClick[0], 2, "ResetAntiClick"),
-      SFARRAYDN(&sbox.VolumeFiltered[0][0], 2 * 2, "VolumeFiltered"),
-      SFARRAYDN(&sbox.vf_xv[0][0][0], 2 * 2 * (1 + 1), "vf_xv"),
-      SFARRAYDN(&sbox.vf_yv[0][0][0], 2 * 2 * (1 + 1), "vf_yv"),
+      SFVARN(sbox.ResetAntiClick, "ResetAntiClick"),
+      SFVARN(sbox.VolumeFiltered, "VolumeFiltered"),
+      SFVARN(sbox.vf_xv, "vf_xv"),
+      SFVARN(sbox.vf_yv, "vf_yv"),
 
-      SFARRAY32N(sbox.ADPCMDelta, 2, "ADPCMDelta"),
-      SFARRAY32N(sbox.ADPCMHaveDelta, 2, "ADPCMHaveDelta"),
+      SFVARN(sbox.ADPCMDelta, "ADPCMDelta"),
+      SFVARN(sbox.ADPCMHaveDelta, "ADPCMHaveDelta"),
 
-      SFARRAY32N(&sbox.ADPCMPredictor[0], 2, "ADPCMPredictor"),
-      SFARRAY32N(&sbox.StepSizeIndex[0], 2, "ADPCMStepSizeIndex"),
+      SFVARN(sbox.ADPCMPredictor, "ADPCMPredictor"),
+      SFVARN(sbox.StepSizeIndex, "ADPCMStepSizeIndex"),
 
-      SFARRAY32N(sbox.ADPCMWhichNibble, 2, "ADPCMWNibble"),
-      SFARRAY16N(sbox.ADPCMHalfWord, 2, "ADPCMHalfWord"),
-      SFARRAYBN(sbox.ADPCMHaveHalfWord, 2, "ADPCMHHW"),
+      SFVARN(sbox.ADPCMWhichNibble, "ADPCMWNibble"),
+      SFVARN(sbox.ADPCMHalfWord, "ADPCMHalfWord"),
+      SFVARN(sbox.ADPCMHaveHalfWord, "ADPCMHHW"),
 
       SFEND
    };
@@ -554,22 +554,22 @@ int SoundBox_StateAction(StateMem *sm, int load, int data_only)
 
    if(load)
    {
+      clamp(&sbox.bigdiv, 1, 1365);
+      clamp(&sbox.smalldiv, 1, 8);
+
       for(int ch = 0; ch < 2; ch++)
       {
          clamp(&sbox.ADPCMPredictor[ch], -0x4000, 0x3FFF);
-         clamp(&sbox.ResetAntiClick[ch], (int64)-0x4000 << 32, (int64)0x3FFF << 32);
+         clamp(&sbox.ResetAntiClick[ch], -((int64)0x4000 << 32), (int64)0x3FFF << 32);
 
          if(!ResetAntiClickEnabled)
             sbox.ResetAntiClick[ch] = 0;
 
          clamp(&sbox.StepSizeIndex[ch], 0, 48);
 
-         clamp(&sbox.bigdiv, 1, 1365);
-         clamp(&sbox.smalldiv, 1, 8);
-
          for(int lr = 0; lr < 2; lr++)
          {
-
+            sbox.ADPCMVolume[ch][lr] &= 0x3F;
          }
       }
       SCSICD_SetCDDAVolume(0.50f * sbox.CDDAVolume[0] / 63, 0.50f * sbox.CDDAVolume[1] / 63);
