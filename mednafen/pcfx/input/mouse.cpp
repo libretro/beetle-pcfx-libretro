@@ -83,9 +83,9 @@ class PCFX_Input_Mouse : public PCFX_Input_Device
 
  virtual void Frame(const void *data)
  {
-  x += (int32)MDFN_de32lsb((uint8 *)data + 0);
-  y += (int32)MDFN_de32lsb((uint8 *)data + 4);
-  button = *(uint8 *)((uint8 *)data + 8);
+  x += (int16)MDFN_de16lsb((uint8 *)data + 0);
+  y += (int16)MDFN_de16lsb((uint8 *)data + 2);
+  button = *(uint8 *)((uint8 *)data + 4);
  }
 
  virtual int StateAction(StateMem *sm, int load, int data_only, const char *section_name)

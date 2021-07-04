@@ -1025,10 +1025,9 @@ int RAINBOW_StateAction(StateMem *sm, int load, int data_only)
    SFVAR(NullRunU),
    SFVAR(NullRunV),
    SFVAR(HSync),
-   SFARRAY32(DecodeFormat, 2),
-   //  if(!(DecodeBuffer[i] = (uint8*)MDFN_malloc(0x2000 * 4, _("RAINBOW buffer RAM"))))
-   SFARRAY(DecodeBuffer[0], 0x2000 * 4),
-   SFARRAY(DecodeBuffer[1], 0x2000 * 4),
+   SFVAR(DecodeFormat),
+   SFARRAY(DecodeBuffer[0], 0x2000 * 4), //SFPTR8
+   SFARRAY(DecodeBuffer[1], 0x2000 * 4), //SFPTR8
    SFEND
  };
 

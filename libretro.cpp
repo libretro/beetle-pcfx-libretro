@@ -708,12 +708,12 @@ static bool TestMagicCD(std::vector<CDIF *> *CDInterfaces)
    {
       if (toc.tracks[track].control & 0x4)
       {
-         cdiface->ReadSector(sector_buffer, toc.tracks[track].lba, 1);
-         if (!strncmp("PC-FX:Hu_CD-ROM", (char*)sector_buffer, strlen("PC-FX:Hu_CD-ROM")))
-            return(TRUE);
+         int m = cdiface->ReadSector(sector_buffer, toc.tracks[track].lba, 1);
 
-         if (!strncmp((char *)sector_buffer + 64, "PPPPHHHHOOOOTTTTOOOO____CCCCDDDD", 32))
-            return(true);
+         if (m == 0x1 && !strncmp("PC-FX:Hu_CD-ROM", (char*)sector_buffer, strlen("PC-FX:Hu_CD-ROM")))
+            return true;
+         else if((m == 0x1 || m == 0x2) && !strncmp((char *)sector_buffer + 64, "PPPPHHHHOOOOTTTTOOOO____CCCCDDDD", 32))
+            return true;
       }
    }
    return(FALSE);
@@ -827,13 +827,14 @@ extern "C" int StateAction(StateMem *sm, int load, int data_only)
    {
       SFARRAY(RAM, 0x200000),
       SFARRAY16(Last_VDC_AR, 2),
+      SFVAR(RAM_LPA),
       SFVAR(BackupControl),
       SFVAR(ExBusReset),
-      SFARRAY(BackupRAM, BRAMDisabled ? 0 : 0x8000),
-      SFARRAY(ExBackupRAM, BRAMDisabled ? 0 : 0x8000),
+      SFARRAY(BackupRAM, BRAMDisabled ? 0 : 0x8000), //SFPTR8
+      SFARRAY(ExBackupRAM, BRAMDisabled ? 0 : 0x8000), //SFPTR8
 
-      SFVAR(CD_TrayOpen),
-      SFVAR(CD_SelectedDisc),
+      // SFVAR(CD_TrayOpen),
+      // SFVAR(CD_SelectedDisc),
 
       SFEND
    };
@@ -1291,9 +1292,9 @@ static void check_variables(bool loaded)
 
 #define MAX_PLAYERS 2
 #define MAX_BUTTONS 15
-static uint32_t input_type[MAX_PLAYERS] = {0};
-static uint16_t input_buf[MAX_PLAYERS] = {0};
-static int32_t  mousedata[MAX_PLAYERS][3] = {{0}, {0}};
+static uint32 input_type[MAX_PLAYERS] = {0};
+static uint16 input_buf[MAX_PLAYERS] = {0};
+static int16  mousedata[MAX_PLAYERS][3] = {{0}, {0}};
 
 static void ReadM3U(std::vector<std::string> &file_list, std::string path, unsigned depth = 0)
 {
@@ -1613,11 +1614,11 @@ static void update_input(void)
          case RETRO_DEVICE_MOUSE:
             mousedata[j][2] = 0;
 
-            int _x = input_state_cb(j, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_X);
-            int _y = input_state_cb(j, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_Y);
+            int16 _x = input_state_cb(j, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_X);
+            int16 _y = input_state_cb(j, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_Y);
 
-            mousedata[j][0] = (int)roundf(_x * mouse_sensitivity);
-            mousedata[j][1] = (int)roundf(_y * mouse_sensitivity);
+            mousedata[j][0] = (int16)roundf(_x * mouse_sensitivity);
+            mousedata[j][1] = (int16)roundf(_y * mouse_sensitivity);
 
             if (input_state_cb(j, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_LEFT))
                mousedata[j][2] |= (1 << 0);
