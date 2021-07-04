@@ -3095,7 +3095,7 @@ int KING_StateAction(StateMem *sm, int load, int data_only)
   SFVARN(vce_rendercache.CCR, "rc_CCR"),
   SFVARN(vce_rendercache.BLE, "rc_BLE"),
   SFVARN(vce_rendercache.SPBL, "rc_SPBL"),
-  SFVARN(fx_vce.coefficients, "coefficients"),
+  SFVARN(vce_rendercache.coefficients, "rc_coefficients"),
 
   SFEND
  };
@@ -3110,6 +3110,12 @@ int KING_StateAction(StateMem *sm, int load, int data_only)
 
   fx_vce.dot_clock_ratio = fx_vce.dot_clock ? 3 : 4;
 
+  if(fx_vce.clock_divider < 0)
+   fx_vce.clock_divider = 0;
+  else if(fx_vce.clock_divider > 3)
+   fx_vce.clock_divider = 3;
+
+
   fx_vce.palette_rw_offset &= 0x1FF;
   fx_vce.palette_offset[3] &= 0x00FF;
   fx_vce.priority[0] &= 0x0777;
@@ -3122,7 +3128,16 @@ int KING_StateAction(StateMem *sm, int load, int data_only)
    RedoPaletteCache(x);
 
   vdc_lb_pos &= 0x1FF; // FIXME: Better checks(in case we remove the assert() elsewhere)?
+  //
+  if(king->dma_cycle_counter < 1)
+   king->dma_cycle_counter = 1;
 
+  if(scsicd_ne < 1)
+   scsicd_ne = 1;
+
+  if(HPhaseCounter < 1)
+   HPhaseCounter = 1;
+  //
   RedoKINGIRQCheck();
   SoundBox_SetKINGADPCMControl(king->ADPCMControl);
  }

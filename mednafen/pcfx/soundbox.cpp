@@ -554,22 +554,22 @@ int SoundBox_StateAction(StateMem *sm, int load, int data_only)
 
    if(load)
    {
+      clamp(&sbox.bigdiv, 1, 1365);
+      clamp(&sbox.smalldiv, 1, 8);
+
       for(int ch = 0; ch < 2; ch++)
       {
          clamp(&sbox.ADPCMPredictor[ch], -0x4000, 0x3FFF);
-         clamp(&sbox.ResetAntiClick[ch], (int64)-0x4000 << 32, (int64)0x3FFF << 32);
+         clamp(&sbox.ResetAntiClick[ch], -((int64)0x4000 << 32), (int64)0x3FFF << 32);
 
          if(!ResetAntiClickEnabled)
             sbox.ResetAntiClick[ch] = 0;
 
          clamp(&sbox.StepSizeIndex[ch], 0, 48);
 
-         clamp(&sbox.bigdiv, 1, 1365);
-         clamp(&sbox.smalldiv, 1, 8);
-
          for(int lr = 0; lr < 2; lr++)
          {
-
+            sbox.ADPCMVolume[ch][lr] &= 0x3F;
          }
       }
       SCSICD_SetCDDAVolume(0.50f * sbox.CDDAVolume[0] / 63, 0.50f * sbox.CDDAVolume[1] / 63);
