@@ -2881,9 +2881,6 @@ static void MDFN_FASTCALL KING_RunGfx(int32 clocks)
 			  fx_vce.odd_field = 0;
 
 			 PCFX_V810.Exit();
-
-                         if (previous_interlaced != fx_vce.frame_interlaced)
-                                MDFN_printf("interlaced = %d", fx_vce.frame_interlaced);
 			}
 
 			if(fx_vce.raster_counter == king->RasterIRQLine && (king->RAINBOWTransferControl & 0x2))
