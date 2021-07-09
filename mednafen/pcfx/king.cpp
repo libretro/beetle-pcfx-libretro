@@ -51,6 +51,7 @@
 #include "../clamp.h"
 #include "../state_helpers.h"
 #include "../sound/OwlResampler.h"
+#include "../video/surface.h"
 
 
 #ifdef _WIN32
@@ -2251,7 +2252,7 @@ static uint32 INLINE YUV888_TO_RGB888(uint32 yuv)
  return((r << rs) | (g << gs) | (b << bs));
 }
 
-static uint32 INLINE YUV888_TO_PF(const uint32 yuv, const MDFN_PixelFormat &pf, const uint8 a = 0x00)
+static uint32 INLINE YUV888_TO_PF(const uint32 yuv)
 {
  const uint8 y = yuv >> 16;
  uint8 r, g, b;
@@ -2260,7 +2261,7 @@ static uint32 INLINE YUV888_TO_PF(const uint32 yuv, const MDFN_PixelFormat &pf, 
  g = clamp_to_u8((int32)(y + UVLUT[yuv & 0xFFFF][1]));
  b = clamp_to_u8((int32)(y + UVLUT[yuv & 0xFFFF][2]));
 
- return MAKECOLOR(r, g, b, a);
+ return MAKECOLOR(r, g, b, 0);
 }
 
 static uint32 INLINE YUV888_TO_YCbCr888(uint32 yuv)
@@ -2533,7 +2534,11 @@ static void MixVDC(void)
 
 static void MixLayers(void)
 {
- uint32 *pXBuf = surface->pixels;
+#ifdef WANT_32BPP
+   uint32 *pXBuf = surface->pixels;
+#elif WANT_16BPP
+   uint16 *pXBuf = surface->pixels16;
+#endif
 
     // Now we have to mix everything together... I'm scared, mommy.
     // We have, vdc_linebuffer[0] and bg_linebuffer
@@ -2583,7 +2588,12 @@ static void MixLayers(void)
      coeff_cache_v_back[x] = vce_rendercache.coefficient_mul_table_uv[(vce_rendercache.coefficients[x * 2 + 1] >> 0) & 0xF];
     }
 
+    //uint32 *target;
+#ifdef WANT_32BPP
     uint32 *target;
+#elif WANT_16BPP
+    uint16 *target;
+#endif
     uint32 BPC_Cache = (LAYER_NONE << 28); // Backmost pixel color(cache)
 
     if(fx_vce.frame_interlaced)
@@ -2759,7 +2769,7 @@ static void MixLayers(void)
     }
     else*/
     {
-     #define YUV888_TO_xxx YUV888_TO_RGB888
+     #define YUV888_TO_xxx YUV888_TO_PF
      #include "king_mix_body.inc"
      #undef YUV888_TO_xxx
     }

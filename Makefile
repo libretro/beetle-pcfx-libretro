@@ -48,7 +48,7 @@ endif
 CACHE_CD = 0
 
 core = pcfx
-NEED_BPP = 32
+NEED_BPP ?= 32
 ifneq ($(platform), osx)
 	PTHREAD_FLAGS = -pthread
 endif
