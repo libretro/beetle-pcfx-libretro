@@ -6,12 +6,14 @@
 // Core only supports 32bpp format
 
 #if defined(WANT_32BPP)
+typedef uint32 bpp_t;
 #define RED_SHIFT 16
 #define GREEN_SHIFT 8
 #define BLUE_SHIFT 0
 #define ALPHA_SHIFT 24
 #define MAKECOLOR(r, g, b, a) ((r << RED_SHIFT) | (g << GREEN_SHIFT) | (b << BLUE_SHIFT) | (a << ALPHA_SHIFT))
 #elif defined(WANT_16BPP) && defined(FRONTEND_SUPPORTS_RGB565)
+typedef uint16 bpp_t;
 #define RED_EXPAND 3
 #define GREEN_EXPAND 2
 #define BLUE_EXPAND 3
@@ -44,8 +46,7 @@ struct MDFN_PixelFormat
 
 struct MDFN_Surface //typedef struct
 {
-   uint32 *pixels;
-   uint16 *pixels16;
+   bpp_t *pixels;
 
    // w, h, and pitch32 should always be > 0
    int32 w;

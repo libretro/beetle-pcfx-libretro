@@ -2519,11 +2519,7 @@ static void MixVDC(void)
 
 static void MixLayers(void)
 {
-#ifdef WANT_32BPP
-   uint32 *pXBuf = surface->pixels;
-#elif WANT_16BPP
-   uint16 *pXBuf = surface->pixels16;
-#endif
+   bpp_t *pXBuf = surface->pixels;
 
     // Now we have to mix everything together... I'm scared, mommy.
     // We have, vdc_linebuffer[0] and bg_linebuffer
@@ -2573,12 +2569,7 @@ static void MixLayers(void)
      coeff_cache_v_back[x] = vce_rendercache.coefficient_mul_table_uv[(vce_rendercache.coefficients[x * 2 + 1] >> 0) & 0xF];
     }
 
-    //uint32 *target;
-#ifdef WANT_32BPP
-    uint32 *target;
-#elif WANT_16BPP
-    uint16 *target;
-#endif
+    bpp_t *target;
     uint32 BPC_Cache = (LAYER_NONE << 28); // Backmost pixel color(cache)
 
     if(fx_vce.frame_interlaced)

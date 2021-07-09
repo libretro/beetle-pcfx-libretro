@@ -1535,7 +1535,7 @@ bool retro_load_game(const struct retro_game_info *info)
       return false;
 
    struct MDFN_PixelFormat pix_fmt;
-   void *pixbuf;
+   bpp_t *pixbuf;
 
 #ifdef WANT_32BPP
    pix_fmt.bpp        = 32;
@@ -1558,14 +1558,11 @@ bool retro_load_game(const struct retro_game_info *info)
 
    surf.format                  = pix_fmt;
 
-   if (!(pixbuf = calloc(1, FB_WIDTH * FB_HEIGHT * (pix_fmt.bpp / 8))))
+   if (!(pixbuf = (bpp_t*)calloc(1, FB_WIDTH * FB_HEIGHT * (pix_fmt.bpp >> 3))))
       return false;
 
-#ifdef WANT_32BPP   
-   surf.pixels                  = (uint32 *)pixbuf;
-#elif WANT_16BPP   
-   surf.pixels16                = (uint16 *)pixbuf;
-#endif
+   surf.pixels                  = (bpp_t *)pixbuf;
+
    surf.w                       = FB_WIDTH;
    surf.h                       = FB_HEIGHT;
    surf.pitchinpix              = FB_WIDTH;
@@ -1736,11 +1733,8 @@ void retro_run()
    width  = spec.DisplayRect.w;
    height = spec.DisplayRect.h;
 
-#ifdef WANT_32BPP
-   video_cb(surf.pixels + surf.pitchinpix * spec.DisplayRect.y, width, height, FB_WIDTH << 2);
-#elif WANT_16BPP
-   video_cb(surf.pixels16 + surf.pitchinpix * spec.DisplayRect.y, width, height, FB_WIDTH << 1);
-#endif
+   size_t pitch = FB_WIDTH * (spec.surface->format.bpp >> 3);
+   video_cb(spec.surface->pixels + spec.surface->pitchinpix * spec.DisplayRect.y, width, height, pitch);
 
    bool updated = false;
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
@@ -1785,16 +1779,10 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
 
 void retro_deinit()
 {
-#ifdef WANT_32BPP
    if(surf.pixels)
       free(surf.pixels);
-#elif WANT_16BPP
-   if(surf.pixels16)
-      free(surf.pixels16);
-#endif
 
    surf.pixels            = NULL;
-   surf.pixels16          = NULL;
    surf.w                 = 0;
    surf.h                 = 0;
    surf.pitchinpix        = 0;
