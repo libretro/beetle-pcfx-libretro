@@ -1503,6 +1503,7 @@ bool retro_load_game(const struct retro_game_info *info)
 
    environ_cb(RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS, desc);
 
+#ifdef WANT_32BPP
    enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_XRGB8888;
    if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
    {
@@ -1510,6 +1511,15 @@ bool retro_load_game(const struct retro_game_info *info)
          log_cb(RETRO_LOG_ERROR, "Pixel format XRGB8888 not supported by platform, cannot use %s.\n", MEDNAFEN_CORE_NAME);
       return false;
    }
+#elif WANT_16BPP
+   enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
+   if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
+   {
+      if (log_cb)
+         log_cb(RETRO_LOG_ERROR, "Pixel format RGB565 not supported by platform, cannot use %s.\n", MEDNAFEN_CORE_NAME);
+      return false;
+   }
+#endif
 
    check_variables(false);
 
@@ -1525,9 +1535,15 @@ bool retro_load_game(const struct retro_game_info *info)
       return false;
 
    struct MDFN_PixelFormat pix_fmt;
+   bpp_t *pixbuf;
 
+#ifdef WANT_32BPP
    pix_fmt.bpp        = 32;
+#elif WANT_16BPP
+   pix_fmt.bpp        = 16;
+#endif
    pix_fmt.colorspace = MDFN_COLORSPACE_RGB;
+   // placeholders since we use MAKECOLOR macro
    pix_fmt.Rshift     = 16;
    pix_fmt.Gshift     = 8;
    pix_fmt.Bshift     = 0;
@@ -1541,10 +1557,11 @@ bool retro_load_game(const struct retro_game_info *info)
    last_pixel_format.Ashift     = 0;
 
    surf.format                  = pix_fmt;
-   surf.pixels                  = (uint32 *)calloc(1, FB_WIDTH * FB_HEIGHT * (pix_fmt.bpp / 8));
 
-   if (!surf.pixels)
+   if (!(pixbuf = (bpp_t*)calloc(1, FB_WIDTH * FB_HEIGHT * (pix_fmt.bpp >> 3))))
       return false;
+
+   surf.pixels                  = (bpp_t *)pixbuf;
 
    surf.w                       = FB_WIDTH;
    surf.h                       = FB_HEIGHT;
@@ -1716,7 +1733,8 @@ void retro_run()
    width  = spec.DisplayRect.w;
    height = spec.DisplayRect.h;
 
-   video_cb(surf.pixels + surf.pitchinpix * spec.DisplayRect.y, width, height, FB_WIDTH << 2);
+   size_t pitch = FB_WIDTH * (spec.surface->format.bpp >> 3);
+   video_cb(spec.surface->pixels + spec.surface->pitchinpix * spec.DisplayRect.y, width, height, pitch);
 
    bool updated = false;
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)

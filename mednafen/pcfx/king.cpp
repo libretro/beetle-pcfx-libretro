@@ -51,6 +51,7 @@
 #include "../clamp.h"
 #include "../state_helpers.h"
 #include "../sound/OwlResampler.h"
+#include "../video/surface.h"
 
 
 #ifdef _WIN32
@@ -2195,7 +2196,6 @@ static void DrawBG(uint32 *target, int n, bool sub)
 
 static int16 UVLUT[65536][3];
 static uint8 RGBDeflower[1152]; // 0 is at 384
-static uint32 CbCrLUT[65536];
 
 static void RebuildUVLUT(const MDFN_PixelFormat &format)
 {
@@ -2217,11 +2217,6 @@ static void RebuildUVLUT(const MDFN_PixelFormat &format)
    UVLUT[vr + ur * 256][0] = r;
    UVLUT[vr + ur * 256][1] = g;
    UVLUT[vr + ur * 256][2] = b;
- 
-   // CbCrLUT[vr + ur * 256] = clamp_to_u8(128 + ((r * -9699 + g * -19071 + b * 28770) >> 16)) << format.Cbshift;
-   // CbCrLUT[vr + ur * 256] |= clamp_to_u8(128 + ((r * 28770 + g * -24117 + b * -4653) >> 16)) << format.Crshift;
-
-   //printf("%d %d %d, %08x\n", r, g, b, CbCrLUT[vr + ur * 256]);
   }
  }
  for(int x = 0; x < 1152; x++)
@@ -2251,7 +2246,7 @@ static uint32 INLINE YUV888_TO_RGB888(uint32 yuv)
  return((r << rs) | (g << gs) | (b << bs));
 }
 
-static uint32 INLINE YUV888_TO_PF(const uint32 yuv, const MDFN_PixelFormat &pf, const uint8 a = 0x00)
+static uint32 INLINE YUV888_TO_PF(const uint32 yuv)
 {
  const uint8 y = yuv >> 16;
  uint8 r, g, b;
@@ -2260,16 +2255,7 @@ static uint32 INLINE YUV888_TO_PF(const uint32 yuv, const MDFN_PixelFormat &pf, 
  g = clamp_to_u8((int32)(y + UVLUT[yuv & 0xFFFF][1]));
  b = clamp_to_u8((int32)(y + UVLUT[yuv & 0xFFFF][2]));
 
- return MAKECOLOR(r, g, b, a);
-}
-
-static uint32 INLINE YUV888_TO_YCbCr888(uint32 yuv)
-{
- uint32 y;
-
- y = 16 + ((((yuv >> 16) & 0xFF) * 220) >> 8);
-
- return(y | CbCrLUT[yuv & 0xFFFF]);
+ return MAKECOLOR(r, g, b, 0);
 }
 
 // FIXME: 
@@ -2533,7 +2519,7 @@ static void MixVDC(void)
 
 static void MixLayers(void)
 {
- uint32 *pXBuf = surface->pixels;
+   bpp_t *pXBuf = surface->pixels;
 
     // Now we have to mix everything together... I'm scared, mommy.
     // We have, vdc_linebuffer[0] and bg_linebuffer
@@ -2583,7 +2569,7 @@ static void MixLayers(void)
      coeff_cache_v_back[x] = vce_rendercache.coefficient_mul_table_uv[(vce_rendercache.coefficients[x * 2 + 1] >> 0) & 0xF];
     }
 
-    uint32 *target;
+    bpp_t *target;
     uint32 BPC_Cache = (LAYER_NONE << 28); // Backmost pixel color(cache)
 
     if(fx_vce.frame_interlaced)
@@ -2751,18 +2737,10 @@ static void MixLayers(void)
       target[x] = YUV888_TO_xxx(zeout);	\
      }
 
-    /*if(surface->format.colorspace == MDFN_COLORSPACE_YCbCr)
-    {
-     #define YUV888_TO_xxx YUV888_TO_YCbCr888
-     #include "king_mix_body.inc"
-     #undef YUV888_TO_xxx
-    }
-    else*/
-    {
-     #define YUV888_TO_xxx YUV888_TO_RGB888
-     #include "king_mix_body.inc"
-     #undef YUV888_TO_xxx
-    }
+    #define YUV888_TO_xxx YUV888_TO_PF
+    #include "king_mix_body.inc"
+    #undef YUV888_TO_xxx
+
     DisplayRect->w = fx_vce.dot_clock ? HighDotClockWidth : 256;
     DisplayRect->x = 0;
 
