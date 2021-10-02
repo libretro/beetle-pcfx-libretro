@@ -49,11 +49,6 @@ ifeq ($(HAVE_THREADS), 1)
 	SOURCES_C += $(LIBRETRO_COMM_DIR)/rthreads/rthreads.c
 endif
 
-ifeq ($(NEED_CRC32), 1)
-   FLAGS += -DWANT_CRC32
-	SOURCES_C += $(CORE_DIR)/scrc32.c
-endif
-
 ifeq ($(NEED_DEINTERLACER), 1)
    FLAGS += -DNEED_DEINTERLACER
 endif
