@@ -30,10 +30,7 @@ static uint8 MDFN_FASTCALL port_rbyte(v810_timestamp_t &timestamp, uint32 A)
  else if(A >= 0x700 && A <= 0x7FF)
  {
   if(!(A & 1))
-  {
-   FXDBG("ExBusReset B Read");
    return(ExBusReset);
-  }
   return(0);
  }
  else if(A >= 0xc00 && A <= 0xCFF) // Backup memory control
@@ -66,8 +63,6 @@ static uint8 MDFN_FASTCALL port_rbyte(v810_timestamp_t &timestamp, uint32 A)
  {
   return(FXSCSI_CtrlRead(A));
  }
- FXDBG("Unknown 8-bit port read: %08x", A);
-
  return(0x00);
 }
 
@@ -123,8 +118,6 @@ static uint16 MDFN_FASTCALL port_rhword(v810_timestamp_t &timestamp, uint32 A)
  else if(FXSCSIROM && A >= 0x600000 && A <= 0x6FFFFF)
   return(FXSCSI_CtrlRead(A));
 
- FXDBG("Unknown 16-bit port read: %08x", A);
-
  return(0x00);
 }
 
@@ -164,10 +157,7 @@ static void MDFN_FASTCALL port_wbyte(v810_timestamp_t &timestamp, uint32 A, uint
   else if(A >= 0x700 && A <= 0x7FF)
   {
    if(!(A & 1))
-   {
-    FXDBG("ExBusReset B Write: %02x", V & 1);
     ExBusReset = V & 1;
-   }
   }
   else if(A >= 0xc00 && A <= 0xCFF)
   {
@@ -176,13 +166,12 @@ static void MDFN_FASTCALL port_wbyte(v810_timestamp_t &timestamp, uint32 A, uint
     case 0x80: BackupControl = V & 0x3;
                break;
 
-    default:   FXDBG("Port 8-bit write: %08x %02x", A, V);
+    default:   
                break;
    }
   }
   else if(A >= 0xe00 && A <= 0xeff)
   {
-   FXDBG("IRQ write8: %08x %02x", A, V);
    PCFXIRQ_Write16(A, V);
   }
   else if((A & 0x7FFFFFFF) >= 0x500000 && (A & 0x7FFFFFFF) <= 0x52ffff)
@@ -193,10 +182,6 @@ static void MDFN_FASTCALL port_wbyte(v810_timestamp_t &timestamp, uint32 A, uint
   else if(FXSCSIROM && A >= 0x600000 && A <= 0x6FFFFF)
   {
    FXSCSI_CtrlWrite(A, V);
-  }
-  else
-  {
-   FXDBG("Port 8-bit write: %08x %02x", A, V);
   }
 }
 
@@ -236,11 +221,9 @@ static void MDFN_FASTCALL port_whword(v810_timestamp_t &timestamp, uint32 A, uin
   else if(A >= 0x700 && A <= 0x7FF)
   {
    ExBusReset = V & 1;
-   FXDBG("ExBusReset H Write: %04x", V);
   }
   else if(A >= 0x800 && A <= 0x8FF) // ?? LIP writes here
   {
-   FXDBG("Port 16-bit write: %08x %04x", A, V);
   }
   else if(A >= 0xc00 && A <= 0xCFF)
   {
@@ -249,7 +232,7 @@ static void MDFN_FASTCALL port_whword(v810_timestamp_t &timestamp, uint32 A, uin
     case 0x80: BackupControl = V & 0x3; 
 	       break;
 
-    default:   FXDBG("Port 16-bit write: %08x %04x", A, V);
+    default:   
 	       break;
    }
   }

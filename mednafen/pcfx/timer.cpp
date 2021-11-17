@@ -102,9 +102,6 @@ void FXTIMER_Write16(uint32 A, uint16 V, const v810_timestamp_t timestamp)
             counter = EFF_PERIOD;
          control = V & 0x7;
 
-         if(V & 0x4)
-            FXDBG("Timer control write with D2 set?");
-
          PCFXIRQ_Assert(PCFXIRQ_SOURCE_TIMER, (bool)(control & 0x4));
          PCFX_SetEvent(PCFX_EVENT_TIMER, CalcNextEventTS(timestamp));
          break;

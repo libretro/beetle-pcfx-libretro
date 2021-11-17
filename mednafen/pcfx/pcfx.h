@@ -9,14 +9,6 @@
 
 #define PCFX_MASTER_CLOCK	21477272.72
 
-#if 0
- #define FXDBG(format, ...) MDFN_DebugPrint(format, ## __VA_ARGS__)
-#elif defined(_WIN32)
-static inline void FXDBG(const char *format, ...) { (void)0; }
-#else
- #define FXDBG(format, ...) ((void)0)
-#endif
-
 static INLINE void MDFN_FastU32MemsetM8(uint32_t *array, uint32_t value_32, unsigned int u32len)
 {
    uint32_t *ai;

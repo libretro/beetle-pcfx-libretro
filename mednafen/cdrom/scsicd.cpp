@@ -319,11 +319,7 @@ static void GenSubQFromSubPW(void)
  // printf("%02x ", SubQBuf[i]);
  //printf("\n");
 
- if(!subq_check_checksum(SubQBuf))
- {
-  //SCSIDBG("SubQ checksum error!");
- }
- else
+ if(subq_check_checksum(SubQBuf))
  {
   memcpy(cd.SubQBuf_Last, SubQBuf, 0xC);
 
@@ -331,10 +327,6 @@ static void GenSubQFromSubPW(void)
 
   if(adr <= 0x3)
    memcpy(cd.SubQBuf[adr], SubQBuf, 0xC);
-
-  //if(adr == 0x02)
-  //for(int i = 0; i < 12; i++)
-  // printf("%02x\n", cd.SubQBuf[0x2][i]);
  }
 }
 
@@ -995,18 +987,11 @@ static void DoMODESENSE6(const uint8_t *cdb)
 
 static void DoSTARTSTOPUNIT6(const uint8_t *cdb)
 {
- //bool Immed = cdb[1] & 0x01;
- //bool LoEj = cdb[4] & 0x02;
- //bool Start = cdb[4] & 0x01;
-
- //SCSIDBG("Do start stop unit 6: %d %d %d\n", Immed, LoEj, Start);
-
  SendStatusAndMessage(STATUS_GOOD, 0x00);
 }
 
 static void DoREZEROUNIT(const uint8_t *cdb)
 {
- //SCSIDBG("Rezero Unit: %02x\n", cdb[5]);
  SendStatusAndMessage(STATUS_GOOD, 0x00);
 }
 
@@ -1935,10 +1920,7 @@ static void DoREAD6(const uint8_t *cdb)
 
  // TODO: confirm real PCE does this(PC-FX does at least).
  if(!sc)
- {
-  //SCSIDBG("READ(6) with count == 0.\n");
   sc = 256;
- }
 
  DoREADBase(sa, sc);
 }
@@ -2280,11 +2262,6 @@ static void DoNEC_SCAN(const uint8_t *cdb)
 ********************************************************/
 static void DoPREVENTALLOWREMOVAL(const uint8_t *cdb)
 {
- //bool prevent = cdb[4] & 0x01;
- //const int logical_unit = cdb[1] >> 5;
- //SCSIDBG("PREVENT ALLOW MEDIUM REMOVAL: %d for %d\n", cdb[4] & 0x1, logical_unit);
- //SendStatusAndMessage(STATUS_GOOD, 0x00);
-
  CommandCCError(SENSEKEY_ILLEGAL_REQUEST, NSE_INVALID_REQUEST_IN_CDB);
 }
 
@@ -2811,17 +2788,10 @@ uint32_t SCSICD_Run(scsicd_timestamp_t system_timestamp)
       {
        CommandCCError(SENSEKEY_ILLEGAL_REQUEST, NSE_INVALID_COMMAND);
 
-       //SCSIDBG("Bad Command: %02x\n", cd.command_buffer[0]);
-
        cd.command_buffer_pos = 0;
       }
       else
       {
-       if(cmd_info_ptr->flags & SCF_UNTESTED)
-       {
-        //SCSIDBG("Untested SCSI command: %02x, %s", cd.command_buffer[0], cmd_info_ptr->pretty_name);
-       }
-
        if(TrayOpen && (cmd_info_ptr->flags & SCF_REQUIRES_MEDIUM))
        {
 	CommandCCError(SENSEKEY_NOT_READY, NSE_TRAY_OPEN);

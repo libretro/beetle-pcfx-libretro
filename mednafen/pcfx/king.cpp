@@ -53,18 +53,6 @@
 #include "../sound/OwlResampler.h"
 #include "../video/surface.h"
 
-
-#ifdef _WIN32
-static inline void KINGDBG(const char *format, ...) { (void)0; }
-static inline void ADPCMDBG(const char *format, ...) { (void)0; }
-#else
-#define KINGDBG(format, ...) (void)0
-#define ADPCMDBG(format, ...) (void)0
-#endif
-//#define KINGDBG FXDBG
-#define KING_UNDEF FXDBG
-//FXDBG
-
 /*
  SCSI Questions(this list needs to be revised more and merged into the issues list at the beginning of the file):
 
@@ -521,7 +509,6 @@ static void DoRealDMA(uint8 db)
   king->DMATransferSize = (king->DMATransferSize - 2) & 0x3FFFF;
   if(!king->DMATransferSize)
   {
-   KINGDBG("DMA Done\n");
    king->DMAInterrupt = TRUE;
    RedoKINGIRQCheck();
    king->DMAStatus &= ~1;
@@ -684,7 +671,6 @@ void KING_CDIRQ(int type)
       SCSICD_GetCD() != ((king->Reg03 >> 1) & 1) ||
       SCSICD_GetMSG() != ((king->Reg03 >> 2) & 1))
    {
-     KINGDBG("Phase mismatch interrupt asserted.\n");
      king->CDInterrupt = TRUE;
      RedoKINGIRQCheck();
    }
@@ -844,7 +830,6 @@ v810_timestamp_t MDFN_FASTCALL KING_Update(const v810_timestamp_t timestamp)
      {
       if(!king->DRQ)
       {
-       //KINGDBG("Did write: %02x\n", king->data_cache);
        SCSICD_SetDB(king->data_cache);
        SCSICD_SetACK(TRUE);
        scsicd_ne = SCSICD_Run(running_timestamp);
@@ -921,7 +906,6 @@ uint16 KING_Read16(const v810_timestamp_t timestamp, uint32 A)
   case 0x604: switch(king->AR)
 	      {
 		default: 
-			KINGDBG("Unknown 16-bit register read: %02x\n", king->AR);
 			break;
 
 		case 0x00:
@@ -994,13 +978,11 @@ uint16 KING_Read16(const v810_timestamp_t timestamp, uint32 A)
 			break;
 
 		case 0x06: // SCSI Input Data Register, same value returned as reading D16-D23 of register 0x05?
-			KINGDBG("Input data for...?\n");
 			ret = king->data_cache;
 			break;
 
 		case 0x07: 
 			// SCSI IRQ acknowledge/reset
-			KINGDBG("SCSI IRQ acknowledge\n");
 			king->CDInterrupt = FALSE;
                         RedoKINGIRQCheck();
 			ret = 0xFF;
@@ -1026,7 +1008,6 @@ uint16 KING_Read16(const v810_timestamp_t timestamp, uint32 A)
 			if(!msh)
 			{
 			 ret = king->DMAInterrupt ? 1 : 0;
-                         KINGDBG("DMA IRQ Acknowledge: %d\n", ret);
                          king->DMAInterrupt = 0;
                          RedoKINGIRQCheck();
 			}
@@ -1071,8 +1052,6 @@ uint16 KING_Read16(const v810_timestamp_t timestamp, uint32 A)
 			   king->ADPCMIRQPending = 0;
 
 			   RedoKINGIRQCheck();
-
-			   ADPCMDBG("Status read: %02x\n", ret);
 			  }
 			  break;
 	      }
@@ -1095,18 +1074,12 @@ static INLINE void SCSI_Reg0_Write(const v810_timestamp_t timestamp, uint8 V, bo
  king->Reg00 = V;
  SCSICD_SetDB(V);
 
- KINGDBG("WriteDB: %02x\n", V);
-
  if(!delay_run)
- {
   scsicd_ne = 1; //SCSICD_Run(timestamp);
- }
 }
 
 static INLINE void SCSI_Reg2_Write(const v810_timestamp_t timestamp, uint8 V, bool delay_run = 0)
 {
- KINGDBG("SCSI Mode: %04x\n", V);
-
  /* SCSI Mode Register
                                D0 = SED:  When using with sequential DMA mode, you use.
                                           (It sets the normal DMA mode time to "0".)
@@ -1146,7 +1119,6 @@ static INLINE void SCSI_Reg2_Write(const v810_timestamp_t timestamp, uint8 V, bo
 
 static INLINE void SCSI_Reg3_Write(const v810_timestamp_t timestamp, uint8 V, bool delay_run = 0)
 {
- KINGDBG("Set phase match SCSI bus bits: IO: %d, CD: %d, MSG: %d\n", (int)(bool)(V & 1), (int)(bool)(V & 2), (int)(bool)(V & 4));
  king->Reg03 = V & 0x7;
 
  if(!delay_run)
@@ -1168,15 +1140,9 @@ void KING_Write16(const v810_timestamp_t timestamp, uint32 A, uint16 V)
  {
   KING_Update(timestamp);
 
-  if(king->AR >= 0x50 && king->AR <= 0x5E)
-  {
-   //ADPCMDBG("Write: %02x(%d), %04x", king->AR, msh, V);
-  }
-
 	      switch(king->AR)
 	      {
 		default: 
-			KINGDBG("Unknown 16-bit register write: %02x %04x %d\n", king->AR, V, msh); 
 			break;
 
 		case 0x00: if(king->Reg01 & 0x80)
@@ -1190,10 +1156,6 @@ void KING_Write16(const v810_timestamp_t timestamp, uint32 A, uint16 V)
 
 		case 0x01: if(!msh)
 			   {
-                            KINGDBG("Set SCSI BUS bits; Assert DB: %d, ATN: %d, SEL: %d, ACK: %d, RST: %d, %02x\n",
-                                (int)(bool)(V & 1), (int)(bool)(V & 2), (int)(bool)(V & 4),
-                                (int)(bool)(V & 0x10), (int)(bool)(V &0x80), SCSICD_GetDB());
-
 			    if(V & 0x80)	// RST, silly KING, resets SCSI internal control registers too!
 			    {
 			     if(!(king->Reg01 & 0x80))
@@ -1242,7 +1204,6 @@ void KING_Write16(const v810_timestamp_t timestamp, uint32 A, uint16 V)
 
 			   if(!msh)	// Start DMA target receive
 			   {
-                            KINGDBG("DMA target receive: %04x, %d\n", V, msh);
                             king->dma_receive_active = FALSE;
                             king->dma_send_active = TRUE;
 			    king->DRQ = TRUE;
@@ -1253,7 +1214,6 @@ void KING_Write16(const v810_timestamp_t timestamp, uint32 A, uint16 V)
 			   {
 			    if(king->dma_send_active && king->DRQ)
 			    {
-			     //KINGDBG("%02x\n", V);
 			     king->data_cache = V;
 			     king->DRQ = FALSE;
 			    }
@@ -1265,8 +1225,6 @@ void KING_Write16(const v810_timestamp_t timestamp, uint32 A, uint16 V)
 		case 0x07: if(king->Reg01 & 0x80)
                             break;
 
-			   KINGDBG("Start DMA initiator receive: %04x\n", V);
-
 			   if(king->Reg02 & 0x2)
 			   {
 			    king->dma_receive_active = TRUE;
@@ -1277,8 +1235,6 @@ void KING_Write16(const v810_timestamp_t timestamp, uint32 A, uint16 V)
 			   break;
 
 		case 0x08: // Sub-channel control
-			   KINGDBG("Sub-channel control: %02x\n", V);
-
 			   king->SubChannelControl = V & 0x3;
 			   king->SubChannelInterrupt = FALSE;
 			   RedoKINGIRQCheck();
@@ -1292,8 +1248,6 @@ void KING_Write16(const v810_timestamp_t timestamp, uint32 A, uint16 V)
 			   RedoKINGIRQCheck();
 
 			   king->DMATransferFlipFlop = 0;
-
-			   KINGDBG("SCSI DMA: %04x, dest=%06x, page=%d, size=%06x(16-bit words)\n", V, king->DMATransferAddr, king->PageSetting & 1, king->DMATransferSize >> 1);
 
 			   break;
                 case 0x0C: REGSETHW(king->KRAMRA, V, msh); break;
@@ -1322,21 +1276,13 @@ void KING_Write16(const v810_timestamp_t timestamp, uint32 A, uint16 V)
 
 		// Background priorities and affine transform master enable.
 		case 0x12: if(!msh)
-			   {
 			    king->priority = V;
-			    if(king->priority & ~0x1FFF)
-			    {
-			     KING_UNDEF("Invalid priority bits set: %04x\n", king->priority);
-			    }
-			   }
 			   break;
 
 
 		// Microprogram Address
 		case 0x13: if(!msh)
-			   {
 			    king->MPROGAddress = V & 0xF;
-			   }
 			   break;
 
 
@@ -1458,10 +1404,7 @@ void KING_Write16(const v810_timestamp_t timestamp, uint32 A, uint16 V)
 
  
 		case 0x61: if(king->KRAM_Mode ^ V)
-			   {
-			    KINGDBG("KRAM Mode Change To: %02x\n", V & 1);
 			    king->KRAM_Mode = V & 0x1; 
-			   }
 			   break;
 	      }
 
@@ -1476,15 +1419,8 @@ uint16 KING_GetADPCMHalfWord(int ch)
 
  king->ADPCMPlayAddress[ch] = (king->ADPCMPlayAddress[ch] & 0x20000) | ((king->ADPCMPlayAddress[ch] + 1) & 0x1FFFF);
 
- if(!(king->ADPCMPlayAddress[ch] & 0x1FFFF))
- {
-  ADPCMDBG("Ch %d Wrapped", ch);
- }
-
  if(king->ADPCMPlayAddress[ch] == (((king->ADPCMEndAddress[ch] + 1) & 0x1FFFF) | (king->ADPCMEndAddress[ch] & 0x20000)) )
  {
-  ADPCMDBG("Ch %d End", ch);
-
   if(!(king->ADPCMBufferMode[ch] & 1))
   {
    king->ADPCMControl &= ~(1 << ch);
@@ -1505,7 +1441,6 @@ uint16 KING_GetADPCMHalfWord(int ch)
  }
  else if(king->ADPCMPlayAddress[ch] == ((uint32)king->ADPCMIntermediateAddress[ch] << 6) )
  {
-  ADPCMDBG("Ch %d Intermediate", ch);
   king->ADPCMStatus[ch] |= 2;
 
   if(king->ADPCMBufferMode[ch] & (0x2 << 1))
@@ -1846,10 +1781,7 @@ static void DrawBG(uint32 *target, int n, bool sub)
     cg_ofbat[remap_thing] = mpd & 0x8;
 
     if((bool)(mpd & 0x20) != rotate_mode)
-    {
-     KINGDBG("Affine bit != rotate_mode?");
      cg_mask[remap_thing] = 0;
-    }
     remap_thing++;
    }
 
@@ -1861,10 +1793,7 @@ static void DrawBG(uint32 *target, int n, bool sub)
     cg_sub_ofbat[remap_sub_thing] = mpd & 0x8;
 
     if((bool)(mpd & 0x20) != rotate_mode)
-    {
-     KINGDBG("Affine bit != rotate_mode? (SUB)");
      cg_sub_mask[remap_sub_thing] = 0;
-    }
     remap_sub_thing++;
    }
   }
