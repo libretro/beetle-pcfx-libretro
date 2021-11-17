@@ -17,7 +17,6 @@
 
 /* VDC emulation */
 
-#include <stdio.h>
 #include <math.h>
 
 #include "mednafen/mednafen.h"
@@ -30,21 +29,13 @@
 static inline void VDC_DEBUG(const char *fmt, ...)
 {
 }
-//#define VDC_DEBUG(x, ...)     { }
-//#define VDC_DEBUG(x, ...)       printf(x ": HPhase=%d, HPhaseCounter=%d, RCRCount=%d\n", ## __VA_ARGS__, HPhase, HPhaseCounter, RCRCount);
-//
 static inline void VDC_UNDEFINED(const char *fmt, ...)
 {
 }
 
-//#define VDC_UNDEFINED(format, ...)   { }
-//#define VDC_UNDEFINED(format, ...)      printf(format " RCRCount=%d" "\n", ## __VA_ARGS__, RCRCount)
-
 static inline void VDC_WARNING(const char *fmt, ...)
 {
 }
-//#define VDC_WARNING(format, ...)      { }
-//#define VDC_WARNING(format, ...)     { printf(format "\n", ## __VA_ARGS__); }
 
 #define ULE_BG		1
 #define ULE_SPR		2
@@ -94,7 +85,7 @@ void VDC::FixTileCache(uint16 A)
 #define VDCS_VD		0x20 // Vertical blank interrupt occurred
 #define VDCS_BSY	0x40 // VDC is waiting for a CPU access slot during the active display area??
 
-uint32 VDC::GetRegister(const unsigned int id, char *special, const uint32 special_len)
+uint32 VDC::GetRegister(const unsigned int id)
 {
  uint32 value = 0xDEADBEEF;
 
@@ -118,12 +109,6 @@ uint32 VDC::GetRegister(const unsigned int id, char *special, const uint32 speci
 
   case GSREG_CR:
 	value = CR;
-
-	if(special)
-	{
-	 sprintf(special, "Sprite Hit IRQ: %s, Sprite Overflow IRQ: %s, RCR IRQ: %s, VBlank IRQ: %s, Sprites: %s, Background: %s", (value & 1) ? "On" : "Off", (value & 2) ? "On" : "Off",
-	        (value & 4) ? "On" : "Off", (value & 8) ? "On" : "Off", (value & 0x40) ? "On" : "Off", (value & 0x80) ? "On" : "Off");
-	}
 	break;
 
   case GSREG_RCR:
@@ -140,38 +125,19 @@ uint32 VDC::GetRegister(const unsigned int id, char *special, const uint32 speci
 
   case GSREG_MWR:
 	value = MWR;
-
-	if(special)
-	{
-	 sprintf(special, "CG Mode: %d, BAT Width: %d(tiles), BAT Height: %d(tiles)", (int)(bool)(value & 0x80), 
-											     bat_width_tab[(value >> 4) & 0x3],
-											     bat_height_tab[(value >> 6) & 0x1]);
-	}
 	break;
 
   case GSREG_HSR:
 	value = HSR;
-	if(special)
-	{
-	 sprintf(special, "HSW: %02x, HDS: %02x", value & 0x1F, (value >> 8) & 0x7F);
-	}
 	break;
 
   case GSREG_HDR:
 	value = HDR;
-	if(special)
-	{
-	 sprintf(special, "HDW: %02x, HDE: %02x", value & 0x7F, (value >> 8) & 0x7F);
-	}
 	break;
 
 
   case GSREG_VSR:
 	value = VSR;
-	if(special)
-	{
-	 sprintf(special, "VSW: %02x, VDS: %02x", value & 0x1F, (value >> 8) & 0xFF);
-	}
 	break;
 
   case GSREG_VDR:
@@ -184,12 +150,6 @@ uint32 VDC::GetRegister(const unsigned int id, char *special, const uint32 speci
 
   case GSREG_DCR:
 	value = DCR;
-	if(special)
-	{
-	 sprintf(special, "SATB DMA IRQ: %s, VRAM DMA IRQ: %s, DMA Source Address: %s, DMA Dest Address: %s, Auto SATB DMA: %s",
-        	(DCR & 0x1) ? "On" : "Off", (DCR & 0x2) ? "On" : "Off", (DCR & 0x4) ? "Decrement" : "Increment", (DCR & 0x8) ? "Decrement" : "Increment", 
-	        (DCR & 0x10) ? "On" : "Off");
-	}
 	break;
 
   case GSREG_SOUR:
@@ -347,7 +307,6 @@ void VDC::RunDMA(int32 cycles, bool force_completion)
     VDC_UNDEFINED("Unmapped VRAM DMA read");
 
    DMAReadBuffer = VRAM[SOUR];
-   //printf("DMA Read: %04x, %04x\n", SOUR, DMAReadBuffer);
   }
   else
   {
@@ -422,13 +381,13 @@ void VDC::IncRCR(void)
 		    {
 		     if(sat_dma_counter > 0)
 		     {
-		      printf("SAT DMA cancelled???\n");
+                      /* SAT DMA cancelled ? */
 		      sat_dma_counter = 0;
 		      CheckAndCommitPending();
 		     }
 		     if(DMARunning)
 		     {
-		      printf("DMA Running Cancelled\n");
+                      /* DMA Running cancelled */
 		      DMARunning = false;
 		      CheckAndCommitPending();
 		     }
@@ -477,14 +436,9 @@ static const int Cycles_Between_RCRIRQ_And_HDWEnd = 4;
 int VDC::TimeFromHDSStartToBYRLatch(void)
 {
  int ret = 1;
-
  if(HDS_cache > 2)
   ret += ((HDS_cache + 1) * 8) - 24 + 2;
-
-
- //printf("%d, %d\n", HDS_cache, ret);
-
- return(ret);
+ return ret;
 }
 
 int VDC::TimeFromBYRLatchToBXRLatch(void)
@@ -563,7 +517,6 @@ int32 VDC::VSync(bool vb)
  }
  in_exvsync = vb;
 
- //printf("VBlank: %d\n", vb);
  if(vb) // Going into vsync
  {
   NeedRCRInc = false;
@@ -594,11 +547,6 @@ int32 VDC::VSync(bool vb)
 //int32 VDC::Run(int32 clocks, bool hs, bool vs, uint16 *pixels, bool skip)
 int32 VDC::Run(int32 clocks, uint16 *pixels, bool skip)
 {
- //uint16 *spixels = pixels;
-
- //puts("Run begin");
- //fflush(stdout);
-
  while(clocks > 0)
  {
   int32 chunk_clocks = clocks;
@@ -802,7 +750,6 @@ int32 VDC::Run(int32 clocks, uint16 *pixels, bool skip)
 			{
 		         DrawBG(linebuf, userle & ULE_BG);
 			}
-			//printf("%d %02x %02x\n", RCRCount, CR, CR_cache);
 		       if(CR_cache & 0x40)
 		        DrawSprites(linebuf, (userle & ULE_SPR) && !skip);
 		      }
@@ -831,9 +778,6 @@ int32 VDC::Run(int32 clocks, uint16 *pixels, bool skip)
   pixels += chunk_clocks;
   clocks -= chunk_clocks;
  }
-
- //puts("Run end");
- //fflush(stdout);
 
  return(CalcNextEvent());
 }
@@ -1053,7 +997,6 @@ void VDC::FetchSpriteData(void)
 
     if(flags & SPRF_HFLIP && width == 32)
      no ^= 1;
-    //printf("Found: %d %d\n", RCRCount, x);
     SpriteList[active_sprites].x = x;
     SpriteList[active_sprites].palette_index = palette_index;
 
@@ -1237,9 +1180,6 @@ void VDC::DoWaitStates(void)
   }
  }
 
- //if(did_wait)
- // printf("End of wait stating: %d %d\n", VDMA_CycleCounter, sat_dma_counter);
-
  assert(!pending_read);
  assert(!pending_write);
 }
@@ -1365,10 +1305,6 @@ void VDC::Write(uint32 A, uint8 V, int32 &next_event)
 
  A &= 0x3;
 
- //if((A == 0x2 || A == 0x3) && (select >= 0xF && select <= 0x12))
- //if((A == 2 || A == 3) && select != 2)
- // printf("VDC Write(RCRCount=%d): A=%02x, Select=%02x, V=%02x\n", RCRCount, A, select, V);
-
  switch(A)
  {
   case 0x0: select = V & 0x1F;
@@ -1416,7 +1352,6 @@ void VDC::Write(uint32 A, uint8 V, int32 &next_event)
                        break;
 
             case 0x05: VDC_REGSETP(CR, V, msb);
-			//printf("CR: %04x, %d\n", CR, msb);
                        break;
 
             case 0x06: VDC_REGSETP(RCR, V, msb);

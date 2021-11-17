@@ -116,10 +116,7 @@ void V810_FP_Ops::fpim_round(fpim* df)
       df->f = (df->f + ((df->f >> sa) & 1) + ((1ULL << (sa - 1)) - 1)) & ~((1ULL << sa) - 1);
 
       if(df->f != old_f)
-      {
-         //printf("Inexact mr\n");
          exception_flags |= flag_inexact;
-      }
    }
 }
 
@@ -129,9 +126,6 @@ void V810_FP_Ops::fpim_round_int(fpim* df, bool truncate)
  {
   const unsigned sa = 23 - df->exp;
   uint64 old_f = df->f;
-
-  //if(sa >= 2)
-  // printf("RI: %lld, %d\n", df->f, sa);
 
   // round to nearest
   if(sa > 24)
@@ -145,10 +139,7 @@ void V810_FP_Ops::fpim_round_int(fpim* df, bool truncate)
   }
 
   if(df->f != old_f)
-  {
-   //printf("Inexact\n");
    exception_flags |= flag_inexact;
-  }
  }
 }
 
@@ -193,8 +184,6 @@ uint32 V810_FP_Ops::mul(uint32 a, uint32 b)
  fpim_decode(&ins[0], a);
  fpim_decode(&ins[1], b);
 
- //printf("%08x %08x - %d %d %d - %d %d %d\n", a, b, a_exp, a_walrus, a_sign, b_exp, b_walrus, b_sign);
-
  res.exp = ins[0].exp + ins[1].exp - 23;
  res.f = ins[0].f * ins[1].f;
  res.sign = ins[0].sign ^ ins[1].sign;
@@ -228,8 +217,6 @@ uint32 V810_FP_Ops::add(uint32 a, uint32 b)
 
  max_exp = std::max<int>(ins[0].exp, ins[1].exp);
 
- //printf("%d:%08llx %d:%08llx\n", ins[0].exp, ins[0].f, ins[1].exp, ins[1].f);
-
  for(unsigned i = 0; i < 2; i++)
  {
   unsigned sd = (max_exp - ins[i].exp);
@@ -249,9 +236,6 @@ uint32 V810_FP_Ops::add(uint32 a, uint32 b)
    {
     nft |= 1;
    }
-   //{
-   // puts("FPR");
-  // }
 
    ft[i] = nft;
   }
@@ -259,8 +243,6 @@ uint32 V810_FP_Ops::add(uint32 a, uint32 b)
   if(ins[i].sign)
    ft[i] = -ft[i];
  }
-
- //printf("SOON: %08llx %08llx\n", ft[0], ft[1]);
 
  tr = ft[0] + ft[1];
  if(tr < 0)
@@ -309,7 +291,6 @@ uint32 V810_FP_Ops::div(uint32 a, uint32 b)
 
  if(ins[1].f == 0)
  {
-  //puts("Divide by zero!");
   exception_flags |= flag_divbyzero;
   return((res.sign << 31) | (255 << 23));
  }
@@ -318,8 +299,6 @@ uint32 V810_FP_Ops::div(uint32 a, uint32 b)
   res.exp = ins[0].exp - ins[1].exp - 2 - 1; // + 23 - 2;
   res.f = ((ins[0].f << 24) / ins[1].f) << 2;
   mtmp = ((ins[0].f << 24) % ins[1].f) << 1;
-
-  //printf("%lld %lld\n", (ins[0].f << 23) % ins[1].f, ins[1].f);
 
   if(mtmp > ins[1].f)
    res.f |= 3;
@@ -420,7 +399,6 @@ uint32 V810_FP_Ops::ftoi(uint32 v, bool truncate)
    ret = ins.f << sa;
   }
  }
- //printf("%d\n", sa);
 
  if(ins.sign)
   ret = -ret;

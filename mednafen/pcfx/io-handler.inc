@@ -99,11 +99,7 @@ static uint16 MDFN_FASTCALL port_rhword(v810_timestamp_t &timestamp, uint32 A)
   return(KING_Read16(timestamp, A));
  }
  else if(A >= 0x700 && A <= 0x7FF)
- {
-  FXDBG("ExBusReset H Read");
-
   return(ExBusReset);
- }
  else if(A >= 0xc00 && A <= 0xCFF) // Backup memory control
  {
   switch(A & 0xC0)
@@ -114,27 +110,18 @@ static uint16 MDFN_FASTCALL port_rhword(v810_timestamp_t &timestamp, uint32 A)
   }
  }
  else if(A >= 0xe00 && A <= 0xeff)
- {
   return(PCFXIRQ_Read16(A));
- }
  else if(A >= 0xf00 && A <= 0xfff)
- {
   return(FXTIMER_Read16(A, timestamp));
- }
  else if((A & 0x7FFFFFFF) >= 0x500000 && (A & 0x7FFFFFFF) <= 0x52ffff)
  {
   if(WantHuC6273)
    return(HuC6273_Read16(A));
  }
  else if(FXSCSIROM && A >= 0x780000 && A <= 0x7FFFFF)
- {
   return(le16toh(*(uint16*)&FXSCSIROM[A & 0x7FFFF]));
- }
  else if(FXSCSIROM && A >= 0x600000 && A <= 0x6FFFFF)
- {
-  puts("FXSCSI 16-bit:");
   return(FXSCSI_CtrlRead(A));
- }
 
  FXDBG("Unknown 16-bit port read: %08x", A);
 
@@ -280,13 +267,6 @@ static void MDFN_FASTCALL port_whword(v810_timestamp_t &timestamp, uint32 A, uin
     HuC6273_Write16(A, V);
   }
   else if(FXSCSIROM && A >= 0x600000 && A <= 0x6FFFFF)
-  {
-   puts("FXSCSI 16-bit:");
    FXSCSI_CtrlWrite(A, V);
-  }
-  else
-  {
-   FXDBG("Port 16-bit write: %08x %04x", A, V);
-  }
 }
 

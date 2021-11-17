@@ -281,13 +281,6 @@ static bool BuildHuffmanLUT(const HuffmanTable *table, HuffmanQuickLUT *qlut, co
   }
  }
 
- //printf("\n\n%d\n", bitmax);
- for(int i = 0; i < (1 << bitmax); i++)
- {
-  //if(!qlut->lut_bits[i])
-  // printf("%d %d\n", i, qlut->lut_bits[i]);
- }
-
  return(TRUE);
 }
 
@@ -392,11 +385,6 @@ static uint32 get_ac_coeff(const HuffmanQuickLUT *table, int32 *zeroes)
   return(0);
  }
 
- if(!table->lut_bits[rawbits])
- {
-  FXDBG("Invalid AC bit sequence: %03x\n", rawbits);
- }
-
  code = table->lut[rawbits];
  SkipBits(table->lut_bits[rawbits]);
 
@@ -413,11 +401,6 @@ static uint32 get_dc_coeff(const HuffmanQuickLUT *table, int32 *zeroes, int maxb
  for(;;)
  {
   uint32 rawbits = GetBits(maxbits, MDFNBITS_PEEK);
-
-  if(!table->lut_bits[rawbits])
-  {
-   FXDBG("Invalid DC bit sequence: %03x\n", rawbits);
-  }
 
   code = table->lut[rawbits];
   SkipBits(table->lut_bits[rawbits]);
@@ -587,7 +570,6 @@ void RAINBOW_Close(void)
 
 void RAINBOW_Write8(uint32 A, uint8 V)
 {
- //printf("RAINBOW Wr8: %08x %02x\n", A, V);
  switch(A & 0x1C)
  {
   case 0x00: REGSETBOFH(HScroll, V, (A & 0x2) >> 1); HScroll &= 0x1FF; break;
@@ -603,7 +585,6 @@ void RAINBOW_Write16(uint32 A, uint16 V)
 {
  int msh = A & 0x2;
 
- //printf("RAINBOW Wr16: %08x %04x\n", A, V);
  switch(A & 0x1C)
  {
   case 0x00: REGSETBOFH(HScroll, V & 0xFF, (A & 0x2) >> 1); HScroll &= 0x1FF; break;
@@ -635,10 +616,7 @@ void RAINBOW_DecodeBlock(bool arg_FirstDecode, bool Skip)
    int which_buffer = DecodeBufferWhichRead ^ 1;
 
    if(!(Control & 0x01))
-   {
-    puts("Rainbow decode when disabled!!");
     return;
-   }
 
    if(arg_FirstDecode)
    {
@@ -659,9 +637,6 @@ void RAINBOW_DecodeBlock(bool arg_FirstDecode, bool Skip)
       icount--;
 
      block_type = KING_RB_Fetch();
-     //if(icount > 0 && block_type != 0xF0 && block_type != 0xF1 && block_type != 0xF2 && block_type != 0xF3 && block_type != 0xF8 && block_type != 0xFF)
-     //if(icount > 0 && block_type == 0x11)
-     // printf("%02x\n", block_type);
      icount--;
     } while(block_type != 0xF0 && block_type != 0xF1 && block_type != 0xF2 && block_type != 0xF3 && block_type != 0xF8 && block_type != 0xFF && icount > 0);
 
@@ -677,21 +652,11 @@ void RAINBOW_DecodeBlock(bool arg_FirstDecode, bool Skip)
     block_size -= 2;
     if(block_type == 0xFF && block_size <= 0)
      for(int i = 0; i < 128; i++,icount--) KING_RB_Fetch();
-
-    //fprintf(stderr, "Block: %d\n", block_size);
    } while(block_size <= 0 && icount > 0);
 
-   //if(!GarbageData && icount < 500)
-   //{
-   // FXDBG("Partial garbage data. %d", icount);
-   //}
-
-   //printf("%d\n", icount);
    if(icount <= 0)
    {
-    FXDBG("Garbage data.");
     GarbageData = TRUE;
-    //printf("Dooom: %d\n");
     DecodeFormat[which_buffer] = 0;
     memset(DecodeBuffer[which_buffer], 0, 0x2000);
     goto BufferNoDecode;
@@ -902,10 +867,7 @@ void RAINBOW_DecodeBlock(bool arg_FirstDecode, bool Skip)
      for(unsigned int i = 0; i < rle_count; i++)
      {
       if(x >= 0x2000) 
-      {
-       //puts("Oops");
        break; // Don't overflow our decode buffer!
-      }
       DecodeBuffer[which_buffer][x] = (boot >> plt_shift);
       x++;
      }
@@ -993,7 +955,6 @@ int RAINBOW_FetchRaster(uint32 *linebuffer, uint32 layer_or, uint32 *palette_ptr
  if(!RasterReadPos)
   DecodeFormat[DecodeBufferWhichRead] = -1;     // Invalidate this buffer.
 
- //printf("Fetch: %d, buffer: %d\n", RasterReadPos, DecodeBufferWhichRead);
  return(ret);
 }
 

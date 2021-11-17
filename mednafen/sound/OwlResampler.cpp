@@ -162,16 +162,7 @@ void OwlBuffer::Integrate(unsigned count, unsigned lp_shift, unsigned hp_shift, 
   else
    accum = ProcessLoop<0, true, 3, false, false, true>(count, accum, Buf());
  }
-
- if(accum >= 32767 * 256 * 8 || accum <= -32767 * 256 * 8)
- {
-  //printf("Possible delta sample loss; accum=%d\n", accum);
- }
 }
-
-//
-//
-//
 
 RavenBuffer::RavenBuffer()
 {
@@ -313,7 +304,6 @@ static INLINE void DoMAC_SSE(float *wave, float *coeffs, int32 count, int32 *acc
  // Multiplies 16 coefficients at a time.
  int dummy;
 
- //printf("%f\n", adj);
 /*
 	?di = wave pointer
 	?si = coeffs pointer
@@ -566,7 +556,6 @@ int32 OwlResampler::Resample(OwlBuffer* in, const uint32 in_count, int16* out, c
 
          if(s < -32768 || s > 32767)
          {
-            //printf("Flow: %6d\n", s);
             if(s < -32768)
                s = -32768;
             else if(s > 32767)
@@ -636,11 +625,7 @@ static float FilterDenormal(float v)
  cat_pun.f = v;
 
  if(((cat_pun.i >> 23) & 0xFF) <= 24)	// Maybe < 24 is more correct?
- {
-  MDFN_printf("Small FP coefficient detected: 0x%08x --- raw_sign=%d, raw_exp=0x%02x, raw_mantissa=0x%06x\n", cat_pun.i, cat_pun.i >> 31, (cat_pun.i >> 23) & 0xFF, cat_pun.i & ((1U << 23) - 1));
   return(0);
- }
-
  return(v);
 }
 
@@ -700,10 +685,6 @@ OwlResampler::OwlResampler(double input_rate, double output_rate, double rate_er
 
   Ratio_Dividend = findo_i;
   Ratio_Divisor = NumPhases;
-
-  MDFN_printf("Phases: %d, Output rate: %f, %d %d\n", NumPhases, input_rate * ratio, Ratio_Dividend, Ratio_Divisor);
-
-  MDFN_printf("Desired maximum rate error: %.10f, Actual rate error: %.10f\n", rate_error, fabs((double)input_rate / output_rate * ratio - 1));
  }
 
  static const struct
@@ -745,9 +726,6 @@ OwlResampler::OwlResampler(double input_rate, double output_rate, double rate_er
 
  NumCoeffs = ceil(k_d / required_bandwidth);
 
- MDFN_printf("Initial number of coefficients per phase: %u\n", NumCoeffs);
- MDFN_printf("Initial nominal cutoff frequency: %f\n", InputRate * cutoff / 2);
-
  //
  // Put this lower limit BEFORE the SIMD stuff, otherwise the NumCoeffs_Padded calculation will be off.
  //
@@ -761,23 +739,15 @@ OwlResampler::OwlResampler(double input_rate, double output_rate, double rate_er
  #ifdef ARCH_X86
  else if(cpuext & RETRO_SIMD_SSE2)
  {
-  MDFN_printf("SIMD: SSE\n");
 
-#if 0 //defined(__x86_64__)
-  // SSE loop does 32 MACs per iteration.
-  NumCoeffs = (NumCoeffs + 31) &~ 31;
-#else
   // SSE loop does 16 MACs per iteration.
   NumCoeffs = (NumCoeffs + 15) &~ 15;
-#endif
   NumCoeffs_Padded = NumCoeffs;
  }
  #endif
  #ifdef ARCH_POWERPC_ALTIVEC
  else if(1)
  {
-  MDFN_printf("SIMD: AltiVec\n");
-
   // AltiVec loop does 16 MACs per iteration.
   NumCoeffs = (NumCoeffs + 15) &~ 15;
   NumCoeffs_Padded = NumCoeffs;
@@ -800,9 +770,6 @@ OwlResampler::OwlResampler(double input_rate, double output_rate, double rate_er
  //
  cutoff = std::min<double>(QualityTable[quality].obw * something / input_rate, (std::min<double>(input_rate, output_rate) / input_rate - ((double)k_d / NumCoeffs)));
 
- MDFN_printf("Adjusted number of coefficients per phase: %u\n", NumCoeffs);
- MDFN_printf("Adjusted nominal cutoff frequency: %f\n", InputRate * cutoff / 2);
-
  FIR_Coeffs = (OwlBuffer::I32_F_Pudding **)malloc(sizeof(int32 **) * NumPhases);
  FIR_Coeffs_Real = (OwlBuffer::I32_F_Pudding **)malloc(sizeof(int32 **) * NumPhases);
 
@@ -816,18 +783,9 @@ OwlResampler::OwlResampler(double input_rate, double output_rate, double rate_er
   FIR_Coeffs[i] = (OwlBuffer::I32_F_Pudding *)tmp_ptr;
  }
 
- MDFN_printf("Impulse response table memory usage: %d bytes\n", (int)((sizeof(int32) * NumCoeffs_Padded + 16) * NumPhases));
-
-
  FilterBuf = (double *)malloc(sizeof(double) * NumCoeffs * NumPhases);
  gen_sinc(FilterBuf, NumCoeffs * NumPhases, cutoff / NumPhases, k_beta);
  normalize(FilterBuf, NumCoeffs * NumPhases); 
-
- #if 0
- for(int i = 0; i < NumCoeffs * NumPhases; i++)
-  fprintf(stderr, "%.20f\n", FilterBuf[i]);
-
- #endif
 
  for(unsigned int phase = 0; phase < NumPhases; phase++)
  {
@@ -845,21 +803,10 @@ OwlResampler::OwlResampler(double input_rate, double output_rate, double rate_er
    sum_d += FIR_Coeffs[tp][i].f;
    sum_f4[i % 4] += FIR_Coeffs[tp][i].f;
   }
-
-#if 0
-  {
-   double sf4t = (sum_f4[0] + sum_f4[2]) + (sum_f4[1] + sum_f4[3]);
-   double sd_div_sf4t = sum_d / sf4t;
-
-   MDFN_printf("Phase %4u: sum_d=%.10f, sum_f4t=%.10f, sum_d div sum_f4t=%.10f(*65536=%f, dB=%.8f)\n", sp, sum_d, (double)sf4t, sd_div_sf4t, 65536.0 * sd_div_sf4t, fabs(20 * log10(sum_d / sf4t)));
-  }
-#endif
  }
 
  free(FilterBuf);
  FilterBuf = NULL;
 
  debias_multiplier = (uint32)(((uint64)1 << 16) * debias_corner / output_rate);
-
- //abort();
 }

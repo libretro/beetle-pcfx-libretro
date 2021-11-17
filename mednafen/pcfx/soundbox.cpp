@@ -187,7 +187,6 @@ void SoundBox_Write(uint32 A, uint16 V, const v810_timestamp_t timestamp)
       pce_psg->Write(timestamp / 3, A >> 1, V);
    else
    {
-      //printf("%04x %04x %d\n", A, V, timestamp);
       switch(A & 0x3F)
       {
          case 0x20:
@@ -196,8 +195,6 @@ void SoundBox_Write(uint32 A, uint16 V, const v810_timestamp_t timestamp)
             {
                if(!(sbox.ADPCMControl & (0x10 << ch)) && (V & (0x10 << ch)))
                {
-                  //printf("Reset: %d\n", ch);
-
                   if(ResetAntiClickEnabled)
                   {
                      sbox.ResetAntiClick[ch] += (int64)sbox.ADPCMPredictor[ch] << 32;
@@ -313,9 +310,6 @@ v810_timestamp_t SoundBox_ADPCMUpdate(const v810_timestamp_t timestamp)
                   uint8 nibble = (sbox.ADPCMHalfWord[ch] >> (sbox.ADPCMWhichNibble[ch])) & 0xF;
                   int32 BaseStepSize = StepSizes[sbox.StepSizeIndex[ch]];
 
-                  //if(!ch)
-                  //printf("Nibble: %02x\n", nibble);
-
                   if(EmulateBuggyCodec)
                   {
                      if(BaseStepSize == 1552)
@@ -360,24 +354,16 @@ v810_timestamp_t SoundBox_ADPCMUpdate(const v810_timestamp_t timestamp)
       const uint32 synthtime = synthtime14 >> 3;
       const unsigned synthtime_phase = synthtime14 & 7;
 
-      //printf("Phase: %d, %d\n", synthtime42 % 24, (synthtime42 / 3) & 7);
-
       for(int ch = 0; ch < 2; ch++)
       {
-         //if(!ch)
-         //{
-         // printf("%d\n", synthtime - last_synthtime);
-         // last_synthtime = synthtime;
-         //}
-
          if(sbox.ADPCMHaveDelta[ch]) 
          {
             sbox.ADPCMPredictor[ch] += sbox.ADPCMDelta[ch];
 
             sbox.ADPCMHaveDelta[ch]--;
 
-            if(sbox.ADPCMPredictor[ch] > 0x3FFF) { sbox.ADPCMPredictor[ch] = 0x3FFF; /*printf("Overflow: %d\n", ch);*/ }
-            if(sbox.ADPCMPredictor[ch] < -0x4000) { sbox.ADPCMPredictor[ch] = -0x4000; /*printf("Underflow: %d\n", ch);*/ }
+            if(sbox.ADPCMPredictor[ch] > 0x3FFF) { sbox.ADPCMPredictor[ch] = 0x3FFF; }
+            if(sbox.ADPCMPredictor[ch] < -0x4000) { sbox.ADPCMPredictor[ch] = -0x4000;  }
          }
          else
          {
@@ -398,18 +384,6 @@ v810_timestamp_t SoundBox_ADPCMUpdate(const v810_timestamp_t timestamp)
                samp[0] = (int32)((sbox.ADPCMPredictor[ch] + (sbox.ResetAntiClick[ch] >> 32)) * sbox.VolumeFiltered[ch][0]);
                samp[1] = (int32)((sbox.ADPCMPredictor[ch] + (sbox.ResetAntiClick[ch] >> 32)) * sbox.VolumeFiltered[ch][1]);
             }
-#if 0
-            printf("%d, %f %f\n", ch, sbox.VolumeFiltered[ch][0], sbox.VolumeFiltered[ch][1]);
-
-            {
-               static int inv = 0x1FFF;
-
-               samp[0] = samp[1] = inv;
-
-               if(ch == 1)
-                  inv = -inv;
-            }
-#endif
             for(unsigned y = 0; y < 2; y++)
             {
                const int32 delta = samp[y] - sbox.ADPCM_last[ch][y];

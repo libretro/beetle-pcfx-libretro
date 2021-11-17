@@ -4,15 +4,6 @@
 // Loop postfix non-endless
 #define DRAWBG8x1_LPOST() } bat_x = (bat_x + 1) & bat_width_mask;
 
-#ifdef _WIN32
-static inline void CDBG_REASON(const char *format, ...)
-{
-   (void)0;
-}
-#else
-#define CDBG_REASON(format, ...) 
-#endif
-//printf("BG%d Reason: " format "\n", n, ## __VA_ARGS__);
 static bool CanDrawBG_Fast(int n)
 {
  static const int cg_per_mode[0x8] =
@@ -35,40 +26,25 @@ static bool CanDrawBG_Fast(int n)
 
  // If the bgmode is 0, or 6/7(EXT DOT modes), abort.
  if(!(bgmode & 0x7) || ((bgmode & 0x7) >= 6))
- {
-  CDBG_REASON("Mode %02x out of range", bgmode);
   return(FALSE);
- }
 
  // BG width out of range?
  if(bg_width < 0x3 || bg_width > 0xA)
- {
-  CDBG_REASON("Width %02x out of range", bg_width);
   return(FALSE);
- }
 
  // BG height out of range?
  if(bg_height < 0x3 || bg_height > 0xA)
- {
-  CDBG_REASON("Height %02x out of range", bg_height);
   return(FALSE);
- }
 
  // Time for very stringent checks for BG0!  Don't draw if the sub-screen is a different size than the main screen,
  // or the subscreen CG base != the main screen CG base, or the subscreen BAT base != main screen BAT base(when bgmode & 0x8 is TRUE)
  if(!n)
  {
   if(king->priority & 0x1000)
-  {
-   CDBG_REASON("Affine transform enabled");
    return(FALSE);
-  }
 
   if((king->BGSize[0] & 0xFF) != (king->BGSize[0] >> 8))
-  {
-   CDBG_REASON("Main Screen/Sub Screen Size Mismatch");
    return(FALSE);
-  }
 
   // Since we already made sure the main screen/sub screen sizes match, we only
   // care if BG base or CG base don't match if endless/repeat scrolling is enabled.
@@ -76,18 +52,12 @@ static bool CanDrawBG_Fast(int n)
   if(king->BGScrollMode & 0x1)
   {
    if(king->BGCGAddr[0] != king->BG0SubCGAddr)
-   {
-    CDBG_REASON("Main Screen/Sub Screen CG base mismatch");
     return(FALSE);
-   }
 
    if(bgmode & 0x8)
    {
     if(king->BGBATAddr[0] != king->BG0SubBATAddr)
-    {
-     CDBG_REASON("Main Screen/Sub Screen BAT base mismatch");
      return(FALSE);
-    }
    }
   }
  }
@@ -95,10 +65,7 @@ static bool CanDrawBG_Fast(int n)
 
  // If microprogram fetching is disabled, abort.
  if(!(king->MPROGControl & 0x1))
- {
-  CDBG_REASON("Microprogram disabled");
   return(FALSE);
- }
  else
  {
   int remap_thing = 0;
@@ -124,19 +91,13 @@ static bool CanDrawBG_Fast(int n)
 
    // Affine bit.
    if(mpd & 0x20)
-   {
-    CDBG_REASON("Affine bit set");
     return(FALSE);
-   }
 
    // BAT fetch
    if(mpd & 0x10)
    {
     if(((bat_offset & 0x20000) >> 14) != (x & 8))
-    {
-     CDBG_REASON("BAT MPROG/base bank mismatch");
      return(FALSE);
-    }
 
     bat_fetch = TRUE;
    }
@@ -144,41 +105,26 @@ static bool CanDrawBG_Fast(int n)
    {
     // CG offset/bank mismatch...
     if(((cg_offset & 0x20000) >> 14) != (x & 8))
-    {
-     CDBG_REASON("CG MPROG/base bank mismatch");
      return(FALSE);
-    }
 
     // Mismatch between CG fetch type and BG mode!
     if((mpd & 0x8) != (bgmode & 0x8))
-    {
-     CDBG_REASON("Mismatch between CG fetch type and bg mode");
      return(FALSE);
-    }
 
     // Skewed CG fetch order
     if((mpd & 0x7) != remap_thing)
-    {
-     CDBG_REASON("Skewed CG fetch order");
      return(FALSE);
-    }
     remap_thing++;
    }
   }
  
   // CG fetch count mismatch
   if(remap_thing != cg_per_mode[bgmode & 0x7])
-  {
-   CDBG_REASON("CG fetch count mismatch");
    return(FALSE);
-  }
 
   // BG mode demands a BAT fetch, but we don't have one!
   if((bgmode & 0x8) && !bat_fetch)
-  {
-   CDBG_REASON("Missing BAT fetch");
    return(FALSE);
-  }
  }
  
 

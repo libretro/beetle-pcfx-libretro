@@ -17,7 +17,6 @@
  ********************************************************************/
 
 #include <stdlib.h>
-#include <stdio.h>
 #include <errno.h>
 #include <string.h>
 #include <math.h>
@@ -27,6 +26,10 @@
 
 #include "os.h"
 #include "misc.h"
+
+#define VSEEK_END	2
+#define VSEEK_CUR	1
+#define VSEEK_SET	0
 
 /* A 'chained bitstream' is a Vorbis bitstream that contains more than
    one logical bitstream arranged end to end (the only form of Ogg
@@ -86,7 +89,7 @@ static long _get_data(OggVorbis_File *vf){
 static int _seek_helper(OggVorbis_File *vf,int64_t offset){
   if(vf->datasource){
     if(!(vf->callbacks.seek_func)||
-       (vf->callbacks.seek_func)(vf->datasource, offset, SEEK_SET) == -1)
+       (vf->callbacks.seek_func)(vf->datasource, offset, VSEEK_SET) == -1)
       return OV_EREAD;
     vf->offset=offset;
     ogg_sync_reset(&vf->oy);
@@ -635,7 +638,7 @@ static int _open_seekable2(OggVorbis_File *vf){
 
   /* we can seek, so set out learning all about this file */
   if(vf->callbacks.seek_func && vf->callbacks.tell_func){
-    (vf->callbacks.seek_func)(vf->datasource,0,SEEK_END);
+    (vf->callbacks.seek_func)(vf->datasource,0,VSEEK_END);
     vf->offset=vf->end=(vf->callbacks.tell_func)(vf->datasource);
   }else{
     vf->offset=vf->end=-1;
@@ -874,16 +877,9 @@ static int _fetch_and_process_packet(OggVorbis_File *vf,
   }
 }
 
-/* if, eg, 64 bit stdio is configured by default, this will build with
-   fseek64 */
-static int _fseek64_wrap(FILE *f,int64_t off,int whence){
-  if(f==NULL)return(-1);
-  return fseek(f,off,whence);
-}
-
 static int _ov_open1(void *f,OggVorbis_File *vf,const char *initial,
                      long ibytes, ov_callbacks callbacks){
-  int offsettest=((f && callbacks.seek_func)?callbacks.seek_func(f,0,SEEK_CUR):-1);
+  int offsettest=((f && callbacks.seek_func)?callbacks.seek_func(f,0,VSEEK_CUR):-1);
   uint32_t *serialno_list=NULL;
   int serialno_list_size=0;
   int ret;
@@ -987,9 +983,6 @@ int ov_clear(OggVorbis_File *vf){
       (vf->callbacks.close_func)(vf->datasource);
     memset(vf,0,sizeof(*vf));
   }
-#ifdef DEBUG_LEAKS
-  _VDBG_dump();
-#endif
   return(0);
 }
 
@@ -1537,101 +1530,6 @@ int ov_pcm_seek(OggVorbis_File *vf,int64_t pos){
   return 0;
 }
 
-/* seek to a playback time relative to the decompressed pcm stream
-   returns zero on success, nonzero on failure */
-int ov_time_seek(OggVorbis_File *vf,int64_t milliseconds){
-  /* translate time to PCM position and call ov_pcm_seek */
-
-  int link=-1;
-  int64_t pcm_total=0;
-  int64_t time_total=0;
-
-  if(vf->ready_state<OPENED)return(OV_EINVAL);
-  if(!vf->seekable)return(OV_ENOSEEK);
-  if(milliseconds<0)return(OV_EINVAL);
-
-  /* which bitstream section does this time offset occur in? */
-  for(link=0;link<vf->links;link++){
-    int64_t addsec = ov_time_total(vf,link);
-    if(milliseconds<time_total+addsec)break;
-    time_total+=addsec;
-    pcm_total+=vf->pcmlengths[link*2+1];
-  }
-
-  if(link==vf->links)return(OV_EINVAL);
-
-  /* enough information to convert time offset to pcm offset */
-  {
-    int64_t target=pcm_total+(milliseconds-time_total)*vf->vi[link].rate/1000;
-    return(ov_pcm_seek(vf,target));
-  }
-}
-
-/* page-granularity version of ov_time_seek 
-   returns zero on success, nonzero on failure */
-int ov_time_seek_page(OggVorbis_File *vf,int64_t milliseconds){
-  /* translate time to PCM position and call ov_pcm_seek */
-
-  int link=-1;
-  int64_t pcm_total=0;
-  int64_t time_total=0;
-
-  if(vf->ready_state<OPENED)return(OV_EINVAL);
-  if(!vf->seekable)return(OV_ENOSEEK);
-  if(milliseconds<0)return(OV_EINVAL);
-
-  /* which bitstream section does this time offset occur in? */
-  for(link=0;link<vf->links;link++){
-    int64_t addsec = ov_time_total(vf,link);
-    if(milliseconds<time_total+addsec)break;
-    time_total+=addsec;
-    pcm_total+=vf->pcmlengths[link*2+1];
-  }
-
-  if(link==vf->links)return(OV_EINVAL);
-
-  /* enough information to convert time offset to pcm offset */
-  {
-    int64_t target=pcm_total+(milliseconds-time_total)*vf->vi[link].rate/1000;
-    return(ov_pcm_seek_page(vf,target));
-  }
-}
-
-/* tell the current stream offset cursor.  Note that seek followed by
-   tell will likely not give the set offset due to caching */
-int64_t ov_raw_tell(OggVorbis_File *vf){
-  if(vf->ready_state<OPENED)return(OV_EINVAL);
-  return(vf->offset);
-}
-
-/* return PCM offset (sample) of next PCM sample to be read */
-int64_t ov_pcm_tell(OggVorbis_File *vf){
-  if(vf->ready_state<OPENED)return(OV_EINVAL);
-  return(vf->pcm_offset);
-}
-
-/* return time offset (milliseconds) of next PCM sample to be read */
-int64_t ov_time_tell(OggVorbis_File *vf){
-  int link=0;
-  int64_t pcm_total=0;
-  int64_t time_total=0;
-
-  if(vf->ready_state<OPENED)return(OV_EINVAL);
-  if(vf->seekable){
-    pcm_total=ov_pcm_total(vf,-1);
-    time_total=ov_time_total(vf,-1);
-
-    /* which bitstream section does this time offset occur in? */
-    for(link=vf->links-1;link>=0;link--){
-      pcm_total-=vf->pcmlengths[link*2+1];
-      time_total-=ov_time_total(vf,link);
-      if(vf->pcm_offset>=pcm_total)break;
-    }
-  }
-
-  return(time_total+(1000*vf->pcm_offset-pcm_total)/vf->vi[link].rate);
-}
-
 /*  link:   -1) return the vorbis_info struct for the bitstream section
                 currently being decoded
            0-n) to request information for a specific bitstream section
@@ -1692,7 +1590,8 @@ long ov_read(OggVorbis_File *vf,char *buffer,int bytes_req,int *bitstream){
 
   if(vf->ready_state<OPENED)return(OV_EINVAL);
 
-  while(1){
+  while(1)
+  {
     if(vf->ready_state==INITSET){
       samples=vorbis_synthesis_pcmout(&vf->vd,&pcm);
       if(samples)break;
@@ -1709,8 +1608,8 @@ long ov_read(OggVorbis_File *vf,char *buffer,int bytes_req,int *bitstream){
 
   }
 
-  if(samples>0){
-
+  if(samples>0)
+  {
     /* yay! proceed to pack data into the byte buffer */
 
     long channels=ov_info(vf,-1)->channels;
@@ -1731,7 +1630,7 @@ long ov_read(OggVorbis_File *vf,char *buffer,int bytes_req,int *bitstream){
     vf->pcm_offset+=samples;
     if(bitstream)*bitstream=vf->current_link;
     return(samples*2*channels);
-  }else{
-    return(samples);
   }
+
+  return(samples);
 }

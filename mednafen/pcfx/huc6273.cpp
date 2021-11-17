@@ -107,17 +107,12 @@ static void ProcessFIFO(void)
    uint8 length = FIFO[0] & 0xFF;
 
    if(length > 0x20) 
-   {
       length = 0x20;
-      puts("Length too long");
-   }
 
    if(InFIFO >= length)
    {
       int opcode = FIFO[0] >> 12;
       int option = (FIFO[0] >> 8) & 0x0F;
-
-      printf("Op: %02x, option: %02x\n", opcode, option);
 
       InFIFO -= length;
       for(int i = 0; i < InFIFO; i++)
@@ -139,15 +134,12 @@ static void StoreInFIFO(uint16 V)
 
 uint8 HuC6273_Read8(uint32 A)
 {
-   puts("73 Read8");
    return(0);
 }
 
 uint16 HuC6273_Read16(uint32 A)
 {
    A &= 0xfffff;
-
-   printf("HuC6273 Read: %04x\n", A);
 
    switch(A)
    {
@@ -208,8 +200,6 @@ uint16 HuC6273_Read16(uint32 A)
 void HuC6273_Write16(uint32 A, uint16 V)
 {
    A &= 0xfffff;
-
-   printf("HuC6273 Write: %04x:%04x\n", A, V);
 
    switch(A)
    {
@@ -291,7 +281,6 @@ void HuC6273_Write16(uint32 A, uint16 V)
 
 void HuC6273_Write8(uint32 A, uint8 V)
 {
-   puts("73 Write8");
 }
 
 void HuC6273_Reset(void)

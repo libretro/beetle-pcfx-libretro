@@ -48,28 +48,16 @@ static uint8 MDFN_FASTCALL mem_rbyte(v810_timestamp_t &timestamp, uint32 A)
  {
   if(BRAMDisabled)
    return(0xFF);
-
-  //printf("%d\n", (A - 0xE0000000) >> 1);
   return(BackupRAM[(A & 0xFFFF) >> 1]);
  }
  else if(A >= 0xE8000000 && A <= 0xE9FFFFFF)
  {
   if(BRAMDisabled)
    return(0xFF);
-
-  if(!(BackupControl & 0x2))
-  {
-   FXDBG("Read8 from external BRAM when not enabled.");
-  }
-
   return(ExBackupRAM[(A & 0xFFFF) >> 1]);
  }
  else if(A >= 0x80000000 && A <= 0x807FFFFF)
- {
-  //FXDBG("Mem->IO B Read Translation: %08x -> %08x", A, A & 0x7FFFFF);
   return(port_rbyte(timestamp, A & 0x7FFFFF));
- }
- FXDBG("Unknown byte read: %08x", A);
  return(0xFF);
 }
 
@@ -119,8 +107,6 @@ static uint16 MDFN_FASTCALL mem_rhword(v810_timestamp_t &timestamp, uint32 A)
  {
   if(BRAMDisabled)
    return(0xFFFF);
-
-  //printf("%d\n", (A - 0xE0000000) >> 1);
   return(BackupRAM[(A & 0xFFFF) >> 1]);
  }
  else if(A >= 0xE8000000 && A <= 0xE9FFFFFF)
@@ -128,27 +114,16 @@ static uint16 MDFN_FASTCALL mem_rhword(v810_timestamp_t &timestamp, uint32 A)
   if(BRAMDisabled)
    return(0xFFFF);
 
-  if(!(BackupControl & 0x2))
-  {
-   FXDBG("Read16 from external BRAM when not enabled.");
-  }
-
   return(ExBackupRAM[(A & 0xFFFF) >> 1]);
  }
  else if(A >= 0xF8000000 && A <= 0xFFEFFFFF) // PIO
  {
-  FXDBG("PIO H Read: %08x", A);
-
   return(0x00);
  }
  else if(A >= 0x80000000 && A <= 0x807FFFFF)
  {
-  //FXDBG("Mem->IO H Read Translation: %08x -> %08x", A, A & 0x7FFFFF);
-
   return(port_rhword(timestamp, A & 0x7FFFFF));
  }
- FXDBG("Unknown hword read: %08x", A);
-
  return(0xFFFF);
 }
 
@@ -170,17 +145,11 @@ static uint32 MDFN_FASTCALL mem_rword(v810_timestamp_t &timestamp, uint32 A)
  }
  else
  {
-  uint32 ret;
-
-  FXDBG("Warning:  mem_rword() called for 16-bit bus access: %08x", A);
-
-  ret = mem_rhword(timestamp, A);
+  uint32 ret = mem_rhword(timestamp, A);
   ret |= mem_rhword(timestamp, A | 2) << 16;
 
   return(ret);
  }
-
- FXDBG("Unknown word read: %08x", A);
 
  return(0xFFFFFFFF);
 }
@@ -208,7 +177,6 @@ static void MDFN_FASTCALL mem_wbyte(v810_timestamp_t &timestamp, uint32 A, uint8
  }
  else if(A >= 0xE8000000 && A <= 0xE9FFFFFF)
  {
-  //printf("ExWrite: %08x", A);
   if(BRAMDisabled)
    return;
 
@@ -219,13 +187,10 @@ static void MDFN_FASTCALL mem_wbyte(v810_timestamp_t &timestamp, uint32 A, uint8
  }
  else if(A >= 0xF8000000 && A <= 0xFFEFFFFF)
  {
-  FXDBG("PIO B Write: %08x %02x", A, V);
-
   // PIO?
  }
  else if(A >= 0x80000000 && A <= 0x807FFFFF)
  {
-  //FXDBG("Mem->IO B Write Translation: %08x %02x -> %08x", A, V, A & 0x7FFFFF);
   port_wbyte(timestamp, A & 0x7FFFFF, V);
  }
 }
@@ -253,7 +218,6 @@ static void MDFN_FASTCALL mem_whword(v810_timestamp_t &timestamp, uint32 A, uint
  }
  else if(A >= 0xE8000000 && A <= 0xE9FFFFFF)
  {
-  //printf("ExWrite16: %08x", A);
   if(BRAMDisabled)
    return;
 
@@ -264,8 +228,6 @@ static void MDFN_FASTCALL mem_whword(v810_timestamp_t &timestamp, uint32 A, uint
  }
  else if(A >= 0xF8000000 && A <= 0xFFEFFFFF)
  {
-  FXDBG("PIO H Write: %08x %04x", A, V);
-
   // PIO?
  }
  else if(A >= 0xA0000000 && A <= 0xAFFFFFFF) // Read only
@@ -294,13 +256,7 @@ static void MDFN_FASTCALL mem_whword(v810_timestamp_t &timestamp, uint32 A, uint
  }
  else if(A >= 0x80000000 && A <= 0x807FFFFF)
  {
-  //FXDBG("Mem->IO H Write Translation: %08x %04x -> %08x", A, V, A & 0x7FFFFF);
-
   port_whword(timestamp, A & 0x7FFFFF, V);
- }
- else
- {
-  FXDBG("Unknown hword write: %08x %04x", A, V);
  }
 }
 
@@ -321,7 +277,6 @@ static void MDFN_FASTCALL mem_wword(v810_timestamp_t &timestamp, uint32 A, uint3
  }
  else
  {
-  FXDBG("Warning:  mem_wword() called for 16-bit bus access: %08x", A);
   mem_whword(timestamp, A, V);
   mem_whword(timestamp, A | 2, V >> 16);
  }

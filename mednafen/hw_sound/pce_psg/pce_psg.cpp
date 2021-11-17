@@ -153,8 +153,6 @@ void PCE_PSG::RecalcUOFunc(int chnum)
 {
  psg_channel *ch = &channel[chnum];
 
- //printf("UO Update: %d, %02x\n", chnum, ch->control);
-
  if((revision != REVISION_HUC6280 && !(ch->control & 0xC0)) || (revision == REVISION_HUC6280 && !(ch->control & 0x80)))
   ch->UpdateOutput = &PCE_PSG::UpdateOutput_Off;
  else if(ch->noisectrl & ch->control & 0x80)
@@ -232,7 +230,7 @@ void PCE_PSG::PokeWave(const unsigned int ch, uint32 Address, uint32 Length, con
  }
 }
 
-uint32 PCE_PSG::GetRegister(const unsigned int id, char *special, const uint32 special_len)
+uint32 PCE_PSG::GetRegister(const unsigned int id)
 {
  uint32 value = 0xDEADBEEF;
  const int ch = (id >> 8) & 0xF;
@@ -403,8 +401,6 @@ void PSG_SetRegister(const unsigned int id, const uint32 value)
 
 PCE_PSG::PCE_PSG(int32* hr_l, int32* hr_r, int want_revision)
 {
-	//printf("Test: %u, %u\n", sizeof(psg_channel), (uint8*)&channel[0].balance - (uint8*)&channel[0].waveform[0]);
-
 	revision = want_revision;
 	switch(revision)
 	{
@@ -471,9 +467,6 @@ void PCE_PSG::Write(int32 timestamp, uint8 A, uint8 V)
     Update(timestamp);
 
     psg_channel *ch = &channel[select];
-
-    //if(A == 0x01 || select == 5)
-    // printf("Write Ch: %d %04x %02x, %d\n", select, A, V, timestamp);
 
     switch(A)
     {
@@ -567,11 +560,9 @@ void PCE_PSG::Write(int32 timestamp, uint8 A, uint8 V)
 
         case 0x08: /* LFO frequency */
             lfofreq = V & 0xFF;
-	    //printf("LFO Freq: %02x\n", V);
             break;
 
         case 0x09: /* LFO trigger and control */
-	    //printf("LFO Ctrl: %02x\n", V);
 	    if(V & 0x80)
 	    {
 	     channel[1].waveform_index = 0;
@@ -729,8 +720,6 @@ void PCE_PSG::Update(int32 timestamp)
 
     if(!phase)
     {
-     //printf("Volume update(Read, %d since last): ch=%d, lr=%d, ts=%d\n", running_timestamp - last_read, chnum, lr, running_timestamp);
-
      if(chnum < 6)
      {
       vol_update_vllatch = GetVL(chnum, lr);
@@ -739,7 +728,6 @@ void PCE_PSG::Update(int32 timestamp)
     }
     else
     {
-     // printf("Volume update(Apply): ch=%d, lr=%d, ts=%d\n", chnum, lr, running_timestamp);
      if(chnum < 6)
      {
       channel[chnum].vl[lr] = vol_update_vllatch;
@@ -884,20 +872,10 @@ int PCE_PSG::StateAction(StateMem *sm, int load, int data_only)
     channel[ch].vl[lr] &= 0x1F;
 
    if(!channel[ch].noisecount && ch >= 4)
-   {
-#if 0
-    printf("ch=%d, noisecount == 0\n", ch);
-#endif
     channel[ch].noisecount = 1;
-   }
 
    if(channel[ch].counter <= 0)
-   {
-#if 0
-    printf("ch=%d, counter <= 0\n", ch);
-#endif
     channel[ch].counter = 1;
-   }
 
    if(ch >= 4)
     RecalcNoiseFreqCache(ch);

@@ -135,42 +135,24 @@ int FXTIMER_StateAction(StateMem *sm, int load, int data_only)
    return(ret);
 }
 
-bool FXTIMER_GetRegister(const std::string &name, uint32 &value, std::string *special)
+bool FXTIMER_GetRegister(const std::string &name, uint32 &value)
 {
    if(name == "TCTRL")
    {
       value = control;
-      if(special)
-      {
-         char buf[256];
-         snprintf(buf, 256, "Counting Enabled: %d, IRQ Enabled: %d, IRQ Asserted: %d", (int)(bool)(control & 2), (int)(bool)(control & 1), (int)(bool)(control & 4));
-         *special = std::string(buf);
-      }
-      return(TRUE);
+      return true;
    }
    else if(name == "TPRD")
    {
       value = period;
-      if(special)
-      {
-         char buf[256];
-         snprintf(buf, 256, "Effective Period: %d; 21477272 / %d = %fHz", EFF_PERIOD, EFF_PERIOD, (double)21477272 / (EFF_PERIOD));
-         *special = std::string(buf);
-      }
-      return(TRUE);
+      return true;
    }
    else if(name == "TCNTR")
    {
       value = counter;
-      if(special)
-      {
-         //char buf[256];
-         //snprintf(buf, 256, "Pad: %d, ??: %d, Timer: %d, Reset: %d",
-         //*special = std::string(buf);
-      }
-      return(TRUE);
+      return true;
    }
-   return(FALSE);
+   return false;
 }
 
 void FXTIMER_Reset(void)

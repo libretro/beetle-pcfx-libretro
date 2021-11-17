@@ -23,7 +23,6 @@ extern "C"
 {
 #endif /* __cplusplus */
 
-#include <stdio.h>
 #include "ivorbiscodec.h"
 
 #define CHUNKSIZE 1024
@@ -95,12 +94,6 @@ extern int64_t ov_time_total(OggVorbis_File *vf,int i);
 extern int ov_raw_seek(OggVorbis_File *vf,int64_t pos);
 extern int ov_pcm_seek(OggVorbis_File *vf,int64_t pos);
 extern int ov_pcm_seek_page(OggVorbis_File *vf,int64_t pos);
-extern int ov_time_seek(OggVorbis_File *vf,int64_t pos);
-extern int ov_time_seek_page(OggVorbis_File *vf,int64_t pos);
-
-extern int64_t ov_raw_tell(OggVorbis_File *vf);
-extern int64_t ov_pcm_tell(OggVorbis_File *vf);
-extern int64_t ov_time_tell(OggVorbis_File *vf);
 
 extern vorbis_info *ov_info(OggVorbis_File *vf,int link);
 

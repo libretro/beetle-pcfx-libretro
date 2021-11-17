@@ -15,7 +15,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -25,6 +24,10 @@
 
 #include "mednafen-endian.h"
 #include "state.h"
+
+#define SSEEK_END	2
+#define SSEEK_CUR	1
+#define SSEEK_SET	0
 
 #define RLSB 		MDFNSTATE_RLSB	/* 0x80000000 */
 
@@ -68,13 +71,13 @@ static int32_t smem_seek(StateMem *st, uint32_t offset, int whence)
 {
    switch(whence)
    {
-      case SEEK_SET:
+      case SSEEK_SET:
          st->loc = offset;
          break;
-      case SEEK_END:
+      case SSEEK_END:
          st->loc = st->len - offset;
          break;
-      case SEEK_CUR:
+      case SSEEK_CUR:
          st->loc += offset;
          break;
    }
@@ -116,7 +119,7 @@ static bool SubWrite(StateMem *st, SFORMAT *sf, const char *name_prefix)
    {
       int32_t bytesize;
       char nameo[1 + 256];
-      int slen;
+      size_t slen;
 
       if(!sf->size || !sf->v)
       {
@@ -134,11 +137,10 @@ static bool SubWrite(StateMem *st, SFORMAT *sf, const char *name_prefix)
       }
 
       bytesize = sf->size;
-      slen     = sprintf(nameo + 1, "%s%s", name_prefix ? name_prefix : "", sf->name);
-      nameo[0] = slen;
-
+      slen     = strlcpy(nameo + 1, sf->name, 256);
       if(slen >= 255)
          slen = 255;
+      nameo[0] = slen;
 
       smem_write(st, nameo, 1 + nameo[0]);
       smem_write32le(st, bytesize);
@@ -215,9 +217,9 @@ static int WriteStateChunk(StateMem *st, const char *sname, SFORMAT *sf)
 
    end_pos = st->loc;
 
-   smem_seek(st, data_start_pos - 4, SEEK_SET);
+   smem_seek(st, data_start_pos - 4, SSEEK_SET);
    smem_write32le(st, end_pos - data_start_pos);
-   smem_seek(st, end_pos, SEEK_SET);
+   smem_seek(st, end_pos, SSEEK_SET);
 
    return(end_pos - data_start_pos);
 }
@@ -281,7 +283,7 @@ static int ReadStateChunk(StateMem *st, SFORMAT *sf, int size)
 
          if(recorded_size != expected_size)
          {
-            if(smem_seek(st, recorded_size, SEEK_CUR) < 0)
+            if(smem_seek(st, recorded_size, SSEEK_CUR) < 0)
                return(0);
          }
          else
@@ -310,7 +312,7 @@ static int ReadStateChunk(StateMem *st, SFORMAT *sf, int size)
       }
       else
       {
-         if(smem_seek(st, recorded_size, SEEK_CUR) < 0)
+         if(smem_seek(st, recorded_size, SSEEK_CUR) < 0)
             return(0);
       }
    }
@@ -349,11 +351,11 @@ static int MDFNSS_StateAction_internal(void *st_p, int load,
          } 
          else
          {
-            if(smem_seek(st, tmp_size, SEEK_CUR) < 0)
+            if(smem_seek(st, tmp_size, SSEEK_CUR) < 0)
                return(0);
          }
       }
-      if(smem_seek(st, -total, SEEK_CUR) < 0)
+      if(smem_seek(st, -total, SSEEK_CUR) < 0)
          return(0);
       if(!found && !section->optional) /* Not found.  We are sad! */
          return(0);
@@ -399,7 +401,7 @@ int MDFNSS_SaveSM(void *st_p, int a, int b, const void *c, const void *d, const 
       return(0);
 
    sizy = st->loc;
-   smem_seek(st, 16 + 4, SEEK_SET);
+   smem_seek(st, 16 + 4, SSEEK_SET);
    smem_write32le(st, sizy);
 
    return(1);

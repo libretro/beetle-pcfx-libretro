@@ -44,16 +44,12 @@ found freely through public domain sources.
 #include "mednafen/mednafen.h"
 #include <mednafen/masmem.h>
 
-//#include "pcfx.h"
-//#include "debug.h"
-
 #include <string.h>
 #include <errno.h>
 #include <algorithm>
 
 #include "v810_opt.h"
 #include "v810_cpu.h"
-#include "v810_cpuD.h"
 
 #include "../../state_helpers.h"
 
@@ -131,7 +127,6 @@ INLINE void V810::RecalcIPendingCache(void)
 
 void V810::CacheClear(v810_timestamp_t &timestamp, uint32 start, uint32 count)
 {
- //printf("Cache clear: %08x %08x\n", start, count);
  for(uint32 i = 0; i < count && (i + start) < 128; i++)
   memset(&Cache[i + start], 0, sizeof(V810_CacheEntry_t));
 }
@@ -175,8 +170,6 @@ INLINE uint32 V810::CacheOpMemLoad(v810_timestamp_t &timestamp, uint32 A)
 
 void V810::CacheDump(v810_timestamp_t &timestamp, const uint32 SA)
 {
- printf("Cache dump: %08x\n", SA);
-
  for(int i = 0; i < 128; i++)
  {
   CacheOpMemStore(timestamp, SA + i * 8 + 0, Cache[i].data[0]);
@@ -194,8 +187,6 @@ void V810::CacheDump(v810_timestamp_t &timestamp, const uint32 SA)
 
 void V810::CacheRestore(v810_timestamp_t &timestamp, const uint32 SA)
 {
- printf("Cache restore: %08x\n", SA);
-
  for(int i = 0; i < 128; i++)
  {
   Cache[i].data[0] = CacheOpMemLoad(timestamp, SA + i * 8 + 0);
@@ -263,15 +254,6 @@ INLINE uint32 V810::RDCACHE(v810_timestamp_t &timestamp, uint32 addr)
   Cache[CI].data_valid[SBI] = TRUE;
   Cache[CI].data_valid[SBI ^ 1] = FALSE;
  }
-
- //{
- // // Caution: This can mess up DRAM page change penalty timings
- // uint32 dummy_timestamp = 0;
- // if(Cache[CI].data[SBI] != mem_rword(addr & ~0x3, dummy_timestamp))
- // {
- //  printf("Cache/Real Memory Mismatch: %08x %08x/%08x\n", addr & ~0x3, Cache[CI].data[SBI], mem_rword(addr & ~0x3, dummy_timestamp));
- // }
- //}
 
  return(Cache[CI].data[SBI]);
 }
@@ -395,11 +377,7 @@ uint8 *V810::SetFastMap(uint32 addresses[], uint32 length, unsigned int num_addr
  for(unsigned int i = 0; i < num_addresses; i++)
  {  
   for(uint64 addr = addresses[i]; addr != (uint64)addresses[i] + length; addr += V810_FAST_MAP_PSIZE)
-  {
-   //printf("%08x, %d, %s\n", addr, length, name);
-
    FastMap[addr / V810_FAST_MAP_PSIZE] = ret - addresses[i];
-  }
  }
 
  FastMapAllocList.push_back(ret);
@@ -512,7 +490,6 @@ INLINE void V810::SetSREG(v810_timestamp_t &timestamp, unsigned int which, uint3
 	switch(which)
 	{
 	 default:	// Reserved
-		printf("LDSR to reserved system register: 0x%02x : 0x%08x\n", which, value);
 		break;
 
          case ECR:      // Read-only
@@ -541,7 +518,6 @@ INLINE void V810::SetSREG(v810_timestamp_t &timestamp, unsigned int which, uint3
 
 	 case ADDTRE:
   	        S_REG[ADDTRE] = value & 0xFFFFFFFE;
-        	printf("Address trap(unemulated): %08x\n", value);
 		break;
 
 	 case CHCW:
@@ -549,7 +525,7 @@ INLINE void V810::SetSREG(v810_timestamp_t &timestamp, unsigned int which, uint3
 
               	switch(value & 0x31)
               	{
-              	 default: printf("Undefined cache control bit combination: %08x\n", value);
+              	 default: 
                           break;
 
               	 case 0x00: break;
@@ -569,15 +545,7 @@ INLINE void V810::SetSREG(v810_timestamp_t &timestamp, unsigned int which, uint3
 
 INLINE uint32 V810::GetSREG(unsigned int which)
 {
-	uint32 ret;
-
-	if(which != 24 && which != 25 && which >= 8)
-	{
-	 printf("STSR from reserved system register: 0x%02x", which);
-        }
-
-	ret = S_REG[which];
-
+	uint32 ret = S_REG[which];
 	return(ret);
 }
 
@@ -961,15 +929,11 @@ bool V810::bstr_subop(v810_timestamp_t &timestamp, int sub_op, int arg1)
 {
  if((sub_op >= 0x10) || (!(sub_op & 0x8) && sub_op >= 0x4))
  {
-  printf("%08x\tBSR Error: %04x\n", PC,sub_op);
-
   SetPC(GetPC() - 2);
   Exception(INVALID_OP_HANDLER_ADDR, ECODE_INVALID_OP);
 
   return(false);
  }
-
-// printf("BSTR: %02x, %02x %02x; src: %08x, dst: %08x, len: %08x\n", sub_op, P_REG[27], P_REG[26], P_REG[30], P_REG[29], P_REG[28]);
 
  if(sub_op & 0x08)
  {
@@ -1104,10 +1068,6 @@ bool V810::bstr_subop(v810_timestamp_t &timestamp, int sub_op, int arg1)
 
 	return((bool)P_REG[28]);
  }
- else
- {
-  printf("BSTR Search: %02x\n", sub_op);
- }
  return(Do_BSTR_Search(timestamp, ((sub_op & 1) ? -1 : 1), (sub_op & 0x2) >> 1));
 }
 
@@ -1129,7 +1089,6 @@ INLINE void V810::SetFPUOPNonFPUFlags(uint32 result)
                   SetFlag(PSW_S, result & 0x80000000);
                   SetFlag(PSW_CY, result & 0x80000000);
 		 }
-                 //printf("MEOW: %08x\n", S_REG[PSW] & (PSW_S | PSW_CY));
 }
 
 bool V810::FPU_DoesExceptionKillResult(void)
@@ -1237,7 +1196,6 @@ INLINE void V810::FPU_Math_Template(uint32 (V810_FP_Ops::*func)(uint32, uint32),
 
 void V810::fpu_subop(v810_timestamp_t &timestamp, int sub_op, int arg1, int arg2)
 {
- //printf("FPU: %02x\n", sub_op);
  if(VBMode)
  {
   switch(sub_op)
@@ -1252,7 +1210,6 @@ void V810::fpu_subop(v810_timestamp_t &timestamp, int sub_op, int arg1, int arg2
 
    // Does REV use arg1 or arg2 for the source register?
    case REV: timestamp++;	// Unknown
-		printf("Revvie bits\n");
 	     {
 	      // Public-domain code snippet from: http://graphics.stanford.edu/~seander/bithacks.html#ReverseParallel
       	      uint32 v = P_REG[arg2]; // 32-bit word to reverse bit order
@@ -1393,8 +1350,6 @@ void V810::Exception(uint32 handler, uint16 eCode)
  }
 #endif
 
-    printf("Exception: %08x %04x\n", handler, eCode);
-
     // Invalidate our bitstring state(forces the instruction to be re-read, and the r/w buffers reloaded).
     in_bstr = FALSE;
     have_src_cache = FALSE;
@@ -1402,7 +1357,6 @@ void V810::Exception(uint32 handler, uint16 eCode)
 
     if(S_REG[PSW] & PSW_NP) // Fatal exception
     {
-     printf("Fatal exception; Code: %08x, ECR: %08x, PSW: %08x, PC: %08x\n", eCode, S_REG[ECR], S_REG[PSW], PC);
      Halted = HALT_FATAL_EXCEPTION;
      IPendingCache = 0;
      return;
@@ -1538,8 +1492,6 @@ int V810::StateAction(StateMem *sm, int load, int data_only)
 
     Cache[i].data_valid[0] = cache_data_valid_temp[i * 2 + 0];
     Cache[i].data_valid[1] = cache_data_valid_temp[i * 2 + 1];
-
-    //printf("%d %08x %08x %08x %d %d\n", i, Cache[i].tag << 10, Cache[i].data[0], Cache[i].data[1], Cache[i].data_valid[0], Cache[i].data_valid[1]);
    }
   }
  }

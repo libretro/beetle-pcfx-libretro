@@ -90,7 +90,6 @@ class PCFX_Input_Gamepad : public PCFX_Input_Device
   buttons |= mode2 << 14;
 
   old_raw_buttons = new_buttons;
-  //printf("%d %08x\n", which, buttons);
  }
 
  virtual int StateAction(StateMem *sm, int load, int data_only, const char *section_name)

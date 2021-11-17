@@ -86,12 +86,9 @@ uint8 PCFXIRQ_Read8(uint32 A)
 
 void PCFXIRQ_Write16(uint32 A, uint16 V)
 {
-   // printf("IRQ Controller Write: %08x %04x\n", A, V);
-   //
    switch(A & 0xC0)
    {
       case 0x00:
-         puts("Address error clear");
          break;
       case 0x40:
          InterruptMask = V & 0x7F;

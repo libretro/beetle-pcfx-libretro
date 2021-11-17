@@ -179,8 +179,6 @@ void FXINPUT_SetInput(int port, const char *type, void *ptr)
 
 uint8 FXINPUT_Read8(uint32 A, const v810_timestamp_t timestamp)
 {
- //printf("Read8: %04x\n", A);
-
  return(FXINPUT_Read16(A &~1, timestamp) >> ((A & 1) * 8));
 }
 
@@ -191,8 +189,6 @@ uint16 FXINPUT_Read16(uint32 A, const v810_timestamp_t timestamp)
  uint16 ret = 0;
  
  A &= 0xC2;
-
- //printf("Read: %04x\n", A);
 
  if(A == 0x00 || A == 0x80)
  {
@@ -224,12 +220,6 @@ void FXINPUT_Write16(uint32 A, uint16 V, const v810_timestamp_t timestamp)
 {
  FXINPUT_Update(timestamp);
 
- //printf("Write16: %04x:%02x, %d\n", A, V, timestamp / 1365);
-
- //PCFXIRQ_Assert(PCFXIRQ_SOURCE_INPUT, FALSE);
- //if(V != 7 && V != 5)
- //printf("PAD Write16: %04x %04x %d\n", A, V, timestamp);
-
  switch(A & 0xC0)
  {
   case 0x80:
@@ -239,7 +229,6 @@ void FXINPUT_Write16(uint32 A, uint16 V, const v810_timestamp_t timestamp)
 
 	     if((V & 0x1) && !(control[w] & 0x1))
 	     {
-	      //printf("Start: %d\n", w);
 	      if(MultiTapEnabled & (1 << w))
 	      {
 	       if(V & 0x2)
@@ -280,8 +269,6 @@ v810_timestamp_t FXINPUT_Update(const v810_timestamp_t timestamp)
    LatchPending[i] -= run_time;
    if(LatchPending[i] <= 0)
    {
-    //printf("Update: %d, %d\n", i, timestamp / 1365);
-
     if(MultiTapEnabled & (1 << i))
     {
      if(TapCounter[i] >= TAP_PORTS)
@@ -295,7 +282,6 @@ v810_timestamp_t FXINPUT_Update(const v810_timestamp_t timestamp)
     {
      data_latch[i] = devices[i]->Read();
     }
-    // printf("Moo: %d, %d, %08x\n", i, TapCounter[i], data_latch[i]);
     latched[i] = TRUE;
     control[i] &= ~1;
     PCFXIRQ_Assert(PCFXIRQ_SOURCE_INPUT, TRUE);
@@ -345,11 +331,6 @@ int FXINPUT_StateAction(StateMem *sm, int load, int data_only)
   ret &= devices[i]->StateAction(sm, load, data_only, sname);
  }
 
- if(load)
- {
-
- }
-  
  return(ret);
 }
 

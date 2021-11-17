@@ -252,10 +252,7 @@ static INLINE void RebuildLayerPrioCache(void)
   {
    vr->LayerPriority[LAYER_BG0 + n] = (((vce_rendercache.priority[1] >> (n * 4)) & 0xF) + 1);
    if(vr->LayerPriority[LAYER_BG0 + n] > 8)
-   {
-    printf("KING BG%d Priority Too Large: %d\n", n, vr->LayerPriority[LAYER_BG0 + n] - 1);
     vr->LayerPriority[LAYER_BG0 + n] = 0;
-   }
   }
   else
    vr->LayerPriority[LAYER_BG0 + n] = 0;
@@ -265,10 +262,7 @@ static INLINE void RebuildLayerPrioCache(void)
  {
   vr->LayerPriority[LAYER_VDC_BG] = ((vce_rendercache.priority[0] & 0xF) + 1);
   if(vr->LayerPriority[LAYER_VDC_BG] > 8)
-  {
-   printf("VDC BG Priority Too Large: %d\n", vr->LayerPriority[LAYER_VDC_BG] - 1);
    vr->LayerPriority[LAYER_VDC_BG] = 0;
-  }
  }
  else
   vr->LayerPriority[LAYER_VDC_BG] = 0;
@@ -277,10 +271,7 @@ static INLINE void RebuildLayerPrioCache(void)
  {
   vr->LayerPriority[LAYER_VDC_SPR] = (((vce_rendercache.priority[0] >> 4) & 0xF) + 1);
   if(vr->LayerPriority[LAYER_VDC_SPR] > 8)
-  {
-   printf("VDC SPR Priority Too Large: %d\n", vr->LayerPriority[LAYER_VDC_SPR] - 1);
    vr->LayerPriority[LAYER_VDC_SPR] = 0;
-  }
  }
  else 
   vr->LayerPriority[LAYER_VDC_SPR] = 0;
@@ -289,10 +280,7 @@ static INLINE void RebuildLayerPrioCache(void)
  {
   vr->LayerPriority[LAYER_RAINBOW] = (((vce_rendercache.priority[0] >> 8) & 0xF) + 1);
   if(vr->LayerPriority[LAYER_RAINBOW] > 8)
-  {
-   printf("RAINBOW Priority Too Large: %d\n", vr->LayerPriority[LAYER_RAINBOW] - 1);
    vr->LayerPriority[LAYER_RAINBOW] = 0;
-  }
  }
  else
   vr->LayerPriority[LAYER_RAINBOW] = 0;
@@ -727,10 +715,7 @@ void KING_StuffSubchannels(uint8 subchannels, int subindex)
 
 uint8 KING_Read8(const v810_timestamp_t timestamp, uint32 A)
 {
- uint8 ret = KING_Read16(timestamp, A & ~1) >> ((A & 1) * 8);
-
- //printf("Read8: %04x\n", A);
- return(ret);
+ return KING_Read16(timestamp, A & ~1) >> ((A & 1) * 8);
 }
 
 void KING_EndFrame(v810_timestamp_t timestamp)
@@ -781,8 +766,6 @@ static int32 CalcNextExternalEvent(int32 next_event)
  if(next_event > HPhaseCounter)
   next_event = HPhaseCounter;
 
- //printf("KING: %d %d %d; %d\n", king->dma_cycle_counter, scsicd_ne, HPhaseCounter, next_event);
-
  for(int chip = 0; chip < 2; chip++)
  {
   int fwoom = (fx_vce.vdc_event[chip] * fx_vce.dot_clock_ratio - fx_vce.clock_divider);
@@ -803,8 +786,6 @@ v810_timestamp_t MDFN_FASTCALL KING_Update(const v810_timestamp_t timestamp)
 {
  int32 clocks = timestamp - king->lastts;
  uint32 running_timestamp = king->lastts;
-
- //printf("KING Run for: %d\n", clocks);
 
  king->lastts = timestamp;
 
@@ -889,8 +870,6 @@ uint16 KING_Read16(const v810_timestamp_t timestamp, uint32 A)
  uint16 ret = 0;
 
  KING_Update(timestamp);
-
- //printf("KRead16: %08x, %d; %04x\n", A, timestamp, king->AR);
 
  switch(A & 0x704)
  {
@@ -984,7 +963,6 @@ uint16 KING_Read16(const v810_timestamp_t timestamp, uint32 A)
 		        if(msh)
 			{
 			 ret = king->data_cache;
-			 //printf("Fooball: %02x\n", ret);
 			 if(king->dma_receive_active)
 			 {
 			  king->DRQ = FALSE;
@@ -1033,7 +1011,6 @@ uint16 KING_Read16(const v810_timestamp_t timestamp, uint32 A)
 			{
 			 ret = king->SubChannelBuf;
 			 king->SubChannelBuf = 0;
-			 //puts("Sub-channel data read.");
 			}
 			break;
 
@@ -1182,9 +1159,6 @@ void KING_Write16(const v810_timestamp_t timestamp, uint32 A, uint16 V)
 {
  int msh = A & 0x2;
 
- //printf("Write16: %08x %04x\n", A, V);
-
-
  if(!(A & 0x4))
  {
   if(!msh) 
@@ -1192,8 +1166,6 @@ void KING_Write16(const v810_timestamp_t timestamp, uint32 A, uint16 V)
  }
  else
  {
-  //if(king->AR != 0x0E)
-  // printf("KING: %02x %04x, %d\n", king->AR, V, fx_vce.raster_counter);
   KING_Update(timestamp);
 
   if(king->AR >= 0x50 && king->AR <= 0x5E)
@@ -1230,10 +1202,6 @@ void KING_Write16(const v810_timestamp_t timestamp, uint32 A, uint16 V)
 			      SCSI_Reg2_Write(timestamp, 0, TRUE);
 			      SCSI_Reg3_Write(timestamp, 0, TRUE);
 			      king->data_cache = 0x00;
-
-			      //king->CDInterrupt = true;
-			      //RedoKINGIRQCheck();
-			      //puts("KING RST IRQ");
 			     }
 
 			     king->Reg01 = V & 0x80; // Only this bit remains...how lonely.
@@ -1430,46 +1398,30 @@ void KING_Write16(const v810_timestamp_t timestamp, uint32 A, uint16 V)
 			    king->RAINBOWTransferControl = V & 0x3;
 			    if(!(V & 1))
 			    {
-			     //if(king->RAINBOWBusyCount || king->RAINBOWBlockCount)
-			     // puts("RAINBOW transfer reset");
-			     // Not sure if this is completely correct or not.  Test cases: "Tonari no Princess Rolfee", (others?)
-			     //king->RAINBOWBusyCount = 0;
-			     //king->RAINBOWBlockCount = 0;
-			     //RAINBOW_ForceTransferReset();
 			     king->RAINBOWBlockCount = 0;
 			    }
 			   }
 			   king->RasterIRQPending = FALSE;
 			   RedoKINGIRQCheck();
-                           //printf("Transfer Control: %d, %08x\n", fx_vce.raster_counter,  king->RAINBOWTransferControl);
 			   break;
 
 		// Rainbow transfer address
                 case 0x41: REGSETHW(king->RAINBOWKRAMA, V, msh); 
 			   king->RAINBOWKRAMA &= 0x3FFFF;
-			   //printf("KRAM Transfer Addr: %d, %08x\n", fx_vce.raster_counter,  king->RAINBOWKRAMA);
 			   break;
 
 		// 0-262
 		case 0x42: if(!msh) 
-			   {
 			    king->RAINBOWTransferStartPosition = V & 0x1FF;
-			    //fprintf(stderr, "%d\n", king->RAINBOWTransferStartPosition);
-	                    //printf("RAINBOW Start Line: %d, %08x\n", fx_vce.raster_counter,  king->RAINBOWTransferStartPosition);
-			   }
 			   break;
 
 		case 0x43: REGSETHW(king->RAINBOWTransferBlockCount, V, msh);
 			   king->RAINBOWTransferBlockCount &= 0x1F;
-                           //printf("KRAM Transfer Block Count: %d, %08x\n", fx_vce.raster_counter,  king->RAINBOWTransferBlockCount);
 			   break;
 
 		// Raster IRQ line
 		case 0x44: if(!msh)
-			   {
 			    king->RasterIRQLine = V & 0x1FF;
-                            //printf("Raster IRQ scanline: %d, %08x\n", fx_vce.raster_counter, king->RasterIRQLine);
-			   }
 			   break;
 
 		case 0x50: 
@@ -1862,10 +1814,7 @@ static void DrawBG(uint32 *target, int n, bool sub)
  if((bgmode & 0x7) >= 6)
  {
   if(!bgmode_warning)
-  {
-   printf("Unsupported KING BG Mode for KING BG %d: %02x\n", n, bgmode);
    bgmode_warning = TRUE;
-  }
   return;
  }
 
@@ -2306,14 +2255,7 @@ static void DrawActive(void)
  rb_type = -1;
 
  if(fx_vce.raster_counter == king->RAINBOWTransferStartPosition && (king->RAINBOWTransferControl & 1))
- {
   king->RAINBOWStartPending = TRUE;
-
-  //printf("Rainbow start pending: line=%d, busycount=%d, blockcount=%d\n", fx_vce.raster_counter, king->RAINBOWBusyCount, king->RAINBOWBlockCount);
-
-  //if(fx_vce.raster_counter == 262)
-  // puts("MOOO");
- }
 
  if(fx_vce.raster_counter < 262)
  {
@@ -2331,7 +2273,6 @@ static void DrawActive(void)
 
    if(!king->RAINBOWBlockCount && king->RAINBOWStartPending)
    {
-    //printf("Rainbow start real: %d %d\n", fx_vce.raster_counter, king->RAINBOWTransferBlockCount);
     king->RAINBOWBlockCount = king->RAINBOWTransferBlockCount;
     if(king->RAINBOWBlockCount)
     {
@@ -2383,7 +2324,6 @@ static void DrawActive(void)
 
      if((fx_vce.ChromaKeyY | fx_vce.ChromaKeyU | fx_vce.ChromaKeyV) == 0)
      {
-      //puts("Opt: 0 chroma key");
       for(int x = 0; x < 256; x++)
       {
        if(!(rainbow_linebuffer[x] & 0xFFFFFF))
@@ -2393,8 +2333,6 @@ static void DrawActive(void)
      else if(ymin == ymax && umin == umax && vmin == vmax)
      {
       const uint32 compare_color = (ymin << 16) | (umin << 8) | (vmin << 0);
-
-      //puts("Opt: Single color chroma key");
 
       for(int x = 0; x < 256; x++)
       {
@@ -2422,10 +2360,6 @@ static void DrawActive(void)
        if(!testie)
         rainbow_linebuffer[x] = 0;
       }
-     }
-     else
-     {
-      //puts("Opt: color keying off\n");
      }
     }
    }
@@ -2529,10 +2463,7 @@ static void MixLayers(void)
     bool ble_cache_any = FALSE;
 
     for(int n = 0; n < 8; n++)
-    {
      priority_remap[n] = vce_rendercache.LayerPriority[n];
-     //printf("%d: %d\n", n, priority_remap[n]);
-    }
 
     // Rainbow layer disabled?
     if(rb_type == -1 || RAINBOWLayerDisable)
@@ -2771,12 +2702,6 @@ static INLINE void RunVDCs(const int master_cycles, uint16 *pixels0, uint16 *pix
  fx_vce.vdc_event[1] = vdc_chips[1]->Run(div_clocks, pixels1, pixels1 ? false : true);
 
  vdc_lb_pos += div_clocks;
-
-// printf("%d\n", vdc_lb_pos);
-// if(fx_vce.dot_clock)
-//  assert(vdc_lb_pos <= 342);
-// else
-//  assert(vdc_lb_pos <= 257);
 }
 
 static void MDFN_FASTCALL KING_RunGfx(int32 clocks)
@@ -2863,13 +2788,6 @@ static void MDFN_FASTCALL KING_RunGfx(int32 clocks)
 
 			if(fx_vce.raster_counter == king->RasterIRQLine && (king->RAINBOWTransferControl & 0x2))
 			{
-			 //printf("Wovely: %d, %d, %d\n", fx_vce.raster_counter, king->RAINBOWRasterCounter, king->RAINBOWTransferControl);
-
-			 //if(fx_vce.raster_counter == 262)
-			 //{
-			 // printf("Rainbow raster IRQ on line 262?\n");
-			 //}
-			 //else
 			 {
 			  king->RasterIRQPending = TRUE;
 			  RedoKINGIRQCheck();

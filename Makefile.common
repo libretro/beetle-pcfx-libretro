@@ -28,7 +28,6 @@ ifneq ($(HAVE_GRIFFIN),1)
 	$(CORE_EMU_DIR)/input/mouse.cpp \
 	$(MEDNAFEN_DIR)/sound/OwlResampler.cpp \
 	$(MEDNAFEN_DIR)/hw_cpu/v810/v810_cpu.cpp \
-	$(MEDNAFEN_DIR)/hw_cpu/v810/v810_cpuD.cpp \
 	$(MEDNAFEN_DIR)/hw_cpu/v810/v810_fp_ops.cpp \
 	$(MEDNAFEN_DIR)/hw_sound/pce_psg/pce_psg.cpp \
 	$(MEDNAFEN_DIR)/hw_video/huc6270/vdc_video.cpp

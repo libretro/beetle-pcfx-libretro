@@ -70,7 +70,6 @@
 	RB_CPUHOOK(RB_GETPC());
 
 	{
-	 //printf("%08x\n", RB_GETPC());
 	 {
 	  v810_timestamp_t timestamp = timestamp_rl;
 
@@ -80,8 +79,6 @@
 	 }
 
        	 opcode = (tmpop >> 9) | IPendingCache;
-
-	 //printf("%02x\n", opcode >> 1);
 
           #ifdef _MSC_VER
              #include "v810_op_table_msvc.inc"
@@ -885,11 +882,6 @@
 	END_OP_SKIPLO();
 
 	BEGIN_OP(DIV);
-             //if(P_REG[arg1] & P_REG[arg2] & 0x80000000)
-             //{
-             // printf("Div: %08x %08x\n", P_REG[arg1], P_REG[arg2]);
-             //}
-
             ADDCLOCK(38);
             if((uint32)P_REG[arg1] == 0) // Divide by zero!
 	    {
@@ -953,7 +945,6 @@
 
             ADDCLOCK(1);
 	    Halted = HALT_HALT;
-            //printf("Untested opcode: HALT\n");
 	END_OP();
 
 	BEGIN_OP(TRAP);
@@ -966,7 +957,6 @@
 	END_OP();
 
 	BEGIN_OP(CAXI);
-            //printf("Untested opcode: caxi\n");
 
 	    // Lock bus(N/A)
 
@@ -1060,11 +1050,7 @@
 	    if(!RB_AccurateMode)
 	    {
 	     RB_SETPC(RB_GETPC());
-	     if((uint32)(RB_RDOP(0, 0) >> 9) != opcode)
-	     {
-	      //printf("Trampoline: %08x %02x\n", RB_GETPC(), opcode >> 1);
-	     }
-	     else
+	     if((uint32)(RB_RDOP(0, 0) >> 9) == opcode)
 	     {
               ADDCLOCK(1);
               Exception(INVALID_OP_HANDLER_ADDR, ECODE_INVALID_OP);
@@ -1086,7 +1072,6 @@
 	OpFinishedSkipLO: ;
      }	// end  while(timestamp_rl < next_event_ts)
      next_event_ts = event_handler(timestamp_rl);
-     //printf("Next: %d, Cur: %d\n", next_event_ts, timestamp);
     }
 
 v810_timestamp = timestamp_rl;
