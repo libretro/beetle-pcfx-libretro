@@ -65,6 +65,7 @@ static std::string retro_save_directory;
 static bool cd_eject_state;
 
 static bool libretro_supports_bitmasks = false;
+static bool libretro_supports_option_categories = false;
 
 typedef struct
 {
@@ -1849,7 +1850,9 @@ void retro_set_environment(retro_environment_t cb)
       { 0 },
    };
 
-   libretro_set_core_options(environ_cb);
+   libretro_supports_option_categories = false;
+   libretro_set_core_options(environ_cb,
+      &libretro_supports_option_categories);
    environ_cb(RETRO_ENVIRONMENT_SET_CONTROLLER_INFO, (void*)ports);
 
    vfs_iface_info.required_interface_version = 1;
