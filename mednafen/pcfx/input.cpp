@@ -29,6 +29,10 @@
 
 #define TAP_PORTS	4
 
+#ifdef OLD_GCC
+using namespace std;
+#endif
+
 static const int TapMap[2][TAP_PORTS] =
 {
  { 0, 2, 3, 4 },
