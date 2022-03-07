@@ -57,6 +57,8 @@
 
 #if defined(VITA) || defined(BSD) || defined(ORBIS)
 #include <sys/time.h>
+#elif defined(__PS3__)
+#include <sys/sys_time.h>
 #endif
 
 #ifdef __MACH__

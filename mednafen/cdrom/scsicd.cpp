@@ -30,6 +30,10 @@
 #include "../mednafen-endian.h"
 #include "../state_helpers.h"
 
+#ifdef OLD_GCC
+using namespace std;
+#endif
+
 static uint32_t CD_DATA_TRANSFER_RATE;
 static uint32_t System_Clock;
 static void (*CDIRQCallback)(int);

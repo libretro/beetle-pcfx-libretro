@@ -30,6 +30,10 @@
 #include "msvc_compat.h"
 #endif
 
+#ifdef OLD_GCC
+using namespace std;
+#endif
+
 static uint8 **RAMPtrs = NULL;
 static uint32 PageSize;
 static uint32 NumPages;
