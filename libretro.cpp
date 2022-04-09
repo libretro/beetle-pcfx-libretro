@@ -191,8 +191,6 @@ static void RebaseTS(const v810_timestamp_t timestamp, const v810_timestamp_t ne
    next_timer_ts -= (timestamp - new_base_timestamp);
    next_adpcm_ts -= (timestamp - new_base_timestamp);
    next_king_ts -= (timestamp - new_base_timestamp);
-
-   //printf("RTS: %d %d %d %d\n", next_pad_ts, next_timer_ts, next_adpcm_ts, next_king_ts);
 }
 
 
@@ -244,10 +242,7 @@ static void ForceEventUpdates(const uint32 timestamp)
    next_timer_ts = FXTIMER_Update(timestamp);
    next_adpcm_ts = SoundBox_ADPCMUpdate(timestamp);
 
-   //printf("Meow: %d\n", CalcNextTS());
    PCFX_V810.SetEventNT(CalcNextTS());
-
-   //printf("FEU: %d %d %d %d\n", next_pad_ts, next_timer_ts, next_adpcm_ts, next_king_ts);
 }
 
 #include "mednafen/pcfx/io-handler.inc"
@@ -285,8 +280,6 @@ static CDGameEntry GameList[] =
 
 static void Emulate(EmulateSpecStruct *espec)
 {
-   //printf("%d\n", PCFX_V810.v810_timestamp);
-
    FXINPUT_Frame();
 
    MDFNMP_ApplyPeriodicCheats();
@@ -335,8 +328,6 @@ static void Emulate(EmulateSpecStruct *espec)
 static void PCFX_Reset(void)
 {
    const uint32 timestamp = PCFX_V810.v810_timestamp;
-
-   //printf("Reset: %d\n", timestamp);
 
    // Make sure all devices are synched to current timestamp before calling their Reset()/Power()(though devices should already do this sort of thing on their
    // own, but it's not implemented for all of them yet, and even if it was all implemented this is also INSURANCE).
@@ -872,8 +863,6 @@ extern "C" int StateAction(StateMem *sm, int load, int data_only)
       }
    }
 
-   //printf("0x%08x, %d %d %d %d\n", load, next_pad_ts, next_timer_ts, next_adpcm_ts, next_king_ts);
-
    return(ret);
 }
 
@@ -1387,28 +1376,6 @@ static bool MDFNI_LoadCD(const char *devicename)
       extract_basename(image_label, devicename, sizeof(image_label));
       disk_control_ext_info.image_labels.push_back(image_label);
    }
-
-#ifdef DEBUG
-   //
-   // Print out a track list for all discs.
-   //
-   for (unsigned i = 0; i < CDInterfaces.size(); i++)
-   {
-      TOC toc;
-
-      CDInterfaces[i]->ReadTOC(&toc);
-
-      MDFN_printf("CD %d Layout:\n", i + 1);
-
-      for (int32 track = toc.first_track; track <= toc.last_track; track++)
-      {
-         MDFN_printf("Track %2d, LBA: %6d  %s\n", track, toc.tracks[track].lba, (toc.tracks[track].control & 0x4) ? "DATA" : "AUDIO");
-      }
-
-      MDFN_printf("Leadout: %6d\n", toc.tracks[100].lba);
-      MDFN_printf("\n");
-   }
-#endif
 
    // Calculate layout MD5.  The system emulation LoadCD() code is free to ignore this value and calculate
    // its own, or to use it to look up a game in its database.
@@ -1998,9 +1965,10 @@ void MDFN_DispMessage(const char *format, ...)
 {
    struct retro_message msg;
    va_list ap;
-   va_start(ap,format);
-   char *str = new char[4096];
+   char *str        = new char[4096];
    const char *strc = NULL;
+
+   va_start(ap,format);
 
    vsnprintf(str, 4096, format,ap);
    va_end(ap);

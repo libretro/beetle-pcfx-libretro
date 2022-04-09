@@ -207,8 +207,6 @@ static void FixOPV(void)
  {
   int32_t tmpvol = cdda.CDDAVolume[port] * 100 / (2 * cdda.CDDADivAccVolFudge);
 
-  //printf("TV: %d\n", tmpvol);
-
   cdda.OutPortVolumeCache[port] = tmpvol;
 
   if(cdda.OutPortChSelect[port] & 0x01)
@@ -281,31 +279,26 @@ void SCSICD_Power(scsicd_timestamp_t system_timestamp)
 void SCSICD_SetDB(uint8_t data)
 {
  cd_bus.DB = data;
- //printf("Set DB: %02x\n", data);
 }
 
 void SCSICD_SetACK(bool set)
 {
  SetkingACK(set);
- //printf("Set ACK: %d\n", set);
 }
 
 void SCSICD_SetSEL(bool set)
 {
  SetkingSEL(set);
- //printf("Set SEL: %d\n", set);
 }
 
 void SCSICD_SetRST(bool set)
 {
  SetkingRST(set);
- //printf("Set RST: %d\n", set);
 }
 
 void SCSICD_SetATN(bool set)
 {
  SetkingATN(set);
- //printf("Set ATN: %d\n", set);
 }
 
 static void GenSubQFromSubPW(void)
@@ -316,12 +309,6 @@ static void GenSubQFromSubPW(void)
 
  for(int i = 0; i < 96; i++)
   SubQBuf[i >> 3] |= ((cd.SubPWBuf[i] & 0x40) >> 6) << (7 - (i & 7));
-
- //printf("Real %d/ SubQ %d - ", read_sec, BCD_to_U8(SubQBuf[7]) * 75 * 60 + BCD_to_U8(SubQBuf[8]) * 75 + BCD_to_U8(SubQBuf[9]) - 150);
- // Debug code, remove me.
- //for(int i = 0; i < 0xC; i++)
- // printf("%02x ", SubQBuf[i]);
- //printf("\n");
 
  if(subq_check_checksum(SubQBuf))
  {
@@ -377,7 +364,6 @@ static void GenSubQFromSubPW(void)
 
 static void ChangePhase(const unsigned int new_phase)
 {
- //printf("New phase: %d %lld\n", new_phase, monotonic_timestamp);
  switch(new_phase)
  {
   case PHASE_BUS_FREE:
@@ -447,10 +433,7 @@ static void SendStatusAndMessage(uint8_t status, uint8_t message)
 {
  // This should never ever happen, but that doesn't mean it won't. ;)
  if(din->in_count)
- {
-  //printf("[SCSICD] BUG: %d bytes still in SCSI CD FIFO\n", din->in_count);
   din->Flush();
- }
 
  cd.message_pending = message;
 
@@ -508,8 +491,6 @@ void SCSICD_SetDisc(bool new_tray_open, CDIF *cdif, bool no_emu_side_effects)
 
 static void CommandCCError(int key, int asc = 0, int ascq = 0)
 {
- //printf("[SCSICD] CC Error: %02x %02x %02x\n", key, asc, ascq);
-
  cd.key_pending = key;
  cd.asc_pending = asc;
  cd.ascq_pending = ascq;
@@ -538,7 +519,6 @@ static void DoMODESELECT6(const uint8_t *cdb)
    {
       cd.data_out_pos = 0;
       cd.data_out_want = cdb[4];
-      //printf("Switch to DATA OUT phase, len: %d\n", cd.data_out_want);
 
       ChangePhase(PHASE_DATA_OUT);
    }
@@ -735,7 +715,6 @@ static void UpdateMPCacheP(const ModePage* mp)
 	     speed = std::max<int>(-32, std::min<int>(32, (int8_t)mp->current_value[0]));
 	     rate = 44100 + 441 * speed;
 
-             //printf("[SCSICD] Speed: %d(pre-clamped=%d) %d\n", speed, (int8_t)mp->current_value[0], rate);
              cdda.CDDADivAcc = ((int64_t)System_Clock * (1024 * 1024) / (2 * rate));
 	     cdda.CDDADivAccVolFudge = 100 + speed;
 	     FixOPV();	// Resampler impulse amplitude volume adjustment(call after setting cdda.CDDADivAccVolFudge)
@@ -776,11 +755,6 @@ static void FinishMODESELECT6(const uint8_t *data, const uint8_t data_len)
 {
 	uint8_t mode_data_length, medium_type, device_specific, block_descriptor_length;
 	uint32_t offset = 0;
-
-        //printf("[SCSICD] Mode Select (6) Data: Length=0x%02x, ", data_len);
-        //for(uint32_t i = 0; i < data_len; i++)
-        // printf("0x%02x ", data[i]);
-        //printf("\n");
 
         if(data_len < 4)
         {
@@ -1441,8 +1415,6 @@ static void DoREADHEADER10(const uint8_t *cdb)
  mode = raw_buf[12 + 3];
  lba = AMSF_to_LBA(m, s, f);
 
- //printf("%d:%d:%d(LBA=%08x) %02x\n", m, s, f, lba, mode);
-
  data_in[0] = mode;
  data_in[1] = 0;
  data_in[2] = 0;
@@ -1754,8 +1726,6 @@ static void DoPATI(const uint8_t *cdb)
   return;
  }
 
- //printf("PATI: %d %d %d  SI: %d, EI: %d\n", StartTrack, EndTrack, Cur_CDIF->GetTrackStartPositionLBA(StartTrack), StartIndex, EndIndex);
-
  DoPABase(toc.tracks[StartTrack].lba, toc.tracks[EndTrack].lba - toc.tracks[StartTrack].lba);
 }
 
@@ -1981,8 +1951,6 @@ static void DoPREFETCH(const uint8_t *cdb)
   return;
  }
 
- //printf("Prefetch: %08x %08x %d %d %d %d\n", lba, len, link, flag, reladdr, immed);
- //SendStatusAndMessage(STATUS_GOOD, 0x00);
  SendStatusAndMessage(STATUS_CONDITION_MET, 0x00);
 }
 
@@ -2079,7 +2047,6 @@ static void DoREADSUBCHANNEL(const uint8_t *cdb)
  data_in[offset++] = 0x00;
  data_in[offset++] = 0x00;
 
- //printf("42Read SubChannel: %02x %02x %d %d %d\n", DataFormat, TrackNum, AllocSize, WantQ, WantMSF);
  if(WantQ)
  {
   // Sub-channel format code
@@ -2612,7 +2579,6 @@ static INLINE void RunCDDA(uint32_t system_timestamp, int32_t run_time)
      cdda.DeemphState[lr][0] = inv;
 
      sample_va[lr] = std::max<float>(-2147483648.0, std::min<float>(2147483647.0, cdda.DeemphState[lr][1]));
-     //printf("%u: %f, %d\n", lr, cdda.DeemphState[lr][1], sample_va[lr]);
     }
    }
 
@@ -2632,9 +2598,6 @@ static INLINE void RunCDDA(uint32_t system_timestamp, int32_t run_time)
     const int16_t mult_a = ((1 << (16 - CDDA_FILTER_NUMPHASES_SHIFT)) - synthtime_phase_fract) << MULT_SHIFT_ADJ;
     const int16_t mult_b = synthtime_phase_fract << MULT_SHIFT_ADJ;
     int32_t coeff[CDDA_FILTER_NUMCONVOLUTIONS];
-
-    //if(synthtime_phase_fract == 0)
-    // printf("%5d: %d %d\n", synthtime_phase_fract, mult_a, mult_b);
 
     for(unsigned c = 0; c < CDDA_FILTER_NUMCONVOLUTIONS; c++)
     {
@@ -2669,12 +2632,8 @@ static INLINE void RunCDRead(uint32_t system_timestamp, int32_t run_time)
   {
    if(din->CanWrite() < (2352))	// +96 if we find out the PC-FX can read subchannel data along with raw data too. ;)
    {
-    //printf("Carp: %d %d %d\n", din->CanWrite(), SectorCount, CDReadTimer);
-    //CDReadTimer = (cd.data_in_size - cd.data_in_pos) * 10;
-    
     CDReadTimer += (uint64_t) 1 * 2048 * System_Clock / CD_DATA_TRANSFER_RATE;
 
-    //CDReadTimer += (uint64_t) 1 * 128 * System_Clock / CD_DATA_TRANSFER_RATE;
    }
    else
    {
@@ -2766,7 +2725,6 @@ uint32_t SCSICD_Run(scsicd_timestamp_t system_timestamp)
  }
  else if(ATN_signal && !REQ_signal && !ACK_signal)
  {
-  //printf("Yay: %d %d\n", REQ_signal, ACK_signal);
   ChangePhase(PHASE_MESSAGE_OUT);
  }
  else switch(CurrentPhase)
@@ -2774,7 +2732,6 @@ uint32_t SCSICD_Run(scsicd_timestamp_t system_timestamp)
   case PHASE_COMMAND:
     if(REQ_signal && ACK_signal)	// Data bus is valid nowww
     {
-     //printf("Command Phase Byte I->T: %02x, %d\n", cd_bus.DB, cd.command_buffer_pos);
      cd.command_buffer[cd.command_buffer_pos++] = cd_bus.DB;
      SetREQ(FALSE);
     }
@@ -2823,7 +2780,6 @@ uint32_t SCSICD_Run(scsicd_timestamp_t system_timestamp)
 	 memset(cdda.sr, 0, sizeof(cdda.sr));
 	 memset(cdda.OversampleBuffer, 0, sizeof(cdda.OversampleBuffer));
 	 memset(cdda.DeemphState, 0, sizeof(cdda.DeemphState));
-	 //printf("CLEAR BUFFERS LALALA\n");
 	}
        }
 
@@ -2838,7 +2794,6 @@ uint32_t SCSICD_Run(scsicd_timestamp_t system_timestamp)
   case PHASE_DATA_OUT:
     if(REQ_signal && ACK_signal)	// Data bus is valid nowww
     {
-     //printf("DATAOUT-SCSIIN: %d %02x\n", cd.data_out_pos, cd_bus.DB);
      cd.data_out[cd.data_out_pos++] = cd_bus.DB;
      SetREQ(FALSE);
     }
@@ -2860,7 +2815,6 @@ uint32_t SCSICD_Run(scsicd_timestamp_t system_timestamp)
 
   
   case PHASE_MESSAGE_OUT:
-   //printf("%d %d, %02x\n", REQ_signal, ACK_signal, cd_bus.DB);
    if(REQ_signal && ACK_signal)
    {
     SetREQ(FALSE);
@@ -2871,7 +2825,6 @@ uint32_t SCSICD_Run(scsicd_timestamp_t system_timestamp)
     //if(cd_bus.DB == 0x6)		// ABORT message!
     if(1)
     {
-     //printf("[SCSICD] Abort Received(DB=0x%02x)\n", cd_bus.DB);
      din->Flush();
      cd.data_out_pos = cd.data_out_want = 0;
 
@@ -2879,8 +2832,6 @@ uint32_t SCSICD_Run(scsicd_timestamp_t system_timestamp)
      cdda.CDDAStatus = CDDASTATUS_STOPPED;
      ChangePhase(PHASE_BUS_FREE);
     }
-    //else
-    // printf("[SCSICD] Message to target: 0x%02x\n", cd_bus.DB);
    }
    break;
 
@@ -3014,10 +2965,7 @@ void SCSICD_SetCDDAVolume(double left, double right)
  for(int i = 0; i < 2; i++)
  {
   if(cdda.CDDAVolume[i] > 65536)
-  {
-   printf("[SCSICD] Debug Warning: CD-DA volume %d too large: %d\n", i, cdda.CDDAVolume[i]);
    cdda.CDDAVolume[i] = 65536;
-  }
  }
 
  FixOPV();
@@ -3106,7 +3054,6 @@ int SCSICD_StateAction(StateMem* sm, const unsigned load, const bool data_only, 
   din->in_count &= din->size - 1;
   din->read_pos &= din->size - 1;
   din->write_pos = (din->read_pos + din->in_count) & (din->size - 1);
-  //printf("%d %d %d\n", din->in_count, din->read_pos, din->write_pos);
 
   if(load < 0x0935)
    cdda.CDDADiv /= 2;
