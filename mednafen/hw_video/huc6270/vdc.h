@@ -314,11 +314,6 @@ class VDC
 	uint32 GetRegister(const unsigned int id);
 	void SetRegister(const unsigned int id, const uint32 value);
 
-	#ifdef WANT_DEBUGGER
-        bool DoGfxDecode(uint32 *target, const uint32 *color_table, const uint32 TransparentColor, bool DecodeSprites,
-	        int32 w, int32 h, int32 scroll);
-	#endif
-
 	INLINE bool PeekIRQ(void)
 	{
 	 return((bool)(status & 0x3F));
