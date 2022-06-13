@@ -1520,7 +1520,7 @@ bool KING_Init(void)
     }
    }
 
- SCSICD_Init(SCSICD_PCFX, 3, FXCDDABufs[0]->Buf(), FXCDDABufs[1]->Buf(), 153600 * MDFN_GetSettingUI("pcfx.cdspeed"), 21477273, KING_CDIRQ, KING_StuffSubchannels);
+ SCSICD_Init(3, FXCDDABufs[0]->Buf(), FXCDDABufs[1]->Buf(), 153600 * MDFN_GetSettingUI("pcfx.cdspeed"), 21477273, KING_CDIRQ, KING_StuffSubchannels);
 
  return(1);
 }
@@ -1647,8 +1647,6 @@ static INLINE void DRAWBG8x1_16M(uint32 *target, const uint16 *cgptr, const uint
  if(cgptr[6] & 0xFF) target[7] = ((cgptr[0x6] & 0x00FF) << 16) | (cgptr[7] & 0xFF00) | (cgptr[7] & 0xFF) | layer_or;
 }
 
-static bool bgmode_warning = 0; // Debug
-
 #include "king-bgfast.inc"
 
 static INLINE int32 max(int32 a, int32 b)
@@ -1747,11 +1745,7 @@ static void DrawBG(uint32 *target, int n, bool sub)
   return;
 
  if((bgmode & 0x7) >= 6)
- {
-  if(!bgmode_warning)
-   bgmode_warning = TRUE;
   return;
- }
 
  memset(cg_mask, 0, sizeof(cg_mask));
  memset(cg_remap, 0, sizeof(cg_remap));

@@ -123,13 +123,7 @@ int FXTIMER_StateAction(StateMem *sm, int load, int data_only)
       SFEND
    };
 
-   int ret = MDFNSS_StateAction(sm, load, data_only, StateRegs, "TIMR", false);
-
-   if(load)
-   {
-
-   }
-   return(ret);
+   return MDFNSS_StateAction(sm, load, data_only, StateRegs, "TIMR", false);
 }
 
 bool FXTIMER_GetRegister(const std::string &name, uint32 &value)

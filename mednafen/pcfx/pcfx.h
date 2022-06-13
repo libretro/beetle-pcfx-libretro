@@ -25,10 +25,6 @@ extern V810 PCFX_V810;
 uint8 MDFN_FASTCALL mem_peekbyte(const v810_timestamp_t timestamp, const uint32 A);
 uint16 MDFN_FASTCALL mem_peekhword(const v810_timestamp_t timestamp, const uint32 A);
 
-// int32 MDFN_FASTCALL pcfx_event_handler(const v810_timestamp_t timestamp);
-
-// void ForceEventUpdates(const uint32 timestamp);
-
 extern VDC *fx_vdc_chips[2];
 
 #define REGSETHW(_reg, _data, _msh) { _reg &= 0xFFFF << (_msh ? 0 : 16); _reg |= _data << (_msh ? 16 : 0); }
@@ -45,6 +41,5 @@ enum
 #define PCFX_EVENT_NONONO       0x7fffffff
 
 void PCFX_SetEvent(const int type, const v810_timestamp_t next_timestamp);
-
 
 #endif

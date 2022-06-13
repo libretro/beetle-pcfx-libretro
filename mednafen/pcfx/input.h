@@ -11,8 +11,6 @@ enum
 class PCFX_Input_Device
 {
  public:
-// PCFX_Input_Device(int which); // "which" is advisory and only should be used in status messages.
-
  virtual ~PCFX_Input_Device();
 
  virtual uint32 ReadTransferTime(void);
@@ -46,8 +44,5 @@ int FXINPUT_StateAction(StateMem *sm, int load, int data_only);
 
 v810_timestamp_t FXINPUT_Update(const v810_timestamp_t timestamp);
 void FXINPUT_ResetTS(int32 ts_base);
-
-extern InputInfoStruct PCFXInputInfo;
-
 
 #endif

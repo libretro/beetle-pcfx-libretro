@@ -18,14 +18,7 @@
  */
 
 
-    // Macro test taken from http://gcc.gnu.org/viewcvs/trunk/gcc/testsuite/gcc.dg/20020919-1.c?view=markup&pathrev=142696
-    //#if defined (__powerpc__) || defined (__PPC__) || defined (__ppc__)	|| defined (__POWERPC__) || defined (PPC) || defined (_IBMR2)
-    //	v810_timestamp_t timestamp_rl asm("15") = v810_timestamp;
-    //#elif defined(__x86_64__)
-    //	v810_timestamp_t timestamp_rl asm("r11") = v810_timestamp;
-    //#else
-	v810_timestamp_t timestamp_rl = v810_timestamp;
-    //#endif
+    v810_timestamp_t timestamp_rl = v810_timestamp;
 
     uint32 opcode;
     uint32 tmp2;
@@ -38,9 +31,6 @@
 
     while(Running)
     {
-     #ifdef RB_DEBUGMODE
-     uint32 old_PC = RB_GETPC();
-     #endif
      uint32 tmpop;
 
      assert(timestamp_rl <= next_event_ts);
@@ -61,10 +51,6 @@
 
      while(timestamp_rl < next_event_ts)
      {
-	#ifdef RB_DEBUGMODE
-	old_PC = RB_GETPC();
-	#endif
-
         P_REG[0] = 0; //Zero the Zero Reg!!!
 
 	RB_CPUHOOK(RB_GETPC());

@@ -355,9 +355,7 @@ uint8 *V810::SetFastMap(uint32 addresses[], uint32 length, unsigned int num_addr
  assert((length & (V810_FAST_MAP_PSIZE - 1)) == 0);
 
  if(!(ret = (uint8 *)malloc(length + V810_FAST_MAP_TRAMPOLINE_SIZE)))
- {
-  return(NULL);
- }
+  return NULL;
 
  for(unsigned int i = length; i < length + V810_FAST_MAP_TRAMPOLINE_SIZE; i += 2)
  {
@@ -749,15 +747,6 @@ INLINE bool V810::Do_BSTR_Search(v810_timestamp_t &timestamp, const int inc_mul,
         uint32 bits_skipped = P_REG[29];
         uint32 src = (P_REG[30] & 0xFFFFFFFC);
 	bool found = false;
-
-	#if 0
-	// TODO: Better timing.
-	if(!in_bstr)	// If we're just starting the execution of this instruction(kind of spaghetti-code), so FIXME if we change
-			// bstr handling in v810_oploop.inc
-	{
-	 timestamp += 13 - 1;
-	}
-	#endif
 
 	while(len)
 	{

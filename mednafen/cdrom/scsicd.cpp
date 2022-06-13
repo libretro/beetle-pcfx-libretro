@@ -39,10 +39,152 @@ static uint32_t System_Clock;
 static void (*CDIRQCallback)(int);
 static void (*CDStuffSubchannels)(uint8_t, int);
 static int32_t* HRBufs[2];
-static int WhichSystem;
 
 static CDIF *Cur_CDIF;
 static bool TrayOpen;
+
+/*
+ All Japan Female Pro Wrestle:
+	Datumama: 10, 00 00 00 00 00 00 00 00 00 0a
+
+ Kokuu Hyouryuu Nirgends:
+	Datumama: 10, 00 00 00 00 00 00 00 00 00 0f
+	Datumama: 10, 00 00 00 00 00 00 00 00 00 0f
+
+ Last Imperial Prince:
+	Datumama: 10, 00 00 00 00 00 00 00 00 00 0f 
+	Datumama: 10, 00 00 00 00 00 00 00 00 00 0f 
+
+ Megami Paradise II:
+	Datumama: 10, 00 00 00 00 00 00 00 00 00 0a
+
+ Miraculum:
+	Datumama: 7, 00 00 00 00 29 01 00 
+	Datumama: 10, 00 00 00 00 00 00 00 00 00 0f 
+	Datumama: 7, 00 00 00 00 29 01 00 
+	Datumama: 10, 00 00 00 00 00 00 00 00 00 00 
+	Datumama: 7, 00 00 00 00 29 01 00 
+
+ Pachio Kun FX:
+	Datumama: 10, 00 00 00 00 00 00 00 00 00 14
+
+ Return to Zork:
+	Datumama: 10, 00 00 00 00 00 00 00 00 00 00
+
+ Sotsugyou II:
+	Datumama: 10, 00 00 00 00 01 00 00 00 00 01
+
+ Tokimeki Card Paradise:
+	Datumama: 10, 00 00 00 00 00 00 00 00 00 14 
+	Datumama: 10, 00 00 00 00 00 00 00 00 00 07 
+
+ Tonari no Princess Rolfee:
+	Datumama: 10, 00 00 00 00 00 00 00 00 00 00
+
+ Zoku Hakutoi Monogatari:
+	Datumama: 10, 00 00 00 00 00 00 00 00 00 14
+*/
+
+      // Page 151: MODE SENSE(6)
+	// PC = 0 current
+	// PC = 1 Changeable
+	// PC = 2 Default
+	// PC = 3 Saved
+      // Page 183: Mode parameter header.
+      // Page 363: CD-ROM density codes.
+      // Page 364: CD-ROM mode page codes.
+      // Page 469: ASC and ASCQ table
+
+
+struct ModePageParam
+{
+ uint8_t default_value;
+ uint8_t alterable_mask;	// Alterable mask reported when PC == 1
+ uint8_t real_mask;		// Real alterable mask.
+};
+
+struct ModePage
+{
+ const uint8_t code;
+ const uint8_t param_length;
+ const ModePageParam params[64];	// 64 should be more than enough
+ uint8_t current_value[64];
+};
+
+/*
+ Mode pages present:
+	0x00:
+	0x0E:
+	0x28:
+	0x29:
+	0x2A:
+	0x2B:
+	0x3F(Yes, not really a mode page but a fetch method)
+*/
+// Remember to update the code in StateAction() if we change the number or layout of modepages here.
+static const int NumModePages = 5;
+static ModePage ModePages[NumModePages] =
+{
+ // Unknown
+ { 0x28,
+   0x04,
+   {
+        { 0x00, 0x00, 0xFF },
+        { 0x00, 0x00, 0xFF },
+        { 0x00, 0x00, 0xFF },
+        { 0x00, 0x00, 0xFF },
+   }
+ },
+
+ // Unknown
+ { 0x29,
+   0x01,
+   {
+	{ 0x00, 0x00, 0xFF },
+   }
+ },
+
+ // Unknown
+ { 0x2a,
+   0x02,
+   {
+        { 0x00, 0x00, 0xFF },
+        { 0x11, 0x00, 0xFF },
+   }
+ },
+
+ // CD-DA playback speed modifier
+ { 0x2B,
+   0x01,
+   {
+	{ 0x00, 0x00, 0xFF },
+   }
+ },
+
+ // 0x0E goes last, for correct order of return data when page code == 0x3F
+ // Real mask values are probably not right; some functionality not emulated yet.
+ // CD-ROM audio control parameters
+ { 0x0E,
+   0x0E,
+   {
+        { 0x04, 0x04, 0x04 },   // Immed
+        { 0x00, 0x00, 0x00 },   // Reserved
+        { 0x00, 0x00, 0x00 }, // Reserved
+        { 0x00, 0x01, 0x01 }, // Reserved?
+        { 0x00, 0x00, 0x00 },   // MSB of LBA per second.
+        { 0x00, 0x00, 0x00 }, // LSB of LBA per second.
+        { 0x01, 0x01, 0x03 }, // Outport port 0 channel selection.
+        { 0xFF, 0x00, 0x00 }, // Outport port 0 volume.
+        { 0x02, 0x02, 0x03 }, // Outport port 1 channel selection.
+        { 0xFF, 0x00, 0x00 }, // Outport port 1 volume.
+        { 0x00, 0x00, 0x00 }, // Outport port 2 channel selection.
+        { 0x00, 0x00, 0x00 }, // Outport port 2 volume.
+        { 0x00, 0x00, 0x00 }, // Outport port 3 channel selection.
+        { 0x00, 0x00, 0x00 }, // Outport port 3 volume.
+   }
+ },
+};
+
 
 // Internal operation to the SCSI CD unit.  Only pass 1 or 0 to these macros!
 #define SetIOP(mask, set)	{ cd_bus.signals &= ~mask; if(set) cd_bus.signals |= mask; }
@@ -164,11 +306,7 @@ void MakeSense(uint8_t * target, uint8_t key, uint8_t asc, uint8_t ascq, uint8_t
  target[14] = fru;		// Field Replaceable Unit code
 }
 
-static void InitModePages(void);
-
 static scsicd_timestamp_t lastts;
-static int64_t monotonic_timestamp;
-static int64_t pce_lastsapsp_timestamp;
 
 scsicd_t cd;
 scsicd_bus_t cd_bus;
@@ -221,6 +359,72 @@ static void FixOPV(void)
  }
 }
 
+static void UpdateMPCacheP(const ModePage* mp)
+{
+  switch(mp->code)
+  {
+   case 0x0E:
+	     {
+              const uint8_t *pd = &mp->current_value[0];
+
+              for(int i = 0; i < 2; i++)
+               cdda.OutPortChSelect[i] = pd[6 + i * 2];
+              FixOPV();
+	     }
+	     break;
+
+   case 0x28:
+   case 0x29:
+   case 0x2A:
+	     break;
+
+   case 0x2B:
+	    {
+             int speed;
+             int rate;
+
+	     //
+	     // Not sure what the actual limits are, or what happens when exceeding them, but these will at least keep the
+	     // CD-DA playback system from imploding in on itself.
+	     //
+	     // The range of speed values accessible via the BIOS CD-DA player is apparently -10 to 10.
+	     //
+	     // No game is known to use the CD-DA playback speed control.  It may be useful in homebrew to lower the rate for fitting more CD-DA onto the disc,
+	     // is implemented on the PC-FX in such a way that it degrades audio quality, so it wouldn't really make sense to increase the rate in homebrew.
+	     //
+	     // Due to performance considerations, we only partially emulate the CD-DA oversampling filters used on the PC Engine and PC-FX, and instead
+	     // blast impulses into the 1.78MHz buffer, relying on the final sound resampler to kill spectrum mirrors.  This is less than ideal, but generally
+	     // works well in practice, except when lowering CD-DA playback rate...which causes the spectrum mirrors to enter the non-murder zone, causing
+	     // the sound output amplitude to approach overflow levels.
+	     // But, until there's a killer PC-FX homebrew game that necessitates more computationally-expensive CD-DA handling,
+	     // I don't see a good reason to change how CD-DA resampling is currently implemented.
+	     // 
+	     speed = std::max<int>(-32, std::min<int>(32, (int8_t)mp->current_value[0]));
+	     rate = 44100 + 441 * speed;
+
+             cdda.CDDADivAcc = ((int64_t)System_Clock * (1024 * 1024) / (2 * rate));
+	     cdda.CDDADivAccVolFudge = 100 + speed;
+	     FixOPV();	// Resampler impulse amplitude volume adjustment(call after setting cdda.CDDADivAccVolFudge)
+	    }
+	    break;
+  }
+}
+
+static void InitModePages(void)
+{
+ for(int pi = 0; pi < NumModePages; pi++)
+ {
+  ModePage *mp = &ModePages[pi];
+  const ModePageParam *params = &ModePages[pi].params[0];
+
+  for(int parami = 0; parami < mp->param_length; parami++)
+   mp->current_value[parami] = params[parami].default_value;
+
+  UpdateMPCacheP(mp);
+ }
+}
+
+
 static void VirtualReset(void)
 {
  InitModePages();
@@ -228,8 +432,6 @@ static void VirtualReset(void)
  din->Flush();
 
  CDReadTimer = 0;
-
- pce_lastsapsp_timestamp = monotonic_timestamp;
 
  SectorAddr = SectorCount = 0;
  read_sec_start = read_sec = 0;
@@ -262,8 +464,6 @@ void SCSICD_Power(scsicd_timestamp_t system_timestamp)
 {
  memset(&cd, 0, sizeof(scsicd_t));
  memset(&cd_bus, 0, sizeof(scsicd_bus_t));
-
- monotonic_timestamp = system_timestamp;
 
  cd.DiscChanged = false;
 
@@ -437,18 +637,10 @@ static void SendStatusAndMessage(uint8_t status, uint8_t message)
 
  cd.message_pending = message;
 
- cd.status_sent = FALSE;
- cd.message_sent = FALSE;
+ cd.status_sent     = FALSE;
+ cd.message_sent    = FALSE;
 
- if(WhichSystem == SCSICD_PCE)
- {
-  if(status == STATUS_GOOD || status == STATUS_CONDITION_MET)
-   cd_bus.DB = 0x00;
-  else
-   cd_bus.DB = 0x01;
- }
- else
-  cd_bus.DB = status << 1;
+ cd_bus.DB          = status << 1;
 
  ChangePhase(PHASE_STATUS);
 }
@@ -507,10 +699,10 @@ static bool ValidateRawDataSector(uint8_t *data, const uint32_t lba)
       cd.data_transfer_done = false;
 
       CommandCCError(SENSEKEY_MEDIUM_ERROR, AP_LEC_UNCORRECTABLE_ERROR);
-      return(false);
+      return false;
    }
 
-   return(true);
+   return true;
 }
 
 static void DoMODESELECT6(const uint8_t *cdb)
@@ -526,203 +718,6 @@ static void DoMODESELECT6(const uint8_t *cdb)
       SendStatusAndMessage(STATUS_GOOD, 0x00);
 }
 
-/*
- All Japan Female Pro Wrestle:
-	Datumama: 10, 00 00 00 00 00 00 00 00 00 0a
-
- Kokuu Hyouryuu Nirgends:
-	Datumama: 10, 00 00 00 00 00 00 00 00 00 0f
-	Datumama: 10, 00 00 00 00 00 00 00 00 00 0f
-
- Last Imperial Prince:
-	Datumama: 10, 00 00 00 00 00 00 00 00 00 0f 
-	Datumama: 10, 00 00 00 00 00 00 00 00 00 0f 
-
- Megami Paradise II:
-	Datumama: 10, 00 00 00 00 00 00 00 00 00 0a
-
- Miraculum:
-	Datumama: 7, 00 00 00 00 29 01 00 
-	Datumama: 10, 00 00 00 00 00 00 00 00 00 0f 
-	Datumama: 7, 00 00 00 00 29 01 00 
-	Datumama: 10, 00 00 00 00 00 00 00 00 00 00 
-	Datumama: 7, 00 00 00 00 29 01 00 
-
- Pachio Kun FX:
-	Datumama: 10, 00 00 00 00 00 00 00 00 00 14
-
- Return to Zork:
-	Datumama: 10, 00 00 00 00 00 00 00 00 00 00
-
- Sotsugyou II:
-	Datumama: 10, 00 00 00 00 01 00 00 00 00 01
-
- Tokimeki Card Paradise:
-	Datumama: 10, 00 00 00 00 00 00 00 00 00 14 
-	Datumama: 10, 00 00 00 00 00 00 00 00 00 07 
-
- Tonari no Princess Rolfee:
-	Datumama: 10, 00 00 00 00 00 00 00 00 00 00
-
- Zoku Hakutoi Monogatari:
-	Datumama: 10, 00 00 00 00 00 00 00 00 00 14
-*/
-
-      // Page 151: MODE SENSE(6)
-	// PC = 0 current
-	// PC = 1 Changeable
-	// PC = 2 Default
-	// PC = 3 Saved
-      // Page 183: Mode parameter header.
-      // Page 363: CD-ROM density codes.
-      // Page 364: CD-ROM mode page codes.
-      // Page 469: ASC and ASCQ table
-
-
-struct ModePageParam
-{
- uint8_t default_value;
- uint8_t alterable_mask;	// Alterable mask reported when PC == 1
- uint8_t real_mask;		// Real alterable mask.
-};
-
-struct ModePage
-{
- const uint8_t code;
- const uint8_t param_length;
- const ModePageParam params[64];	// 64 should be more than enough
- uint8_t current_value[64];
-};
-
-/*
- Mode pages present:
-	0x00:
-	0x0E:
-	0x28:
-	0x29:
-	0x2A:
-	0x2B:
-	0x3F(Yes, not really a mode page but a fetch method)
-*/
-// Remember to update the code in StateAction() if we change the number or layout of modepages here.
-static const int NumModePages = 5;
-static ModePage ModePages[NumModePages] =
-{
- // Unknown
- { 0x28,
-   0x04,
-   {
-        { 0x00, 0x00, 0xFF },
-        { 0x00, 0x00, 0xFF },
-        { 0x00, 0x00, 0xFF },
-        { 0x00, 0x00, 0xFF },
-   }
- },
-
- // Unknown
- { 0x29,
-   0x01,
-   {
-	{ 0x00, 0x00, 0xFF },
-   }
- },
-
- // Unknown
- { 0x2a,
-   0x02,
-   {
-        { 0x00, 0x00, 0xFF },
-        { 0x11, 0x00, 0xFF },
-   }
- },
-
- // CD-DA playback speed modifier
- { 0x2B,
-   0x01,
-   {
-	{ 0x00, 0x00, 0xFF },
-   }
- },
-
- // 0x0E goes last, for correct order of return data when page code == 0x3F
- // Real mask values are probably not right; some functionality not emulated yet.
- // CD-ROM audio control parameters
- { 0x0E,
-   0x0E,
-   {
-        { 0x04, 0x04, 0x04 },   // Immed
-        { 0x00, 0x00, 0x00 },   // Reserved
-        { 0x00, 0x00, 0x00 }, // Reserved
-        { 0x00, 0x01, 0x01 }, // Reserved?
-        { 0x00, 0x00, 0x00 },   // MSB of LBA per second.
-        { 0x00, 0x00, 0x00 }, // LSB of LBA per second.
-        { 0x01, 0x01, 0x03 }, // Outport port 0 channel selection.
-        { 0xFF, 0x00, 0x00 }, // Outport port 0 volume.
-        { 0x02, 0x02, 0x03 }, // Outport port 1 channel selection.
-        { 0xFF, 0x00, 0x00 }, // Outport port 1 volume.
-        { 0x00, 0x00, 0x00 }, // Outport port 2 channel selection.
-        { 0x00, 0x00, 0x00 }, // Outport port 2 volume.
-        { 0x00, 0x00, 0x00 }, // Outport port 3 channel selection.
-        { 0x00, 0x00, 0x00 }, // Outport port 3 volume.
-   }
- },
-};
-
-static void UpdateMPCacheP(const ModePage* mp)
-{
-  switch(mp->code)
-  {
-   case 0x0E:
-	     {
-              const uint8_t *pd = &mp->current_value[0];
-
-              for(int i = 0; i < 2; i++)
-               cdda.OutPortChSelect[i] = pd[6 + i * 2];
-              FixOPV();
-	     }
-	     break;
-
-   case 0x28:
-	     break;
-
-   case 0x29:
-	     break;
-
-   case 0x2A:
-	     break;
-
-   case 0x2B:
-	    {
-             int speed;
-             int rate;
-
-	     //
-	     // Not sure what the actual limits are, or what happens when exceeding them, but these will at least keep the
-	     // CD-DA playback system from imploding in on itself.
-	     //
-	     // The range of speed values accessible via the BIOS CD-DA player is apparently -10 to 10.
-	     //
-	     // No game is known to use the CD-DA playback speed control.  It may be useful in homebrew to lower the rate for fitting more CD-DA onto the disc,
-	     // is implemented on the PC-FX in such a way that it degrades audio quality, so it wouldn't really make sense to increase the rate in homebrew.
-	     //
-	     // Due to performance considerations, we only partially emulate the CD-DA oversampling filters used on the PC Engine and PC-FX, and instead
-	     // blast impulses into the 1.78MHz buffer, relying on the final sound resampler to kill spectrum mirrors.  This is less than ideal, but generally
-	     // works well in practice, except when lowering CD-DA playback rate...which causes the spectrum mirrors to enter the non-murder zone, causing
-	     // the sound output amplitude to approach overflow levels.
-	     // But, until there's a killer PC-FX homebrew game that necessitates more computationally-expensive CD-DA handling,
-	     // I don't see a good reason to change how CD-DA resampling is currently implemented.
-	     // 
-	     speed = std::max<int>(-32, std::min<int>(32, (int8_t)mp->current_value[0]));
-	     rate = 44100 + 441 * speed;
-
-             cdda.CDDADivAcc = ((int64_t)System_Clock * (1024 * 1024) / (2 * rate));
-	     cdda.CDDADivAccVolFudge = 100 + speed;
-	     FixOPV();	// Resampler impulse amplitude volume adjustment(call after setting cdda.CDDADivAccVolFudge)
-	    }
-	    break;
-  }
-}
-
 static void UpdateMPCache(uint8_t code)
 {
  for(int pi = 0; pi < NumModePages; pi++)
@@ -734,20 +729,6 @@ static void UpdateMPCache(uint8_t code)
    UpdateMPCacheP(mp);
    break;
   }
- }
-}
-
-static void InitModePages(void)
-{
- for(int pi = 0; pi < NumModePages; pi++)
- {
-  ModePage *mp = &ModePages[pi];
-  const ModePageParam *params = &ModePages[pi].params[0];
-
-  for(int parami = 0; parami < mp->param_length; parami++)
-   mp->current_value[parami] = params[parami].default_value;
-
-  UpdateMPCacheP(mp);
  }
 }
 
@@ -1853,7 +1834,7 @@ static void DoREADBase(uint32_t sa, uint32_t sc)
  {
   Cur_CDIF->HintReadSector(sa);	//, sa + sc);
 
-  CDReadTimer = (uint64_t)((WhichSystem == SCSICD_PCE) ? 3 : 1) * 2048 * System_Clock / CD_DATA_TRANSFER_RATE;
+  CDReadTimer = (uint64_t)2048 * System_Clock / CD_DATA_TRANSFER_RATE;
  }
  else
  {
@@ -2651,8 +2632,6 @@ uint32_t SCSICD_Run(scsicd_timestamp_t system_timestamp)
 {
  int32_t run_time = system_timestamp - lastts;
 
- monotonic_timestamp += run_time;
-
  lastts = system_timestamp;
 
  RunCDRead(system_timestamp, run_time);
@@ -2860,10 +2839,6 @@ uint32_t SCSICD_Run(scsicd_timestamp_t system_timestamp)
  return(next_time);
 }
 
-void SCSICD_SetLog(void (*logfunc)(const char *, const char *, ...))
-{
-}
-
 void SCSICD_SetTransferRate(uint32_t TransferRate)
 {
  CD_DATA_TRANSFER_RATE = TransferRate;
@@ -2878,17 +2853,14 @@ void SCSICD_Close(void)
  }
 }
 
-void SCSICD_Init(int type, int cdda_time_div, int32_t* left_hrbuf, int32_t* right_hrbuf, uint32_t TransferRate, uint32_t SystemClock, void (*IRQFunc)(int), void (*SSCFunc)(uint8_t, int))
+void SCSICD_Init(int cdda_time_div, int32_t* left_hrbuf, int32_t* right_hrbuf, uint32_t TransferRate, uint32_t SystemClock, void (*IRQFunc)(int), void (*SSCFunc)(uint8_t, int))
 {
  Cur_CDIF = NULL;
  TrayOpen = true;
 
- monotonic_timestamp = 0;
  lastts = 0;
 
  din = new SimpleFIFO<uint8_t>(65536);	//4096);
-
- WhichSystem = type;
 
  cdda.CDDADivAcc = (int64_t)System_Clock * (1024 * 1024) / 88200;
  cdda.CDDADivAccVolFudge = 100;
@@ -2983,9 +2955,6 @@ int SCSICD_StateAction(StateMem* sm, const unsigned load, const bool data_only, 
   SFARRAYN(&cd.SubQBuf[0][0], sizeof(cd.SubQBuf), "SubQBufs"),
   SFARRAYN(cd.SubQBuf_Last, sizeof(cd.SubQBuf_Last), "SubQBufLast"),
   SFARRAYN(cd.SubPWBuf, sizeof(cd.SubPWBuf), "SubPWBuf"),
-
-  SFVAR(monotonic_timestamp),
-  SFVAR(pce_lastsapsp_timestamp),
 
   //
   //
