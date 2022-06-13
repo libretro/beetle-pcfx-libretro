@@ -632,7 +632,6 @@ static float FilterDenormal(float v)
 OwlResampler::OwlResampler(double input_rate, double output_rate, double rate_error, double debias_corner, int quality)
 {
  double *FilterBuf = NULL;
- double ratio = (double)output_rate / input_rate;
  double cutoff;
  double required_bandwidth;
  double k_beta;
@@ -665,7 +664,6 @@ OwlResampler::OwlResampler(double input_rate, double output_rate, double rate_er
 
   s_ratio = floor(0.5 + findo) / count;
   findo_i = (uint32) floor(0.5 + findo);
-  ratio = 1 / s_ratio;
   NumPhases = count;
 
   PhaseNext = (uint32 *)malloc(sizeof(uint32) * NumPhases);
@@ -760,14 +758,7 @@ OwlResampler::OwlResampler(double input_rate, double output_rate, double rate_er
   NumCoeffs_Padded = NumCoeffs;
  }
 
-#if 0
- #if !defined(ARCH_X86) && !defined(ARCH_POWERPC_ALTIVEC)
-  #warning "OwlResampler is being compiled without SIMD support."
- #endif
-#endif
- //
  // Adjust cutoff now that NumCoeffs may have been increased.
- //
  cutoff = std::min<double>(QualityTable[quality].obw * something / input_rate, (std::min<double>(input_rate, output_rate) / input_rate - ((double)k_d / NumCoeffs)));
 
  FIR_Coeffs = (OwlBuffer::I32_F_Pudding **)malloc(sizeof(int32 **) * NumPhases);
