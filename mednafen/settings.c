@@ -92,7 +92,5 @@ const char *MDFN_GetSettingS(const char *name)
 {
    if (!strcmp("pcfx.bios", name))
       return "pcfx.rom";
-   if (!strcmp("pcfx.fxscsi", name))
-      return "pcfx.fxscsi";
    return 0;
 }

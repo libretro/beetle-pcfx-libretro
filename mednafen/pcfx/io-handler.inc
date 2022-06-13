@@ -55,14 +55,6 @@ static uint8 MDFN_FASTCALL port_rbyte(v810_timestamp_t &timestamp, uint32 A)
   if(WantHuC6273)
    return(HuC6273_Read8(A));
  }
- else if(FXSCSIROM && A >= 0x780000 && A <= 0x7FFFFF)
- {
-  return(FXSCSIROM[A & 0x7FFFF]);
- }
- else if(FXSCSIROM && A >= 0x600000 && A <= 0x6FFFFF)
- {
-  return(FXSCSI_CtrlRead(A));
- }
  return(0x00);
 }
 
@@ -113,10 +105,6 @@ static uint16 MDFN_FASTCALL port_rhword(v810_timestamp_t &timestamp, uint32 A)
   if(WantHuC6273)
    return(HuC6273_Read16(A));
  }
- else if(FXSCSIROM && A >= 0x780000 && A <= 0x7FFFFF)
-  return(le16toh(*(uint16*)&FXSCSIROM[A & 0x7FFFF]));
- else if(FXSCSIROM && A >= 0x600000 && A <= 0x6FFFFF)
-  return(FXSCSI_CtrlRead(A));
 
  return(0x00);
 }
@@ -178,10 +166,6 @@ static void MDFN_FASTCALL port_wbyte(v810_timestamp_t &timestamp, uint32 A, uint
   {
    if(WantHuC6273)
     HuC6273_Write16(A, V);
-  }
-  else if(FXSCSIROM && A >= 0x600000 && A <= 0x6FFFFF)
-  {
-   FXSCSI_CtrlWrite(A, V);
   }
 }
 
@@ -249,7 +233,5 @@ static void MDFN_FASTCALL port_whword(v810_timestamp_t &timestamp, uint32 A, uin
    if(WantHuC6273)
     HuC6273_Write16(A, V);
   }
-  else if(FXSCSIROM && A >= 0x600000 && A <= 0x6FFFFF)
-   FXSCSI_CtrlWrite(A, V);
 }
 

@@ -31,7 +31,6 @@
 #include "mednafen/pcfx/interrupt.h"
 #include "mednafen/pcfx/rainbow.h"
 #include "mednafen/pcfx/huc6273.h"
-#include "mednafen/pcfx/fxscsi.h"
 #include "mednafen/cdrom/scsicd.h"
 #include "mednafen/mempatcher.h"
 #include "mednafen/cdrom/cdromif.h"
@@ -106,7 +105,6 @@ V810 PCFX_V810;
 
 static uint8 *BIOSROM   = NULL;	// 1MB
 static uint8 *RAM       = NULL;	// 2MB
-static uint8 *FXSCSIROM = NULL;	// 512KiB
 
 static uint32 RAM_LPA;		// Last page access
 

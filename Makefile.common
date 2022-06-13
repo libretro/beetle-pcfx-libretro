@@ -32,7 +32,6 @@ ifneq ($(HAVE_GRIFFIN),1)
 	$(MEDNAFEN_DIR)/hw_sound/pce_psg/pce_psg.cpp \
 	$(MEDNAFEN_DIR)/hw_video/huc6270/vdc_video.cpp
 SOURCES_C += \
-	$(CORE_EMU_DIR)/fxscsi.c \
 	$(CORE_EMU_DIR)/jrevdct.c
 endif
 
