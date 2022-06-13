@@ -30,33 +30,7 @@
 #include "general.h"
 #include "state.h"
 
-#include "md5.h"
-
 using namespace std;
-
-bool MDFN_IsFIROPSafe(const std::string &path)
-{
- // We could make this more OS-specific, but it shouldn't hurt to try to weed out usage of characters that are path
- // separators in one OS but not in another, and we'd also run more of a risk of missing a special path separator case
- // in some OS.
-
- if(!MDFN_GetSettingB("filesys.untrusted_fip_check"))
-  return(true);
-
- if(path.find('\0') != string::npos)
-  return(false);
-
- if(path.find(':') != string::npos)
-  return(false);
-
- if(path.find('\\') != string::npos)
-  return(false);
-
- if(path.find('/') != string::npos)
-  return(false);
-
- return(true);
-}
 
 void MDFN_GetFilePathComponents(const std::string &file_path, 
       std::string *dir_path_out, std::string *file_base_out, 
@@ -119,12 +93,8 @@ std::string MDFN_EvalFIP(const std::string &dir_path, const std::string &rel_pat
 #else
    char slash = '/';
 #endif
-
-   if(!skip_safety_check && !MDFN_IsFIROPSafe(rel_path))
-      throw MDFN_Error(0, "Referenced path \"%s\" is potentially unsafe.  See \"filesys.untrusted_fip_check\" setting.\n", rel_path.c_str());
-
    if(path_is_absolute(rel_path.c_str()))
-      return(rel_path);
+      return rel_path;
    return(dir_path + slash + rel_path);
 }
 

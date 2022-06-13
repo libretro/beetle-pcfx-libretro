@@ -85,12 +85,6 @@ bool MDFN_GetSettingB(const char *name)
       return setting_emulate_buggy_codec;
    if (!strcmp("pcfx.rainbow.chromaip", name))
       return setting_rainbow_chromaip;
-   /* CDROM */
-   if (!strcmp("cdrom.lec_eval", name))
-      return 1;
-   /* FILESYS */
-   if (!strcmp("filesys.untrusted_fip_check", name))
-      return 0;
    return 0;
 }
 
