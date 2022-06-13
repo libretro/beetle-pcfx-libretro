@@ -1,4 +1,4 @@
-#include	<stdarg.h>
+#include <stdarg.h>
 #include <errno.h>
 #include <string.h>
 #include <math.h>
@@ -104,8 +104,8 @@ static int CD_SelectedDisc;	// -1 for no disc
 
 V810 PCFX_V810;
 
-static uint8 *BIOSROM = NULL; 	// 1MB
-static uint8 *RAM = NULL; 	// 2MB
+static uint8 *BIOSROM   = NULL;	// 1MB
+static uint8 *RAM       = NULL;	// 2MB
 static uint8 *FXSCSIROM = NULL;	// 512KiB
 
 static uint32 RAM_LPA;		// Last page access
@@ -126,7 +126,7 @@ static uint8* BackupRAM = (uint8*)(SaveRAM + (0x8000 * 0));
 static uint8* ExBackupRAM = (uint8*)(SaveRAM + (0x8000 * 1));
 static uint8 ExBusReset; // I/O Register at 0x0700
 
-static bool BRAMDisabled;	// Cached at game load, don't remove this caching behavior or save game loss may result(if we ever get a GUI).
+static bool BRAMDisabled;// Cached at game load, don't remove this caching behavior or save game loss may result(if we ever get a GUI).
 
 // Checks to see if this main-RAM-area access
 // is in the same DRAM page as the last access.
@@ -158,10 +158,10 @@ static void PCFX_FixNonEvents(void)
 
 static void PCFX_Event_Reset(void)
 {
-   next_pad_ts = PCFX_EVENT_NONONO;
+   next_pad_ts   = PCFX_EVENT_NONONO;
    next_timer_ts = PCFX_EVENT_NONONO;
    next_adpcm_ts = PCFX_EVENT_NONONO;
-   next_king_ts = PCFX_EVENT_NONONO;
+   next_king_ts  = PCFX_EVENT_NONONO;
 }
 
 static INLINE uint32 CalcNextTS(void)
@@ -177,7 +177,7 @@ static INLINE uint32 CalcNextTS(void)
    if (next_timestamp > next_adpcm_ts)
       next_timestamp = next_adpcm_ts;
 
-   return(next_timestamp);
+   return next_timestamp;
 }
 
 static void RebaseTS(const v810_timestamp_t timestamp, const v810_timestamp_t new_base_timestamp)
@@ -187,17 +187,15 @@ static void RebaseTS(const v810_timestamp_t timestamp, const v810_timestamp_t ne
    assert(next_adpcm_ts > timestamp);
    assert(next_king_ts > timestamp);
 
-   next_pad_ts -= (timestamp - new_base_timestamp);
+   next_pad_ts   -= (timestamp - new_base_timestamp);
    next_timer_ts -= (timestamp - new_base_timestamp);
    next_adpcm_ts -= (timestamp - new_base_timestamp);
-   next_king_ts -= (timestamp - new_base_timestamp);
+   next_king_ts  -= (timestamp - new_base_timestamp);
 }
 
 
 void PCFX_SetEvent(const int type, const v810_timestamp_t next_timestamp)
 {
-   //assert(next_timestamp > PCFX_V810.v810_timestamp);
-
    if (type == PCFX_EVENT_PAD)
       next_pad_ts = next_timestamp;
    else if (type == PCFX_EVENT_TIMER)
@@ -225,13 +223,7 @@ static int32 MDFN_FASTCALL pcfx_event_handler(const v810_timestamp_t timestamp)
    if (timestamp >= next_adpcm_ts)
       next_adpcm_ts = SoundBox_ADPCMUpdate(timestamp);
 
-#if 1
-   assert(next_king_ts > timestamp);
-   assert(next_pad_ts > timestamp);
-   assert(next_timer_ts > timestamp);
-   assert(next_adpcm_ts > timestamp);
-#endif
-   return(CalcNextTS());
+   return CalcNextTS();
 }
 
 // Called externally from debug.cpp
@@ -272,12 +264,6 @@ typedef struct
 
 static uint32 EmuFlags;
 
-static CDGameEntry GameList[] =
-{
-   #include "mednafen/pcfx/gamedb.inc"
-};
-
-
 static void Emulate(EmulateSpecStruct *espec)
 {
    FXINPUT_Frame();
@@ -285,12 +271,12 @@ static void Emulate(EmulateSpecStruct *espec)
    MDFNMP_ApplyPeriodicCheats();
 
    if (espec->VideoFormatChanged)
-      KING_SetPixelFormat(espec->surface->format); //.Rshift, espec->surface->format.Gshift, espec->surface->format.Bshift);
+      KING_SetPixelFormat(espec->surface->format);
 
    if (espec->SoundFormatChanged)
       SoundBox_SetSoundRate(espec->SoundRate);
 
-   KING_StartFrame(fx_vdc_chips, espec);	//espec->surface, &espec->DisplayRect, espec->LineWidths, espec->skip);
+   KING_StartFrame(fx_vdc_chips, espec);
 
    v810_timestamp_t v810_timestamp;
    v810_timestamp = PCFX_V810.Run(pcfx_event_handler);
@@ -306,9 +292,7 @@ static void Emulate(EmulateSpecStruct *espec)
    //
    KING_EndFrame(v810_timestamp);
 
-   //
    // new_base_ts is guaranteed to be <= v810_timestamp
-   //
    v810_timestamp_t new_base_ts;
    espec->SoundBufSize = SoundBox_Flush(v810_timestamp, &new_base_ts, espec->SoundBuf, espec->SoundBufMaxSize);
 
@@ -319,8 +303,6 @@ static void Emulate(EmulateSpecStruct *espec)
 
    // Call this AFTER all the EndFrame/Flush/ResetTS stuff
    RebaseTS(v810_timestamp, new_base_ts);
-
-   espec->MasterCycles = v810_timestamp - new_base_ts;
 
    PCFX_V810.ResetTS(new_base_ts);
 }
@@ -391,44 +373,33 @@ static bool LoadCommon(std::vector<CDIF *> *CDInterfaces)
 {
    V810_Emu_Mode cpu_mode  = _V810_EMU_MODE_COUNT;
    std::string biospath    = retro_base_directory + slash + MDFN_GetSettingS("pcfx.bios");
-   MDFNFILE *BIOSFile      = NULL;
-
-   log_cb(RETRO_LOG_INFO, "Loading %s\n", biospath.c_str());
-
-   BIOSFile = file_open(biospath.c_str());
+   MDFNFILE *BIOSFile      = file_open(biospath.c_str());
 
    if (!BIOSFile)
-      return(0);
+      return false;
 
    cpu_mode = (V810_Emu_Mode)MDFN_GetSettingI("pcfx.cpu_emulation");
    if (cpu_mode == _V810_EMU_MODE_COUNT)
       cpu_mode = (EmuFlags & CDGE_FLAG_ACCURATE_V810) ? V810_EMU_MODE_ACCURATE : V810_EMU_MODE_FAST;
 
-   if (EmuFlags & CDGE_FLAG_FXGA)
-   {
-      //WantHuC6273 = TRUE;
-   }
-
-   MDFN_printf("V810 Emulation Mode: %s\n", (cpu_mode == V810_EMU_MODE_ACCURATE) ? "Accurate" : "Fast");
    PCFX_V810.Init(cpu_mode, false);
 
-   uint32 RAM_Map_Addresses[1] = { 0x00000000 };
+   uint32 RAM_Map_Addresses[1]     = { 0x00000000 };
    uint32 BIOSROM_Map_Addresses[1] = { 0xFFF00000 };
 
    RAM = PCFX_V810.SetFastMap(RAM_Map_Addresses, 0x00200000, 1, "RAM");
 
-   // todo: cleanup on error
    if (!RAM)
-      return(0);
+      return false;
 
    BIOSROM = PCFX_V810.SetFastMap(BIOSROM_Map_Addresses, 0x00100000, 1, "BIOS ROM");
    if (!BIOSROM)
-      return(0);
+      return false;
 
    if (BIOSFile->size != 1024 * 1024)
    {
       MDFN_PrintError("BIOS ROM file is incorrect size.\n");
-      return(0);
+      return false;
    }
 
    memcpy(BIOSROM, BIOSFile->data, 1024 * 1024);
@@ -436,45 +407,11 @@ static bool LoadCommon(std::vector<CDIF *> *CDInterfaces)
    file_close(BIOSFile);
    BIOSFile = NULL;
 
-#if 0
-   const char *fxscsi_path = MDFN_GetSettingS("pcfx.fxscsi");	// For developers only, so don't make it convenient.
-   if (fxscsi_path)
-   {
-      MDFNFILE *FXSCSIFile;
-
-      FXSCSIFile = file_open(fxscsi_path);
-
-      if (!FXSCSIFile)
-         return(0);
-
-      if (FXSCSIFile->size != 1024 * 512)
-      {
-         MDFN_PrintError("BIOS ROM file is incorrect size.\n");
-         return(0);
-      }
-
-      uint32 FXSCSI_Map_Addresses[1] = { 0x80780000 };
-
-      if (!(FXSCSIROM = PCFX_V810.SetFastMap(FXSCSI_Map_Addresses, 0x0080000, 1, "FX-SCSI ROM")))
-      {
-         return(0);
-      }
-
-      memcpy(FXSCSIROM, FXSCSIFile->data, 1024 * 512);
-
-      file_close(FXSCSIFile);
-      FXSCSIFile = NULL;
-   }
-#endif
-
    for (int i = 0; i < 2; i++)
    {
       fx_vdc_chips[i] = new VDC(MDFN_GetSettingB("pcfx.nospritelimit"), 65536);
       fx_vdc_chips[i]->SetWSHook(NULL);
       fx_vdc_chips[i]->SetIRQHook(i ? VDCB_IRQHook : VDCA_IRQHook);
-
-      //fx_vdc_chips[0] = FXVDC_Init(PCFXIRQ_SOURCE_VDCA, MDFN_GetSettingB("pcfx.nospritelimit"));
-      //fx_vdc_chips[1] = FXVDC_Init(PCFXIRQ_SOURCE_VDCB, MDFN_GetSettingB("pcfx.nospritelimit"));
    }
 
    SoundBox_Init(MDFN_GetSettingB("pcfx.adpcm.emulate_buggy_codec"), MDFN_GetSettingB("pcfx.adpcm.suppress_channel_reset_clicks"));
@@ -490,8 +427,8 @@ static bool LoadCommon(std::vector<CDIF *> *CDInterfaces)
       free(BIOSROM);
       free(RAM);
       BIOSROM = NULL;
-      RAM = NULL;
-      return(0);
+      RAM     = NULL;
+      return false;
    }
 
    CD_TrayOpen = false;
@@ -510,8 +447,6 @@ static bool LoadCommon(std::vector<CDIF *> *CDInterfaces)
    SCSICD_SetDisc(true, NULL, true);
    SCSICD_SetDisc(false, (*CDInterfaces)[CD_SelectedDisc], true);
 
-   EmulatedPCFX.fps = (uint32)((double)7159090.90909090 / 455 / 263 * 65536 * 256);
-
    EmulatedPCFX.nominal_height = MDFN_GetSettingUI("pcfx.slend") - MDFN_GetSettingUI("pcfx.slstart") + 1;
 
    // Emulation raw framebuffer image should always be of 256 width when the pcfx.high_dotclock_width setting is set to "256",
@@ -523,12 +458,7 @@ static bool LoadCommon(std::vector<CDIF *> *CDInterfaces)
    MDFNMP_Init(1024 * 1024, ((uint64)1 << 32) / (1024 * 1024));
    MDFNMP_AddRAM(2048 * 1024, 0x00000000, RAM);
 
-   BRAMDisabled = MDFN_GetSettingB("pcfx.disable_bram");
-
-   if (BRAMDisabled)
-      MDFN_printf("Warning: BRAM is disabled per pcfx.disable_bram setting.  This is simulating a malfunction.\n");
-
-   if (!BRAMDisabled)
+   if (!(BRAMDisabled = MDFN_GetSettingB("pcfx.disable_bram")))
    {
       // Initialize Save RAM
       memset(SaveRAM, 0, sizeof(SaveRAM));
@@ -590,11 +520,15 @@ static bool LoadCommon(std::vector<CDIF *> *CDInterfaces)
    PCFX_V810.SetIOReadHandlers(port_rbyte, port_rhword, NULL);
    PCFX_V810.SetIOWriteHandlers(port_wbyte, port_whword, NULL);
 
-   return(1);
+   return true;
 }
 
 static void DoMD5CDVoodoo(std::vector<CDIF *> *CDInterfaces)
 {
+   static CDGameEntry GameList[] =
+   {
+#include "mednafen/pcfx/gamedb.inc"
+   };
    const CDGameEntry *found_entry = NULL;
    TOC toc;
 
@@ -680,8 +614,6 @@ FoundIt: ;
          break;
       }
    } // end: for (unsigned if_disc = 0; if_disc < CDInterfaces->size(); if_disc++)
-
-   MDFN_printf("CD Layout MD5:   0x%s\n", mednafen_md5_asciistr(EmulatedPCFX.MD5));
 }
 
 // PC-FX BIOS will look at all data tracks(not just the first one), in contrast to the PCE CD BIOS, which only looks
@@ -714,21 +646,16 @@ static bool TestMagicCD(std::vector<CDIF *> *CDInterfaces)
 static int LoadCD(std::vector<CDIF *> *CDInterfaces)
 {
    EmuFlags = 0;
-
-   cdifs = CDInterfaces;
+   cdifs    = CDInterfaces;
 
    DoMD5CDVoodoo(CDInterfaces);
 
    if (!LoadCommon(CDInterfaces))
-      return(0);
-
-   MDFN_printf("Emulated CD-ROM drive speed: %ux\n", (unsigned int)MDFN_GetSettingUI("pcfx.cdspeed"));
-
-   EmulatedPCFX.GameType = GMT_CDROM;
+      return 0;
 
    PCFX_Power();
 
-   return(1);
+   return 1;
 }
 
 static void PCFX_CDInsertEject(void)
@@ -868,10 +795,6 @@ extern "C" int StateAction(StateMem *sm, int load, int data_only)
 
 MDFNGI EmulatedPCFX =
 {
-   MDFN_MASTERCLOCK_FIXED(PCFX_MASTER_CLOCK),
-   0,
-   TRUE, // Multires possible?
-
    0,    // lcm_width
    0,    // lcm_height
    NULL, // Dummy
@@ -881,8 +804,6 @@ MDFNGI EmulatedPCFX =
 
    1024, // Framebuffer width
    512,  // Framebuffer height
-
-   2,    // Number of output sound channels
 };
 
 #ifdef NEED_DEINTERLACER
@@ -906,8 +827,6 @@ static Deinterlacer deint;
 #define FB_MAX_HEIGHT FB_HEIGHT
 
 static bool cdimagecache = false;
-
-const char *mednafen_core_str = MEDNAFEN_CORE_NAME;
 
 static std::vector<CDIF *> CDInterfaces;	// FIXME: Cleanup on error out.
 // TODO: LoadCommon()
@@ -968,7 +887,7 @@ static bool disk_get_eject_state(void)
 static bool disk_set_image_index(unsigned index)
 {
    // only listen if the tray is open
-   if ( cd_eject_state == true )
+   if (cd_eject_state)
    {
       CD_SelectedDisc = index;
       if (CD_SelectedDisc > CDInterfaces.size())
@@ -996,13 +915,11 @@ static unsigned disk_get_image_index(void)
 
 static bool disk_replace_image_index(unsigned index, const struct retro_game_info *info)
 {
-   log_cb(RETRO_LOG_INFO, "disk_replace_image_index(%d,*info) called.\n", index);
    return false;
 }
 
 static bool disk_add_image_index(void)
 {
-   log_cb(RETRO_LOG_INFO, "disk_add_image_index called.\n");
    return true;
 }
 
@@ -1335,17 +1252,8 @@ void MDFND_DispMessage(unsigned char *str)
       log_cb(RETRO_LOG_INFO, "%s\n", str);
 }
 
-static void MDFN_ResetMessages(void)
-{
-   MDFND_DispMessage(NULL);
-}
-
 static bool MDFNI_LoadCD(const char *devicename)
 {
-   uint8 LayoutMD5[16];
-
-   log_cb(RETRO_LOG_INFO, "Loading %s...\n", devicename);
-
    if (devicename && strlen(devicename) > 4 && !strcasecmp(devicename + strlen(devicename) - 4, ".m3u"))
    {
       ReadM3U(disk_control_ext_info.image_paths, devicename);
@@ -1377,36 +1285,6 @@ static bool MDFNI_LoadCD(const char *devicename)
       disk_control_ext_info.image_labels.push_back(image_label);
    }
 
-   // Calculate layout MD5.  The system emulation LoadCD() code is free to ignore this value and calculate
-   // its own, or to use it to look up a game in its database.
-   {
-      md5_context layout_md5;
-
-      mednafen_md5_starts(&layout_md5);
-
-      for (unsigned i = 0; i < CDInterfaces.size(); i++)
-      {
-         TOC toc;
-
-         CDInterfaces[i]->ReadTOC(&toc);
-
-         mednafen_md5_update_u32_as_lsb(&layout_md5, toc.first_track);
-         mednafen_md5_update_u32_as_lsb(&layout_md5, toc.last_track);
-         mednafen_md5_update_u32_as_lsb(&layout_md5, toc.tracks[100].lba);
-
-         for (uint32 track = toc.first_track; track <= toc.last_track; track++)
-         {
-            mednafen_md5_update_u32_as_lsb(&layout_md5, toc.tracks[track].lba);
-            mednafen_md5_update_u32_as_lsb(&layout_md5, toc.tracks[track].control & 0x4);
-         }
-      }
-
-      mednafen_md5_finish(&layout_md5, LayoutMD5);
-   }
-
-   // TODO: include module name in hash
-   memcpy(EmulatedPCFX.MD5, LayoutMD5, 16);
-
    if (!(LoadCD(&CDInterfaces)))
    {
       for (unsigned i = 0; i < CDInterfaces.size(); i++)
@@ -1417,10 +1295,6 @@ static bool MDFNI_LoadCD(const char *devicename)
 
       return false;
    }
-
-   //MDFNI_SetLayerEnableMask(~0ULL);
-
-   MDFN_ResetMessages();   // Save state, status messages, etc.
 
    MDFN_LoadGameCheats(NULL);
    MDFNMP_InstallReadPatches();
@@ -1627,8 +1501,6 @@ static void update_input(void)
    }
 }
 
-static uint64_t video_frames, audio_frames;
-
 void update_geometry(unsigned width, unsigned height)
 {
    struct retro_system_av_info system_av_info;
@@ -1640,7 +1512,7 @@ void update_geometry(unsigned width, unsigned height)
    environ_cb(RETRO_ENVIRONMENT_SET_GEOMETRY, &system_av_info);
 }
 
-void retro_run()
+void retro_run(void)
 {
    input_poll_cb();
 
@@ -1658,8 +1530,6 @@ void retro_run()
    spec.SoundBuf           = sound_buf;
    spec.LineWidths         = rects;
    spec.SoundBufMaxSize    = sizeof(sound_buf) / 2;
-   spec.SoundVolume        = 1.0;
-   spec.soundmultiplier    = 1.0;
    spec.SoundBufSize       = 0;
    spec.VideoFormatChanged = false;
    spec.SoundFormatChanged = false;
@@ -1714,9 +1584,6 @@ void retro_run()
    if (resolution_changed)
       update_geometry(width, height);
 
-   video_frames++;
-   audio_frames += spec.SoundBufSize;
-
    audio_batch_cb(spec.SoundBuf, spec.SoundBufSize);
 }
 
@@ -1745,7 +1612,7 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
    info->geometry.aspect_ratio = MEDNAFEN_CORE_GEOMETRY_ASPECT_RATIO;
 }
 
-void retro_deinit()
+void retro_deinit(void)
 {
    if(surf.pixels)
       free(surf.pixels);
@@ -1760,19 +1627,11 @@ void retro_deinit()
    surf.format.Gshift     = 0;
    surf.format.Bshift     = 0;
    surf.format.Ashift     = 0;
-
-   if (log_cb)
-   {
-      log_cb(RETRO_LOG_INFO, "[%s]: Samples / Frame: %.5f\n",
-            mednafen_core_str, (double)audio_frames / video_frames);
-      log_cb(RETRO_LOG_INFO, "[%s]: Estimated FPS: %.5f\n",
-            mednafen_core_str, (double)video_frames * 44100 / audio_frames);
-   }
 }
 
 unsigned retro_get_region(void)
 {
-   return RETRO_REGION_NTSC; // FIXME: Regions for other cores.
+   return RETRO_REGION_NTSC;
 }
 
 unsigned retro_api_version(void)
@@ -1789,12 +1648,12 @@ void retro_set_controller_port_device(unsigned in_port, unsigned device)
          case RETRO_DEVICE_JOYPAD:
             input_type[in_port] = RETRO_DEVICE_JOYPAD;
             FXINPUT_SetInput(in_port, "gamepad", &input_buf[in_port]);
-            log_cb(RETRO_LOG_INFO," Port %d: gamepad\n", in_port +1);
+            log_cb(RETRO_LOG_DEBUG," Port %d: gamepad\n", in_port +1);
             break;
          case RETRO_DEVICE_MOUSE:
             input_type[in_port] = RETRO_DEVICE_MOUSE;
             FXINPUT_SetInput(in_port, "mouse", &mousedata[in_port]);
-            log_cb(RETRO_LOG_INFO," Port %d: mouse\n", in_port +1);
+            log_cb(RETRO_LOG_DEBUG," Port %d: mouse\n", in_port +1);
             break;
       }
    }
@@ -1853,8 +1712,6 @@ void retro_set_video_refresh(retro_video_refresh_t cb)
    video_cb = cb;
 }
 
-static size_t serialize_size;
-
 size_t retro_serialize_size(void)
 {
    StateMem st;
@@ -1869,7 +1726,7 @@ size_t retro_serialize_size(void)
       return 0;
 
    free(st.data);
-   return serialize_size = st.len;
+   return st.len;
 }
 
 bool retro_serialize(void *data, size_t size)
@@ -1941,26 +1798,6 @@ void retro_cheat_reset(void) {}
 
 void retro_cheat_set(unsigned, bool, const char *) {}
 
-#ifdef _WIN32
-static void sanitize_path(std::string &path)
-{
-   size_t size = path.size();
-   for (size_t i = 0; i < size; i++)
-      if (path[i] == '/')
-         path[i] = '\\';
-}
-#endif
-
-void MDFND_MidSync(const EmulateSpecStruct *) {}
-
-void MDFN_MidLineUpdate(EmulateSpecStruct *espec, int y)
-{
- //MDFND_MidLineUpdate(espec, y);
-}
-
-/* forward declarations */
-extern void MDFND_DispMessage(unsigned char *str);
-
 void MDFN_DispMessage(const char *format, ...)
 {
    struct retro_message msg;
@@ -1978,67 +1815,6 @@ void MDFN_DispMessage(const char *format, ...)
    msg.msg = strc;
 
    environ_cb(RETRO_ENVIRONMENT_SET_MESSAGE, &msg);
-}
-
-static int curindent = 0;
-
-void MDFN_indent(int indent)
-{
-   curindent += indent;
-}
-
-static uint8 lastchar = 0;
-
-void MDFN_printf(const char *format, ...)
-{
-   char *format_temp;
-   char *temp;
-   unsigned int x, newlen;
-
-   va_list ap;
-   va_start(ap,format);
-
-
-   // First, determine how large our format_temp buffer needs to be.
-   uint8 lastchar_backup = lastchar; // Save lastchar!
-   for (newlen=x=0;x<strlen(format);x++)
-   {
-      if (lastchar == '\n' && format[x] != '\n')
-      {
-         int y;
-         for (y=0;y<curindent;y++)
-            newlen++;
-      }
-      newlen++;
-      lastchar = format[x];
-   }
-
-   format_temp = (char *)malloc(newlen + 1); // Length + NULL character, duh
-
-   // Now, construct our format_temp string
-   lastchar = lastchar_backup; // Restore lastchar
-   for (newlen=x=0;x<strlen(format);x++)
-   {
-      if (lastchar == '\n' && format[x] != '\n')
-      {
-         int y;
-         for (y=0;y<curindent;y++)
-            format_temp[newlen++] = ' ';
-      }
-      format_temp[newlen++] = format[x];
-      lastchar = format[x];
-   }
-
-   format_temp[newlen] = 0;
-   temp = (char*)malloc(4096 * sizeof(char));
-   vsnprintf(temp, 4096, format_temp, ap);
-   free(format_temp);
-
-   if (log_cb)
-      log_cb(RETRO_LOG_INFO, "%s\n", temp);
-   free(temp);
-
-   va_end(ap);
 }
 
 void MDFN_PrintError(const char *format, ...)
