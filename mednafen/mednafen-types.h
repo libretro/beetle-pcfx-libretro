@@ -61,48 +61,6 @@ typedef uint64_t uint64;
 
 #endif
 
-
-typedef struct
-{
- union
- {
-  struct
-  {
-   #ifdef MSB_FIRST
-   uint8   High;
-   uint8   Low;
-   #else
-   uint8   Low;
-   uint8   High;
-   #endif
-  } Union8;
-  uint16 Val16;
- };
-} Uuint16;
-
-typedef struct
-{
- union
- {
-  struct
-  {
-   #ifdef MSB_FIRST
-   Uuint16   High;
-   Uuint16   Low;
-   #else
-   Uuint16   Low;
-   Uuint16   High;
-   #endif
-  } Union16;
-  uint32  Val32;
- };
-} Uuint32;
-
-typedef uint32   UTF32;  /* at least 32 bits */
-typedef uint16  UTF16;  /* at least 16 bits */
-typedef uint8   UTF8;   /* typically 8 bits */
-typedef unsigned char   Boolean; /* 0 or 1 */
-
 #ifndef FALSE
 #define FALSE 0
 #endif

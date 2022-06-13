@@ -40,7 +40,7 @@ void mednafen_md5_starts(struct md5_context *ctx)
    ctx->state[3] = 0x10325476;
 }
 
-void mednafen_md5_process(struct md5_context *ctx, uint8_t data[64])
+static void mednafen_md5_process(struct md5_context *ctx, uint8_t data[64])
 {
    uint32_t A, B, C, D, X[16];
 
@@ -209,48 +209,4 @@ void mednafen_md5_update_u32_as_lsb(struct md5_context *ctx, uint32_t input)
   buf[3] = input >> 24;
 
   mednafen_md5_update(ctx, buf, 4);
-}
-
-static uint8_t md5_padding[64] =
-{
-	0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-};
-
-void mednafen_md5_finish(struct md5_context *ctx, uint8_t digest[16])
-{
-   uint32_t last, padn;
-   uint8_t msglen[8];
-
-   PUT_UINT32(ctx->total[0], msglen, 0);
-   PUT_UINT32(ctx->total[1], msglen, 4);
-
-   last = (ctx->total[0] >> 3) & 0x3F;
-   padn = (last < 56) ? (56 - last) : (120 - last);
-
-   mednafen_md5_update(ctx, md5_padding, padn);
-   mednafen_md5_update(ctx, msglen, 8);
-
-   PUT_UINT32(ctx->state[0], digest, 0);
-   PUT_UINT32(ctx->state[1], digest, 4);
-   PUT_UINT32(ctx->state[2], digest, 8);
-   PUT_UINT32(ctx->state[3], digest, 12);
-}
-
-
-/* Uses a static buffer, so beware of how it's used. */
-char *mednafen_md5_asciistr(uint8_t digest[16])
-{
-   static char str[33];
-   static char trans[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-   int x;
-
-   for (x = 0; x < 16; x++)
-   {
-      str[x * 2] = trans[digest[x] >> 4];
-      str[x * 2 + 1] = trans[digest[x] & 0x0F];
-   }
-   return(str);
 }

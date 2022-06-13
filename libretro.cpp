@@ -614,33 +614,6 @@ FoundIt: ;
    } // end: for (unsigned if_disc = 0; if_disc < CDInterfaces->size(); if_disc++)
 }
 
-// PC-FX BIOS will look at all data tracks(not just the first one), in contrast to the PCE CD BIOS, which only looks
-// at the first data track.
-static bool TestMagicCD(std::vector<CDIF *> *CDInterfaces)
-{
-   TOC toc;
-   uint8 sector_buffer[2048];
-   CDIF *cdiface = (*CDInterfaces)[0];
-
-   memset(sector_buffer, 0, sizeof(sector_buffer));
-
-   cdiface->ReadTOC(&toc);
-
-   for (int32 track = toc.first_track; track <= toc.last_track; track++)
-   {
-      if (toc.tracks[track].control & 0x4)
-      {
-         int m = cdiface->ReadSector(sector_buffer, toc.tracks[track].lba, 1);
-
-         if (m == 0x1 && !strncmp("PC-FX:Hu_CD-ROM", (char*)sector_buffer, strlen("PC-FX:Hu_CD-ROM")))
-            return true;
-         else if((m == 0x1 || m == 0x2) && !strncmp((char *)sector_buffer + 64, "PPPPHHHHOOOOTTTTOOOO____CCCCDDDD", 32))
-            return true;
-      }
-   }
-   return(FALSE);
-}
-
 static int LoadCD(std::vector<CDIF *> *CDInterfaces)
 {
    EmuFlags = 0;
@@ -1024,6 +997,7 @@ static void check_system_specs(void)
 void retro_init(void)
 {
    struct retro_log_callback log;
+   const char *dir = NULL;
    if (environ_cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &log))
       log_cb = log.log;
    else
@@ -1032,8 +1006,6 @@ void retro_init(void)
    disc_init(); // Initialize disc control interface
 
    CDUtility_Init();
-
-   const char *dir = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &dir) && dir)
    {
