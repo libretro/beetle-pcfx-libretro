@@ -179,11 +179,6 @@ static void DrawBG_Fast(uint32 *target, int n)
   int wmul = (1 << bat_width_shift), wmask = (1 << bat_height_shift) - 1;
   int sexy_y_pos = (YOffset & wmask) * wmul;
   
-  #if 0
-  #define BGFAST_BATMODE (bgmode & 0x8)
-  #include "king-bgfast-blit.inc"
-
-  #else
   if(bgmode & 0x8)
   {
    #define BGFAST_BATMODE 1
@@ -196,7 +191,6 @@ static void DrawBG_Fast(uint32 *target, int n)
    #include "king-bgfast-blit.inc"
    #undef BGFAST_BATMODE
   }
-  #endif
  }
 }
 

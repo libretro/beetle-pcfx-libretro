@@ -351,54 +351,6 @@ void PCE_PSG::SetRegister(const unsigned int id, const uint32 value)
  }
 }
 
-
-#if 0
-void PSG_SetRegister(const unsigned int id, const uint32 value)
-{
- 
-
- if(name == "Select")
-  PSG_Write(0x00, V);
- else if(name == "GBalance")
-  PSG_Write(0x01, V);
- else if(name == "LFOFreq")
- {
-  PSG_Write(0x08, V);
- }
- else if(name == "LFOCtrl")
-  PSG_Write(0x09, V);
- else if(!strncmp(name.c_str(), "CH", 2))
- {
-  unsigned int psg_sel_save = select;
-  int ch = name[2] - '0';
-  char moomoo[64];
-  strncpy(moomoo, name.c_str() + 3, 63);
-
-  PSG_Write(0x00, ch);
-
-  if(!strcmp(moomoo, "Freq"))
-  {
-   PSG_Write(0x02, V);
-   PSG_Write(0x03, V >> 8);
-  }
-  else if(!strcmp(moomoo, "Ctrl"))
-   PSG_Write(0x04, V);
-  else if(!strcmp(moomoo, "Balance"))
-   PSG_Write(0x05, V);
-  else if(!strcmp(moomoo, "WIndex"))
-   psg.channel[ch].waveform_index = V & 0x1F;
-  else if(!strcmp(moomoo, "SCache"))
-   psg.channel[ch].dda = V & 0x1F;
-  else if(!strcmp(moomoo, "NCtrl") && ch < 4)
-   psg.channel[ch].noisectrl = V;
-  else if(!strcmp(moomoo, "LFSR") && ch < 4)
-   psg.channel[ch].lfsr = V & 0x3FFFF;
-
-  PSG_Write(0x00, psg_sel_save);
- }
-}
-#endif
-
 PCE_PSG::PCE_PSG(int32* hr_l, int32* hr_r, int want_revision)
 {
 	revision = want_revision;

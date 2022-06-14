@@ -1670,19 +1670,6 @@ static void DrawBG(uint32 *target, int n, bool sub)
   1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1
  };
 
-#if 0
- const uint32 cg_per_mode[0x8] = 
- {
-  0, // Invalid mode
-  1, // 2-bit mode
-  2, // 4-bit mode
-  4, // 8-bit mode
-  8, // 16-bit mode
-  8, // 16-bit mode
-  8, // 16-bit mode
-  8, // 16-bit mode
- };
-#endif
  const uint32 layer_or = (LAYER_BG0 + n) << 28;
 
  const uint32 palette_offset = ((fx_vce.palette_offset[1 + (n >> 1)] >> ((n & 1) ? 8 : 0)) << 1) & 0x1FF;
@@ -2052,16 +2039,6 @@ static void DrawBG(uint32 *target, int n, bool sub)
    case 0x05: // 16M color, 2 bytes per pixel - OK
 	DRAWBG8x1_MAC(8, 16M, 0);
 	break;
-  #if 0
-   case BGMODE_64K_EXTDOT:
-	break;
-
-   case BGMODE_16M_EXTDOT:
-	{
-	 uint32 fat_bat = ((YOffset & ((1 << bat_height_shift) - 1)) << bat_width_shift) + (((XScroll & ~ 7) & ((1 << bat_width_shift) - 1));
-	}
-        break;
-  #endif
   }
  }
 }
@@ -2766,29 +2743,6 @@ void KING_SetLayerEnableMask(uint64 mask)
 
  RAINBOWLayerDisable = (~ms) & 0x1;
  ms >>= 1;
-
-#if 0
- if(which < 4)
- {
-  BGLayerDisable ^= 1 << which;
-  return( !((BGLayerDisable >> which) & 1));
- }
- else if(which == 4 || which == 5)
- {
-  return(fx_vdc_chips[0]->ToggleLayer(which - 4));
- }
- else if(which == 6 || which == 7)
- {
-  return(fx_vdc_chips[1]->ToggleLayer(which - 6));
- }
- else if(which == 8)
- {
-  RAINBOWLayerDisable = !RAINBOWLayerDisable;
-  return(!RAINBOWLayerDisable);
- }
- else
-  return(0);
-#endif
 }
 
 

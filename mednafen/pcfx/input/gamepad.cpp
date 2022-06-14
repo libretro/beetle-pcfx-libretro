@@ -116,20 +116,6 @@ class PCFX_Input_Gamepad : public PCFX_Input_Device
  int which;
 };
 
-#if 0
-int PCFX_Input_Gamepad::StateAction(StateMem *sm, int load, int data_only, const char *section_name)
-{
- #if 0
- SFORMAT StateRegs[] =
- {
-  SFEND
- };
- int ret =  MDFNSS_StateAction(sm, load, data_only, StateRegs, section_name, false);
-
- return(ret);
- #endif
-}
-#endif
 // GamepadIDII and GamepadIDII_DSR must be EXACTLY the same except for the RUN+SELECT exclusion in the latter.
 const InputDeviceInputInfoStruct PCFX_GamepadIDII[] =
 {

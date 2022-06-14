@@ -23,28 +23,16 @@ bool V810_FP_Ops::fp_is_zero(uint32 v)
  return((v & 0x7FFFFFFF) == 0);
 }
 
-#if 0
-bool V810_FP_Ops::fp_is_nan(uint32 v)
-{
- return((v & 0x7FFFFFFF) > (255 << 23));
-}
-
-bool V810_FP_Ops::fp_is_inf(uint32 v)
-{
- return((v & 0x7FFFFFFF) == (255 << 23));
-}
-#endif
-
 bool V810_FP_Ops::fp_is_inf_nan_sub(uint32 v)
 {
- if((v & 0x7FFFFFFF) == 0)
-  return(false);
-
- switch((v >> 23) & 0xFF)
+ if((v & 0x7FFFFFFF) != 0)
  {
-  case 0x00:
-  case 0xff:
+  switch((v >> 23) & 0xFF)
+  {
+   case 0x00:
+   case 0xff:
 	return(true);
+  }
  }
  return(false);
 }
