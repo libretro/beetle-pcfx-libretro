@@ -50,7 +50,6 @@ static retro_environment_t environ_cb;
 static retro_input_poll_t input_poll_cb;
 static retro_input_state_t input_state_cb;
 
-static double last_sound_rate;
 static MDFN_PixelFormat last_pixel_format;
 
 static MDFN_Surface surf;
@@ -270,9 +269,6 @@ static void Emulate(EmulateSpecStruct *espec)
 
    if (espec->VideoFormatChanged)
       KING_SetPixelFormat(espec->surface->format);
-
-   if (espec->SoundFormatChanged)
-      SoundBox_SetSoundRate(espec->SoundRate);
 
    KING_StartFrame(fx_vdc_chips, espec);
 
@@ -1387,6 +1383,8 @@ bool retro_load_game(const struct retro_game_info *info)
    for (unsigned i = 0; i < MAX_PLAYERS; i++)
       FXINPUT_SetInput(i, "gamepad", &input_buf[i]);
 
+   SoundBox_SetSoundRate(44100.0);
+
    return true;
 }
 
@@ -1496,24 +1494,16 @@ void retro_run(void)
 
    EmulateSpecStruct spec  = {0};
    spec.surface            = &surf;
-   spec.SoundRate          = 44100.0;
    spec.SoundBuf           = sound_buf;
    spec.LineWidths         = rects;
    spec.SoundBufMaxSize    = sizeof(sound_buf) / 2;
    spec.SoundBufSize       = 0;
    spec.VideoFormatChanged = false;
-   spec.SoundFormatChanged = false;
 
    if (memcmp(&last_pixel_format, &spec.surface->format, sizeof(MDFN_PixelFormat)))
    {
       spec.VideoFormatChanged = TRUE;
       last_pixel_format       = spec.surface->format;
-   }
-
-   if (spec.SoundRate != last_sound_rate)
-   {
-      spec.SoundFormatChanged = true;
-      last_sound_rate         = spec.SoundRate;
    }
 
    Emulate(&spec);

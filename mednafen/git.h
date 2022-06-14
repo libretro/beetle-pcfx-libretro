@@ -150,16 +150,6 @@ typedef struct
 	// Skip rendering this frame if true.  Set by the driver code.
 	int skip;
 
-	//
-	// If sound is disabled, the driver code must set SoundRate to false, SoundBuf to NULL, SoundBufMaxSize to 0.
-
-        // Will be set to TRUE if the sound format(only rate for now, at least) has changed since the last call to Emulate(), FALSE otherwise.
-        // Will be set to TRUE on the first call to the Emulate() function/method
-	bool SoundFormatChanged;
-
-	// Sound rate.  Set by driver side.
-	double SoundRate;
-
 	// Pointer to sound buffer, set by the driver code, that the emulation code should render sound to.
 	// Guaranteed to be at least 500ms in length, but emulation code really shouldn't exceed 40ms or so.  Additionally, if emulation code
 	// generates >= 100ms, 
