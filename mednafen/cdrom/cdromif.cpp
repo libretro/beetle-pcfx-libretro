@@ -266,11 +266,6 @@ int CDIF_MT::ReadThreadStart()
 
    disc_cdaccess->Read_TOC(&disc_toc);
 
-   if(disc_toc.first_track < 1 || disc_toc.last_track > 99 || disc_toc.first_track > disc_toc.last_track)
-   {
-      log_cb(RETRO_LOG_ERROR, "TOC first(%d)/last(%d) track numbers bad.\n", disc_toc.first_track, disc_toc.last_track);
-   }
-
    SBWritePos = 0;
    ra_lba = 0;
    ra_count = 0;
@@ -284,7 +279,6 @@ int CDIF_MT::ReadThreadStart()
       CDIF_Message msg;
 
       // Only do a blocking-wait for a message if we don't have any sectors to read-ahead.
-      // MDFN_DispMessage("%d %d %d\n", last_read_lba, ra_lba, ra_count);
       if(ReadThreadQueue.Read(&msg, ra_count ? false : true))
       {
          switch(msg.message)
@@ -549,7 +543,6 @@ CDIF_ST::~CDIF_ST()
 
 void CDIF_ST::HintReadSector(int32_t lba)
 {
-   // TODO: disc_cdaccess seek hint? (probably not, would require asynchronousitycamel)
 }
 
 bool CDIF_ST::ReadRawSector(uint8_t *buf, int32_t lba)

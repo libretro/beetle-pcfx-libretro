@@ -309,10 +309,6 @@ static INLINE void RebuildLayerPrioCache(void)
   }
  }
  assert(RemapPriority <= 8);
-
- //if(fx_vce.raster_counter == 50)
- // MDFN_DispMessage("%d BG0: %d %d %d %d, VBG: %d, VSPR: %d, RAIN: %d", vr->LayerPriority[0], vr->LayerPriority[1], vr->LayerPriority[2], vr->LayerPriority[3],
- //						vr->LayerPriority[4], vr->LayerPriority[5], vr->LayerPriority[6], vr->LayerPriority[7]);
 }
 
 // Call this function in FX VCE hblank(or at the end/immediate start of active display)
@@ -2122,9 +2118,6 @@ void KING_StartFrame(VDC **arg_vdc_chips, EmulateSpecStruct *espec)	//MDFN_Surfa
  ::DisplayRect = &espec->DisplayRect;
  ::LineWidths = espec->LineWidths;
  ::skip = espec->skip;
-
- //MDFN_DispMessage("P0:%06x P1:%06x; I0: %06x I1: %06x", king->ADPCMPlayAddress[0], king->ADPCMPlayAddress[1], king->ADPCMIntermediateAddress[0] << 6, king->ADPCMIntermediateAddress[1] << 6);
- //MDFN_DispMessage("%d %d\n", SCSICD_GetACK(), SCSICD_GetREQ());
 
  // For the case of interlaced mode(clear ~0 state)
  LineWidths[0] = 0;

@@ -404,11 +404,7 @@ v810_timestamp_t SoundBox_ADPCMUpdate(const v810_timestamp_t timestamp)
       }
 
       for(int ch = 0; ch < 2; ch++)
-      {
          sbox.ResetAntiClick[ch] -= sbox.ResetAntiClick[ch] >> 8;
-         //if(ch)
-         // MDFN_DispMessage("%d", (int)(sbox.ResetAntiClick[ch] >> 32));
-      }
 
       for(int ch = 0; ch < 2; ch++)
          for(int lr = 0; lr < 2; lr++)
