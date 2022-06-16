@@ -193,7 +193,7 @@ bool CDAccess_CCD::Load(const std::string& path, bool image_memcache)
       for(unsigned te = 0; te < toc_entries; te++)
       {
          char tmpbuf[64];
-         snprintf(tmpbuf, sizeof(tmpbuf), "ENTRY %u", te);
+         sprintf(tmpbuf, "ENTRY %u", te);
          CCD_Section& ts = Sections[std::string(tmpbuf)];
          unsigned session = CCD_ReadInt<unsigned>(ts, "SESSION");
          uint8_t point = CCD_ReadInt<uint8_t>(ts, "POINT");
