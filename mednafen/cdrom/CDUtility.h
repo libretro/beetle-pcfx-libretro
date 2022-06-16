@@ -1,6 +1,7 @@
 #ifndef __MDFN_CDROM_CDUTILITY_H
 #define __MDFN_CDROM_CDUTILITY_H
 
+#include <stdint.h>
 #include <string.h>
 
 #include <retro_inline.h>
