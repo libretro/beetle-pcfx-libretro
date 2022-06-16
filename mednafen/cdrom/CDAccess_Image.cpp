@@ -220,7 +220,7 @@ bool CDAccess_Image::ParseTOCFileLineInfo(CDRFILE_TRACK_INFO *track, const int t
       toc_streamcache[filename] = track->fp;
    }
 
-   if(filename.length() >= 4 && !strcasecmp(filename.c_str() + filename.length() - 4, ".wav"))
+   if(filename.length() >= 4 && !strcmp(filename.c_str() + filename.length() - 4, ".wav"))
    {
       track->AReader = CDAFR_Open(track->fp);
 
@@ -358,7 +358,7 @@ bool CDAccess_Image::ImageOpen(const std::string& path, bool image_memcache)
 
    MDFN_GetFilePathComponents(path, &base_dir, &file_base, &file_ext);
 
-   if(!strcasecmp(file_ext.c_str(), ".toc"))
+   if(!strcmp(file_ext.c_str(), ".toc"))
       IsTOC = true;
 
    // Check for annoying UTF-8 BOM.
@@ -440,7 +440,7 @@ bool CDAccess_Image::ImageOpen(const std::string& path, bool image_memcache)
             int format_lookup;
             for(format_lookup = 0; format_lookup < _DI_FORMAT_COUNT; format_lookup++)
             {
-               if(!strcasecmp(args[0].c_str(), DI_CDRDAO_Strings[format_lookup]))
+               if(!strcmp(args[0].c_str(), DI_CDRDAO_Strings[format_lookup]))
                {
                   TmpTrack.DIFormat = format_lookup;
                   break;
@@ -453,9 +453,9 @@ bool CDAccess_Image::ImageOpen(const std::string& path, bool image_memcache)
             if(TmpTrack.DIFormat == DI_FORMAT_AUDIO)
                TmpTrack.RawAudioMSBFirst = true; /* Silly cdrdao... */
 
-            if(!strcasecmp(args[1].c_str(), "RW"))
+            if(!strcmp(args[1].c_str(), "RW"))
                TmpTrack.SubchannelMode = CDRF_SUBM_RW;
-            else if(!strcasecmp(args[1].c_str(), "RW_RAW"))
+            else if(!strcmp(args[1].c_str(), "RW_RAW"))
                TmpTrack.SubchannelMode = CDRF_SUBM_RW_RAW;
 
          } // end to TRACK
@@ -584,19 +584,19 @@ bool CDAccess_Image::ImageOpen(const std::string& path, bool image_memcache)
             if(image_memcache)
                TmpTrack.fp = new MemoryStream(TmpTrack.fp);
 
-            if(!strcasecmp(args[1].c_str(), "BINARY"))
+            if(!strcmp(args[1].c_str(), "BINARY"))
             {
                //TmpTrack.Format = TRACK_FORMAT_DATA;
                //struct stat stat_buf;
                //fstat(fileno(TmpTrack.fp), &stat_buf);
                //TmpTrack.sectors = stat_buf.st_size; // / 2048;
             }
-            else if(!strcasecmp(args[1].c_str(), "WAVE") || !strcasecmp(args[1].c_str(), "WAV"))
+            else if(!strcmp(args[1].c_str(), "WAVE") || !strcmp(args[1].c_str(), "WAV"))
             {
                // Make it work with WAVE / WAV file type names in the cue sheet, previously .wav was working only with BINARY
             }
-            else if(!strcasecmp(args[1].c_str(), "OGG") || !strcasecmp(args[1].c_str(), "VORBIS") || !strcasecmp(args[1].c_str(), "PCM")
-                  || !strcasecmp(args[1].c_str(), "MPC") || !strcasecmp(args[1].c_str(), "MP+"))
+            else if(!strcmp(args[1].c_str(), "ogg") || !strcmp(args[1].c_str(), "vorbis") || !strcmp(args[1].c_str(), "pcm")
+                  || !strcmp(args[1].c_str(), "mpc") || !strcmp(args[1].c_str(), "mp+"))
             {
                TmpTrack.AReader = CDAFR_Open(TmpTrack.fp);
                if(!TmpTrack.AReader)
@@ -605,7 +605,7 @@ bool CDAccess_Image::ImageOpen(const std::string& path, bool image_memcache)
             else
                return false;
          }
-         else if(cmdbuf == "TRACK")
+         else if(cmdbuf == "track")
          {
             if(active_track >= 0)
             {
@@ -634,7 +634,7 @@ bool CDAccess_Image::ImageOpen(const std::string& path, bool image_memcache)
             int format_lookup;
             for(format_lookup = 0; format_lookup < _DI_FORMAT_COUNT; format_lookup++)
             {
-               if(!strcasecmp(args[1].c_str(), DI_CUE_Strings[format_lookup]))
+               if(!strcmp(args[1].c_str(), DI_CUE_Strings[format_lookup]))
                {
                   TmpTrack.DIFormat = format_lookup;
                   break;

@@ -36,10 +36,10 @@ CDAccess* CDAccess_Open(const std::string& path, bool image_memcache)
 {
    CDAccess *ret = NULL;
 
-   if(path.size() >= 4 && !strcasecmp(path.c_str() + path.size() - 4, ".ccd"))
+   if(path.size() >= 4 && !strcmp(path.c_str() + path.size() - 4, ".ccd"))
       ret = new CDAccess_CCD(path, image_memcache);
 #ifdef HAVE_CHD
-   else if(path.size() >= 4 && !strcasecmp(path.c_str() + path.size() - 4, ".chd"))
+   else if(path.size() >= 4 && !strcmp(path.c_str() + path.size() - 4, ".chd"))
       ret = new CDAccess_CHD(path, image_memcache);
 #endif
    else

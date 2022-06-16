@@ -1216,7 +1216,7 @@ void MDFND_DispMessage(unsigned char *str)
 
 static bool MDFNI_LoadCD(const char *devicename)
 {
-   if (devicename && strlen(devicename) > 4 && !strcasecmp(devicename + strlen(devicename) - 4, ".m3u"))
+   if (devicename && strlen(devicename) > 4 && !strcmp(devicename + strlen(devicename) - 4, ".m3u"))
    {
       ReadM3U(disk_control_ext_info.image_paths, devicename);
 
@@ -1328,11 +1328,11 @@ bool retro_load_game(const struct retro_game_info *info)
    check_variables(false);
 
    if ((strlen(info->path) > 4) && (
-         (!strcasecmp(info->path + strlen(info->path) - 4, ".cue")) ||
-         (!strcasecmp(info->path + strlen(info->path) - 4, ".ccd")) ||
-         (!strcasecmp(info->path + strlen(info->path) - 4, ".chd")) ||
-         (!strcasecmp(info->path + strlen(info->path) - 4, ".toc")) ||
-         (!strcasecmp(info->path + strlen(info->path) - 4, ".m3u"))))
+         (!strcmp(info->path + strlen(info->path) - 4, ".cue")) ||
+         (!strcmp(info->path + strlen(info->path) - 4, ".ccd")) ||
+         (!strcmp(info->path + strlen(info->path) - 4, ".chd")) ||
+         (!strcmp(info->path + strlen(info->path) - 4, ".toc")) ||
+         (!strcmp(info->path + strlen(info->path) - 4, ".m3u"))))
       ret = MDFNI_LoadCD(info->path);
 
    if (!ret)
