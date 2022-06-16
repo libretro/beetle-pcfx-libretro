@@ -732,10 +732,7 @@ OwlResampler::OwlResampler(double input_rate, double output_rate, double rate_er
  if(NumCoeffs < 16)
   NumCoeffs = 16;
 
- if(0)
- {
-  abort();	// The sky is falling AAAAAAAAAAAAA
- }
+ if(0) { }
  #ifdef ARCH_X86
  else if(cpuext & RETRO_SIMD_SSE2)
  {
