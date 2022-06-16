@@ -369,8 +369,8 @@ int FXINPUT_StateAction(StateMem *sm, int load, int data_only)
 
  for(int i = 0; i < TOTAL_PORTS; i++)
  {
-  char sname[256];
-  snprintf(sname, 256, "INPUT%d:%d", i, InputTypes[i]);
+  char sname[128];
+  sprintf(sname, "INPUT%d:%d", i, InputTypes[i]);
   ret &= devices[i]->StateAction(sm, load, data_only, sname);
  }
 
