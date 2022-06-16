@@ -15,16 +15,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "mednafen.h"
-
 #include <string.h>
 #include <stdarg.h>
 
 #include <sys/types.h>
 
-#include <file/file_path.h>
-
 #include <string>
+
+#include <file/file_path.h>
 
 #include "error.h"
 #include "general.h"
@@ -103,7 +101,7 @@ void MDFN_ltrim(std::string &string)
 {
  size_t len = string.length();
  size_t di, si;
- bool InWhitespace = TRUE;
+ bool InWhitespace = true;
 
  di = si = 0;
 
@@ -115,7 +113,7 @@ void MDFN_ltrim(std::string &string)
   }
   else
   {
-   InWhitespace = FALSE;
+   InWhitespace = false;
    string[di] = string[si];
    di++;
   }

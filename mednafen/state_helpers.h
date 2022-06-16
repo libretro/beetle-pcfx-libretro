@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <retro_inline.h>
 
+#include "state.h"
+
 INLINE bool SF_IS_BOOL(bool *) { return(1); }
 INLINE bool SF_IS_BOOL(void *) { return(0); }
 

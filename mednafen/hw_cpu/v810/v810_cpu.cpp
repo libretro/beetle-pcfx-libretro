@@ -41,8 +41,6 @@ found freely through public domain sources.
 //////////////////////////////////////////////////////////
 // CPU routines
 
-#include "mednafen/mednafen.h"
-#include <mednafen/masmem.h>
 
 #include <string.h>
 #include <errno.h>
@@ -51,6 +49,8 @@ found freely through public domain sources.
 #include "v810_opt.h"
 #include "v810_cpu.h"
 
+#include "../../masmem.h"
+#include "../../mednafen-types.h"
 #include "../../state_helpers.h"
 
 V810::V810()

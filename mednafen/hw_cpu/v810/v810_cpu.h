@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "v810_fp_ops.h"
+#include "../../state_helpers.h"
 
 typedef int32 v810_timestamp_t;
 

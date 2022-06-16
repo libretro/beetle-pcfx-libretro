@@ -5,7 +5,9 @@
 //
 
 #ifndef V810_OPT_H_
-#define V810_OPT_H_  
+#define V810_OPT_H_
+
+#include "../../math_ops.h"
 
 #define sign_26(num) ((uint32)sign_x_to_s32(26, num))
 #define sign_16(num) ((uint32)(int16)(num))

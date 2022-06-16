@@ -1,8 +1,10 @@
 #ifndef __PCFX_KING_H
 #define __PCFX_KING_H
 
-void KING_StartFrame(VDC **, EmulateSpecStruct *espec);	//MDFN_Surface *surface, MDFN_Rect *DisplayRect, MDFN_Rect *LineWidths, int skip);
-void KING_SetPixelFormat(const MDFN_PixelFormat &format); //int rshift, int gshift, int bshift);
+#include "../git.h"
+
+void KING_StartFrame(VDC **, EmulateSpecStruct *espec);
+void KING_SetPixelFormat(const MDFN_PixelFormat &format);
 uint16 FXVCE_Read16(uint32 A);
 void FXVCE_Write16(uint32 A, uint16 V);
 

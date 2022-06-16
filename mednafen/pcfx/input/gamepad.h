@@ -1,6 +1,8 @@
 #ifndef __PCFX_INPUT_GAMEPAD_H
 #define __PCFX_INPUT_GAMEPAD_H
 
+#include "../../git.h"
+
 extern const InputDeviceInputInfoStruct PCFX_GamepadIDII[0xF];
 extern const InputDeviceInputInfoStruct PCFX_GamepadIDII_DSR[0xF];
 

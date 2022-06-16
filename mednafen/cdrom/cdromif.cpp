@@ -15,14 +15,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "../mednafen.h"
 #include <string.h>
 #include <sys/types.h>
-#include "cdromif.h"
-#include "CDAccess.h"
-#include "../error.h"
-#include "../general.h"
-
 #include <algorithm>
 
 #include <boolean.h>
@@ -30,6 +24,12 @@
 #include <rthreads/rthreads.h>
 #endif
 #include <retro_miscellaneous.h>
+
+#include "cdromif.h"
+#include "CDAccess.h"
+#include "../error.h"
+#include "../general.h"
+
 
 enum
 {
@@ -222,12 +222,8 @@ bool CDIF_Queue::Read(CDIF_Message *message, bool blocking)
    slock_unlock(ze_mutex);
 
    if(ret)
-   {
       if (message->message != CDIF_MSG_FATAL_ERROR)
          return true;
-
-      log_cb(RETRO_LOG_ERROR, "%s", message->str_message.c_str());
-   }
 
    return false;
 }

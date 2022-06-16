@@ -16,19 +16,18 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
 #include <errno.h>
 #include <libretro.h>
 
-#include "mednafen.h"
 #include "error.h"
 
 extern retro_log_printf_t log_cb;
 
 MDFN_Error::MDFN_Error()
 {
-   abort();
 }
 
 MDFN_Error::MDFN_Error(int errno_code_new, const char *format, ...)

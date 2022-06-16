@@ -22,7 +22,8 @@
 #ifndef __MDFN_CDAFREADER_H
 #define __MDFN_CDAFREADER_H
 
-#include <mednafen/Stream.h>
+#include <stdint.h>
+#include "../Stream.h"
 
 class CDAFReader
 {
@@ -31,7 +32,7 @@ class CDAFReader
  virtual ~CDAFReader();
 
  virtual uint64_t FrameCount(void) = 0;
- INLINE uint64_t Read(uint64_t frame_offset, int16 *buffer, uint64_t frames)
+ INLINE uint64_t Read(uint64_t frame_offset, int16_t *buffer, uint64_t frames)
  {
   uint64_t ret;
 
@@ -48,7 +49,7 @@ class CDAFReader
  }
 
  private:
- virtual uint64_t Read_(int16 *buffer, uint64_t frames) = 0;
+ virtual uint64_t Read_(int16_t *buffer, uint64_t frames) = 0;
  virtual bool Seek_(uint64_t frame_offset) = 0;
 
  uint64_t LastReadPos;

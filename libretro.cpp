@@ -12,13 +12,13 @@
 #include <streams/file_stream.h>
 
 #include "mednafen/error.h"
-#include "mednafen/mednafen.h"
 #include "mednafen/mempatcher.h"
 #include "mednafen/git.h"
 #include "mednafen/general.h"
+#include "mednafen/settings.h"
 #include "mednafen/md5.h"
 #ifdef NEED_DEINTERLACER
-#include	"mednafen/video/Deinterlacer.h"
+#include "mednafen/video/Deinterlacer.h"
 #endif
 #include "libretro.h"
 #include <rthreads/rthreads.h>
@@ -74,6 +74,35 @@ typedef struct
 } disk_control_ext_info_t;
 
 static disk_control_ext_info_t disk_control_ext_info;
+
+MDFNGI EmulatedPCFX =
+{
+   288,  // Nominal width
+   240,  // Nominal height
+};
+
+void MDFN_DispMessage(const char *format, ...)
+{
+   struct retro_message msg;
+   va_list ap;
+   char *str        = new char[4096];
+   const char *strc = NULL;
+
+   va_start(ap,format);
+
+   vsnprintf(str, 4096, format,ap);
+   va_end(ap);
+   strc = str;
+
+   msg.frames = 180;
+   msg.msg = strc;
+
+   environ_cb(RETRO_ENVIRONMENT_SET_MESSAGE, &msg);
+}
+
+/* Forward declarations */
+void MDFN_LoadGameCheats(void);
+void MDFN_FlushGameCheats(void);
 
 /* Mednafen - Multi-system Emulator
  *
@@ -391,10 +420,7 @@ static bool LoadCommon(std::vector<CDIF *> *CDInterfaces)
       return false;
 
    if (BIOSFile->size != 1024 * 1024)
-   {
-      MDFN_PrintError("BIOS ROM file is incorrect size.\n");
       return false;
-   }
 
    memcpy(BIOSROM, BIOSFile->data, 1024 * 1024);
 
@@ -442,12 +468,6 @@ static bool LoadCommon(std::vector<CDIF *> *CDInterfaces)
    SCSICD_SetDisc(false, (*CDInterfaces)[CD_SelectedDisc], true);
 
    EmulatedPCFX.nominal_height = MDFN_GetSettingUI("pcfx.slend") - MDFN_GetSettingUI("pcfx.slstart") + 1;
-
-   // Emulation raw framebuffer image should always be of 256 width when the pcfx.high_dotclock_width setting is set to "256",
-   // but it could be either 256 or 341 when the setting is set to "341", so stay with 1024 in that case so we won't have
-   // a messed up aspect ratio in our recorded QuickTime movies.
-   EmulatedPCFX.lcm_width = (MDFN_GetSettingUI("pcfx.high_dotclock_width") == 256) ? 256 : 1024;
-   EmulatedPCFX.lcm_height = EmulatedPCFX.nominal_height;
 
    MDFNMP_Init(1024 * 1024, ((uint64)1 << 32) / (1024 * 1024));
    MDFNMP_AddRAM(2048 * 1024, 0x00000000, RAM);
@@ -629,17 +649,6 @@ static void PCFX_CDInsertEject(void)
 {
    CD_TrayOpen = !CD_TrayOpen;
 
-#if 0
-   for (unsigned disc = 0; disc < cdifs->size(); disc++)
-   {
-      if (!(*cdifs)[disc]->Eject(CD_TrayOpen))
-      {
-         MDFN_DispMessage("Eject error.");
-         CD_TrayOpen = !CD_TrayOpen;
-      }
-   }
-#endif
-
    if (CD_TrayOpen)
       MDFN_DispMessage("Virtual CD Drive Tray Open");
    else
@@ -759,19 +768,6 @@ extern "C" int StateAction(StateMem *sm, int load, int data_only)
 
    return(ret);
 }
-
-MDFNGI EmulatedPCFX =
-{
-   0,    // lcm_width
-   0,    // lcm_height
-   NULL, // Dummy
-
-   288,  // Nominal width
-   240,  // Nominal height
-
-   1024, // Framebuffer width
-   512,  // Framebuffer height
-};
 
 #ifdef NEED_DEINTERLACER
 static bool PrevInterlaced;
@@ -1262,7 +1258,7 @@ static bool MDFNI_LoadCD(const char *devicename)
       return false;
    }
 
-   MDFN_LoadGameCheats(NULL);
+   MDFN_LoadGameCheats();
    MDFNMP_InstallReadPatches();
 
    return true;
@@ -1390,7 +1386,7 @@ bool retro_load_game(const struct retro_game_info *info)
 
 void retro_unload_game(void)
 {
-   MDFN_FlushGameCheats(0);
+   MDFN_FlushGameCheats();
 
    CloseGame();
 
@@ -1757,37 +1753,3 @@ size_t retro_get_memory_size(unsigned type)
 void retro_cheat_reset(void) {}
 
 void retro_cheat_set(unsigned, bool, const char *) {}
-
-void MDFN_DispMessage(const char *format, ...)
-{
-   struct retro_message msg;
-   va_list ap;
-   char *str        = new char[4096];
-   const char *strc = NULL;
-
-   va_start(ap,format);
-
-   vsnprintf(str, 4096, format,ap);
-   va_end(ap);
-   strc = str;
-
-   msg.frames = 180;
-   msg.msg = strc;
-
-   environ_cb(RETRO_ENVIRONMENT_SET_MESSAGE, &msg);
-}
-
-void MDFN_PrintError(const char *format, ...)
-{
-   char *temp;
-   va_list ap;
-
-   va_start(ap, format);
-   temp = (char*)malloc(4096 * sizeof(char));
-   vsnprintf(temp, 4096, format, ap);
-   if (log_cb)
-      log_cb(RETRO_LOG_ERROR, "%s\n", temp);
-   free(temp);
-
-   va_end(ap);
-}

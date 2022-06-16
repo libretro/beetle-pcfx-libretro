@@ -1,7 +1,6 @@
 #ifndef __PCFX_PCFX_H
 #define __PCFX_PCFX_H
 
-#include "../mednafen.h"
 #include "../state.h"
 #include "../general.h"
 #include "v810/v810_cpu.h"

@@ -17,6 +17,8 @@
 
 #include <math.h>
 #include <algorithm>
+#include <boolean.h>
+
 #include "scsicd.h"
 #include "cdromif.h"
 #include "SimpleFIFO.h"
@@ -26,7 +28,6 @@
 #include <emmintrin.h>
 #endif
 
-#include "../mednafen.h"
 #include "../mednafen-endian.h"
 #include "../state_helpers.h"
 
@@ -232,7 +233,7 @@ typedef struct
  uint8_t command_buffer_pos;
  uint8_t command_size_left;
 
- // FALSE if not all pending data is in the FIFO, TRUE if it is.
+ // false if not all pending data is in the FIFO, true if it is.
  // Used for multiple sector CD reads.
  bool data_transfer_done;
 
@@ -637,8 +638,8 @@ static void SendStatusAndMessage(uint8_t status, uint8_t message)
 
  cd.message_pending = message;
 
- cd.status_sent     = FALSE;
- cd.message_sent    = FALSE;
+ cd.status_sent     = false;
+ cd.message_sent    = false;
 
  cd_bus.DB          = status << 1;
 
@@ -2501,7 +2502,7 @@ static INLINE void RunCDDA(uint32_t system_timestamp, int32_t run_time)
    // This de-emphasis filter's frequency response isn't totally correct, but it's much better than nothing(and it's not like any known PCE CD/TG16 CD/PC-FX games
    // utilize pre-emphasis anyway).
    //
-   if(MDFN_UNLIKELY(cd.SubQBuf_Last[0] & 0x10))
+   if(cd.SubQBuf_Last[0] & 0x10)
    {
     for(unsigned lr = 0; lr < 2; lr++)
     {
@@ -2574,7 +2575,7 @@ static INLINE void RunCDRead(uint32_t system_timestamp, int32_t run_time)
     if(TrayOpen)
     {
      din->Flush();
-     cd.data_transfer_done = FALSE;
+     cd.data_transfer_done = false;
 
      CommandCCError(SENSEKEY_NOT_READY, NSE_TRAY_OPEN);
     }
@@ -2588,7 +2589,7 @@ static INLINE void RunCDRead(uint32_t system_timestamp, int32_t run_time)
     }
     else if(!Cur_CDIF->ReadRawSector(tmp_read_buf, SectorAddr))	//, SectorAddr + SectorCount))
     {
-     cd.data_transfer_done = FALSE;
+     cd.data_transfer_done = false;
 
      CommandCCError(SENSEKEY_ILLEGAL_REQUEST);
     }
@@ -2613,13 +2614,11 @@ static INLINE void RunCDRead(uint32_t system_timestamp, int32_t run_time)
 
      if(SectorCount)
      {
-      cd.data_transfer_done = FALSE;
+      cd.data_transfer_done = false;
       CDReadTimer += (uint64_t) 1 * 2048 * System_Clock / CD_DATA_TRANSFER_RATE;
      }
      else
-     {
-      cd.data_transfer_done = TRUE;
-     }
+      cd.data_transfer_done = true;
     }
    }				// end else to if(!Cur_CDIF->ReadSector
 
@@ -2663,7 +2662,7 @@ uint32_t SCSICD_Run(scsicd_timestamp_t system_timestamp)
     if(REQ_signal && ACK_signal)	// Data bus is valid nowww
     {
      cd.command_buffer[cd.command_buffer_pos++] = cd_bus.DB;
-     SetREQ(FALSE);
+     SetREQ(false);
     }
 
     if(!REQ_signal && !ACK_signal && cd.command_buffer_pos)	// Received at least one byte, what should we do?
@@ -2717,7 +2716,7 @@ uint32_t SCSICD_Run(scsicd_timestamp_t system_timestamp)
       }
      } // end if(cd.command_buffer_pos == RequiredCDBLen[cd.command_buffer[0] >> 4])
      else			// Otherwise, get more data for the command!
-      SetREQ(TRUE);
+      SetREQ(true);
     }
     break;
 
@@ -2725,7 +2724,7 @@ uint32_t SCSICD_Run(scsicd_timestamp_t system_timestamp)
     if(REQ_signal && ACK_signal)	// Data bus is valid nowww
     {
      cd.data_out[cd.data_out_pos++] = cd_bus.DB;
-     SetREQ(FALSE);
+     SetREQ(false);
     }
     else if(!REQ_signal && !ACK_signal && cd.data_out_pos)
     {
@@ -2739,7 +2738,7 @@ uint32_t SCSICD_Run(scsicd_timestamp_t system_timestamp)
        SendStatusAndMessage(STATUS_GOOD, 0x00);
      }
      else
-      SetREQ(TRUE);
+      SetREQ(true);
     }
     break;
 
@@ -2747,7 +2746,7 @@ uint32_t SCSICD_Run(scsicd_timestamp_t system_timestamp)
   case PHASE_MESSAGE_OUT:
    if(REQ_signal && ACK_signal)
    {
-    SetREQ(FALSE);
+    SetREQ(false);
 
     // ABORT message is 0x06, but the code isn't set up to be able to recover from a MESSAGE OUT phase back to the previous phase, so we treat any message as an ABORT.
     // Real tests are needed on the PC-FX to determine its behavior.
@@ -2769,15 +2768,15 @@ uint32_t SCSICD_Run(scsicd_timestamp_t system_timestamp)
   case PHASE_STATUS:
     if(REQ_signal && ACK_signal)
     {
-     SetREQ(FALSE);
-     cd.status_sent = TRUE;
+     SetREQ(false);
+     cd.status_sent = true;
     }
 
     if(!REQ_signal && !ACK_signal && cd.status_sent)
     {
      // Status sent, so get ready to send the message!
-     cd.status_sent = FALSE;
-     cd_bus.DB = cd.message_pending;
+     cd.status_sent = false;
+     cd_bus.DB      = cd.message_pending;
 
      ChangePhase(PHASE_MESSAGE_IN);
     }
@@ -2793,32 +2792,32 @@ uint32_t SCSICD_Run(scsicd_timestamp_t system_timestamp)
       if(cd.data_transfer_done)
       {
        SendStatusAndMessage(STATUS_GOOD, 0x00);
-       cd.data_transfer_done = FALSE;
+       cd.data_transfer_done = false;
        CDIRQCallback(SCSICD_IRQ_DATA_TRANSFER_DONE);
       }
      }
      else
      {
       cd_bus.DB = din->ReadByte();
-      SetREQ(TRUE);
+      SetREQ(true);
      }
     }
     if(REQ_signal && ACK_signal)
     {
-     SetREQ(FALSE);
+     SetREQ(false);
     }
     break;
 
   case PHASE_MESSAGE_IN:
    if(REQ_signal && ACK_signal)
    {
-    SetREQ(FALSE);
-    cd.message_sent = TRUE;
+    SetREQ(false);
+    cd.message_sent = true;
    }
 
    if(!REQ_signal && !ACK_signal && cd.message_sent)
    {
-    cd.message_sent = FALSE;
+    cd.message_sent = false;
     ChangePhase(PHASE_BUS_FREE);
    }
    break;

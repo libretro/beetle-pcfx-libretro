@@ -1,6 +1,7 @@
 #ifndef __MDFN_SIMPLEFIFO_H
 #define __MDFN_SIMPLEFIFO_H
 
+#include <stdint.h>
 #include <vector>
 
 #include "../math_ops.h"
@@ -11,7 +12,7 @@ class SimpleFIFO
  public:
 
  // Constructor
- SimpleFIFO(uint32 the_size) // Size should be a power of 2!
+ SimpleFIFO(uint32_t the_size) // Size should be a power of 2!
  {
   data.resize(round_up_pow2(the_size));
   size = the_size;
@@ -33,7 +34,7 @@ class SimpleFIFO
   in_count %= (data.size() + 1);
  }
 
- INLINE uint32 CanWrite(void)
+ INLINE uint32_t CanWrite(void)
  {
   return(size - in_count);
  }
@@ -51,12 +52,12 @@ class SimpleFIFO
   return(ret);
  }
 
- INLINE uint8 ReadByte(bool peek = false)
+ INLINE uint8_t ReadByte(bool peek = false)
  {
   return(ReadUnit(peek));
  }
 
- INLINE void Write(const T *happy_data, uint32 happy_count)
+ INLINE void Write(const T *happy_data, uint32_t happy_count)
  {
   while(happy_count)
   {
@@ -89,10 +90,10 @@ class SimpleFIFO
 
  //private:
  std::vector<T> data;
- uint32 size;
- uint32 read_pos; // Read position
- uint32 write_pos; // Write position
- uint32 in_count; // Number of units in the FIFO
+ uint32_t size;
+ uint32_t read_pos; // Read position
+ uint32_t write_pos; // Write position
+ uint32_t in_count; // Number of units in the FIFO
 };
 
 

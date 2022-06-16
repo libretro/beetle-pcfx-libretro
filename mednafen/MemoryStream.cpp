@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include "math_ops.h"
 #include "MemoryStream.h"
 
 #ifdef _XBOX
@@ -21,15 +22,15 @@ MemoryStream::MemoryStream() : data_buffer(NULL), data_buffer_size(0), data_buff
 {
  data_buffer_size = 0;
  data_buffer_alloced = 64;
- data_buffer = (uint8*)realloc(data_buffer, data_buffer_alloced);
+ data_buffer = (uint8_t*)realloc(data_buffer, data_buffer_alloced);
 }
 
-MemoryStream::MemoryStream(uint64 size_hint) : data_buffer(NULL), data_buffer_size(0), data_buffer_alloced(0), position(0)
+MemoryStream::MemoryStream(uint64_t size_hint) : data_buffer(NULL), data_buffer_size(0), data_buffer_alloced(0), position(0)
 {
  data_buffer_size = 0;
  data_buffer_alloced = (size_hint > SIZE_MAX) ? SIZE_MAX : size_hint;
 
- data_buffer = (uint8*)realloc(data_buffer, data_buffer_alloced);
+ data_buffer = (uint8_t*)realloc(data_buffer, data_buffer_alloced);
 }
 
 MemoryStream::MemoryStream(Stream *stream) : data_buffer(NULL), data_buffer_size(0), data_buffer_alloced(0), position(0)
@@ -39,7 +40,7 @@ MemoryStream::MemoryStream(Stream *stream) : data_buffer(NULL), data_buffer_size
 
    data_buffer_size = stream->size();
    data_buffer_alloced = data_buffer_size;
-   data_buffer = (uint8*)realloc(data_buffer, data_buffer_alloced);
+   data_buffer = (uint8_t*)realloc(data_buffer, data_buffer_alloced);
 
    stream->read(data_buffer, data_buffer_size);
 
@@ -51,7 +52,7 @@ MemoryStream::MemoryStream(const MemoryStream &zs)
 {
  data_buffer_size = zs.data_buffer_size;
  data_buffer_alloced = zs.data_buffer_alloced;
- data_buffer = (uint8*)malloc(data_buffer_alloced);
+ data_buffer = (uint8_t*)malloc(data_buffer_alloced);
 
  memcpy(data_buffer, zs.data_buffer, data_buffer_size);
 
@@ -67,7 +68,7 @@ MemoryStream::~MemoryStream()
  }
 }
 
-uint8 *MemoryStream::map(void)
+uint8_t *MemoryStream::map(void)
 {
  return data_buffer;
 }
@@ -78,21 +79,21 @@ void MemoryStream::unmap(void)
 }
 
 
-INLINE void MemoryStream::grow_if_necessary(uint64 new_required_size)
+INLINE void MemoryStream::grow_if_necessary(uint64_t new_required_size)
 {
  if(new_required_size > data_buffer_size)
  {
   if(new_required_size > data_buffer_alloced)
   {
-   uint64 new_required_alloced = round_up_pow2(new_required_size);
-   uint8 *new_data_buffer;
+   uint64_t new_required_alloced = round_up_pow2(new_required_size);
+   uint8_t *new_data_buffer;
 
    // first condition will happen at new_required_size > (1ULL << 63) due to round_up_pow2() "wrapping".
    // second condition can occur when running on a 32-bit system.
    if(new_required_alloced < new_required_size || new_required_alloced > SIZE_MAX)
     new_required_alloced = SIZE_MAX;
 
-   new_data_buffer = (uint8*)realloc(data_buffer, new_required_alloced);
+   new_data_buffer = (uint8_t*)realloc(data_buffer, new_required_alloced);
 
    //
    // Assign all in one go after the realloc() so we don't leave our object in an inconsistent state if the realloc() fails.
@@ -106,12 +107,12 @@ INLINE void MemoryStream::grow_if_necessary(uint64 new_required_size)
  }
 }
 
-uint64 MemoryStream::read(void *data, uint64 count)
+uint64_t MemoryStream::read(void *data, uint64_t count)
 {
    if(count > data_buffer_size)
       count = data_buffer_size;
 
-   if((uint64)position > (data_buffer_size - count))
+   if((uint64_t)position > (data_buffer_size - count))
       count = data_buffer_size - position;
 
    memmove(data, &data_buffer[position], count);
@@ -120,9 +121,9 @@ uint64 MemoryStream::read(void *data, uint64 count)
    return count;
 }
 
-void MemoryStream::write(const void *data, uint64 count)
+void MemoryStream::write(const void *data, uint64_t count)
 {
- uint64 nrs = position + count;
+ uint64_t nrs = position + count;
 
  grow_if_necessary(nrs);
 
@@ -130,9 +131,9 @@ void MemoryStream::write(const void *data, uint64 count)
  position += count;
 }
 
-void MemoryStream::seek(int64 offset, int whence)
+void MemoryStream::seek(int64_t offset, int whence)
 {
- int64 new_position;
+ int64_t new_position;
 
  switch(whence)
  {
@@ -181,7 +182,7 @@ int MemoryStream::get_line(std::string &str)
 
  while(position < data_buffer_size)
  {
-  uint8 c = data_buffer[position++];
+  uint8_t c = data_buffer[position++];
 
   if(c == '\r' || c == '\n' || c == 0)
    return(c);

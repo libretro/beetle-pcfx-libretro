@@ -22,6 +22,7 @@
 #include "input/gamepad.h"
 #include "input/mouse.h"
 
+#include "../settings.h"
 #include "../state_helpers.h"
 
 #define PCFX_PORTS	2
@@ -142,7 +143,6 @@ static uint32 data_latch[TOTAL_PORTS];
 
 static void SyncSettings(void)
 {
- EmulatedPCFX.mouse_sensitivity = MDFN_GetSettingF("pcfx.mouse_sensitivity");
  InputDeviceInfo[1].IDII = MDFN_GetSettingB("pcfx.disable_softreset") ? PCFX_GamepadIDII_DSR : PCFX_GamepadIDII;
 
  MultiTapEnabled = MDFN_GetSettingB("pcfx.input.port1.multitap");

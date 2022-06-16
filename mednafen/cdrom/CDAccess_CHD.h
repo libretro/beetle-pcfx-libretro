@@ -19,11 +19,13 @@
 ** 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include <mednafen/FileStream.h>
-#include <mednafen/MemoryStream.h>
+#include <stdint.h>
+#include <libchdr/chd.h>
+
+#include "../FileStream.h"
+#include "../MemoryStream.h"
 
 #include "CDAccess.h"
-#include <libchdr/chd.h>
 
 struct CHDFILE_TRACK_INFO
 {
@@ -57,9 +59,9 @@ class CDAccess_CHD : public CDAccess
  CDAccess_CHD(const std::string& path, bool image_memcache);
  virtual ~CDAccess_CHD();
 
- virtual bool Read_Raw_Sector(uint8 *buf, int32 lba);
+ virtual bool Read_Raw_Sector(uint8_t *buf, int32_t lba);
 
- virtual bool Fast_Read_Raw_PW_TSRE(uint8* pwbuf, int32 lba);
+ virtual bool Fast_Read_Raw_PW_TSRE(uint8_t* pwbuf, int32_t lba);
 
  virtual bool Read_TOC(TOC *toc);
 

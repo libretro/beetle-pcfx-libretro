@@ -28,8 +28,6 @@
 	it will be added onto the implicit default 00:02:00 of pregap.
 */
 
-#include "../mednafen.h"
-
 #include <stdint.h>
 
 #include <string.h>
@@ -42,6 +40,7 @@
 
 #include "../error.h"
 #include "../general.h"
+#include "../mednafen-endian.h"
 #include "../mednafen-endian.h"
 #include "../FileStream.h"
 #include "../MemoryStream.h"
@@ -226,10 +225,7 @@ bool CDAccess_Image::ParseTOCFileLineInfo(CDRFILE_TRACK_INFO *track, const int t
       track->AReader = CDAFR_Open(track->fp);
 
       if(!track->AReader)
-      {
-         log_cb(RETRO_LOG_ERROR, "TODO ERROR\n");
          return false;
-      }
    }
 
    sector_mult = DI_Size_Table[track->DIFormat];
@@ -273,10 +269,7 @@ bool CDAccess_Image::ParseTOCFileLineInfo(CDRFILE_TRACK_INFO *track, const int t
       }
 
       if(tmp_long > sectors)
-      {
-         log_cb(RETRO_LOG_ERROR, "Length specified in TOC file for track %d is too large by %ld sectors!\n", tracknum, (long)(tmp_long - sectors));
          return false;
-      }
       sectors = tmp_long;
    }
 
@@ -302,11 +295,7 @@ bool CDAccess_Image::LoadSBI(const std::string& sbi_path)
    uint8_t header[4];
    uint8_t ed[4 + 10];
    uint8_t tmpq[12];
-   RFILE *sbiFile;
-
-   log_cb(RETRO_LOG_INFO, "Loading SBI file \"%s\"...\n", sbi_path.c_str());
-
-   sbiFile = filestream_open(sbi_path.c_str(), RETRO_VFS_FILE_ACCESS_READ, RETRO_VFS_FILE_ACCESS_HINT_NONE);
+   RFILE *sbiFile = filestream_open(sbi_path.c_str(), RETRO_VFS_FILE_ACCESS_READ, RETRO_VFS_FILE_ACCESS_HINT_NONE);
       /* SBI file not available, but don't error out. */
    if (!sbiFile)
       return true;
@@ -318,24 +307,15 @@ bool CDAccess_Image::LoadSBI(const std::string& sbi_path)
    sbis.read(header, 4);
 
    if(memcmp(header, "SBI\0", 4))
-   {
-      log_cb(RETRO_LOG_ERROR, "Not recognized a valid SBI file.");
       return false;
-   }
 
    while(sbis.read(ed, sizeof(ed)) == sizeof(ed))
    {
       if(!BCD_is_valid(ed[0]) || !BCD_is_valid(ed[1]) || !BCD_is_valid(ed[2]))
-      {
-         log_cb(RETRO_LOG_ERROR, "Bad BCD MSF offset in SBI file: %02x:%02x:%02x\n", ed[0], ed[1], ed[2]);
          return false;
-      }
 
       if(ed[3] != 0x01)
-      {
-         log_cb(RETRO_LOG_ERROR, "Unrecognized boogly oogly in SBI file: %02x\n", ed[3]);
          return false;
-      }
 
       memcpy(tmpq, &ed[4], 10);
 
@@ -348,24 +328,15 @@ bool CDAccess_Image::LoadSBI(const std::string& sbi_path)
       memcpy(SubQReplaceMap[aba].data(), tmpq, 12);
    }
 
-   log_cb(RETRO_LOG_INFO, "Loaded Q subchannel replacements for %zu sectors.\n", SubQReplaceMap.size());
    return true;
 }
 
 static bool StringToMSF(const char* str, unsigned* m, unsigned* s, unsigned* f)
 {
    if(sscanf(str, "%u:%u:%u", m, s, f) != 3)
-   {
-      log_cb(RETRO_LOG_ERROR, "M:S:F time \"%s\" is malformed.\n", str);
       return false;
-   }
-
    if(*m > 99 || *s > 59 || *f > 74)
-   {
-      log_cb(RETRO_LOG_ERROR, "M:S:F time \"%s\" contains component(s) out of range.\n", str);
       return false;
-   }
-
    return true;
 }
 
@@ -388,10 +359,7 @@ bool CDAccess_Image::ImageOpen(const std::string& path, bool image_memcache)
    MDFN_GetFilePathComponents(path, &base_dir, &file_base, &file_ext);
 
    if(!strcasecmp(file_ext.c_str(), ".toc"))
-   {
-      log_cb(RETRO_LOG_INFO, "TOC file detected.\n");
       IsTOC = true;
-   }
 
    // Check for annoying UTF-8 BOM.
    if(!IsTOC)
@@ -400,8 +368,6 @@ bool CDAccess_Image::ImageOpen(const std::string& path, bool image_memcache)
 
       if(fp.read(bom_tmp, 3) == 3 && bom_tmp[0] == 0xEF && bom_tmp[1] == 0xBB && bom_tmp[2] == 0xBF)
       {
-         // Print an annoying error message, but don't actually error out.
-         log_cb(RETRO_LOG_WARN, "UTF-8 BOM detected at start of CUE sheet.\n");
       }
       else
          fp.seek(0, SEEK_SET);
@@ -463,10 +429,7 @@ bool CDAccess_Image::ImageOpen(const std::string& path, bool image_memcache)
                TmpTrack.index[i] = -1;
 
             if(AutoTrackInc > 99)
-            {
-               log_cb(RETRO_LOG_ERROR, "Invalid track number: %d", AutoTrackInc);
                return false;
-            }
 
             active_track = AutoTrackInc++;
             if(active_track < FirstTrack)
@@ -485,28 +448,19 @@ bool CDAccess_Image::ImageOpen(const std::string& path, bool image_memcache)
             }
 
             if(format_lookup == _DI_FORMAT_COUNT)
-            {
-               log_cb(RETRO_LOG_ERROR, "Invalid track format: %s", args[0].c_str());
                return false;
-            }
 
             if(TmpTrack.DIFormat == DI_FORMAT_AUDIO)
                TmpTrack.RawAudioMSBFirst = true; /* Silly cdrdao... */
 
             if(!strcasecmp(args[1].c_str(), "RW"))
-            {
                TmpTrack.SubchannelMode = CDRF_SUBM_RW;
-               log_cb(RETRO_LOG_ERROR, "\"RW\" format subchannel data not supported, only \"RW_RAW\" is!");
-            }
             else if(!strcasecmp(args[1].c_str(), "RW_RAW"))
                TmpTrack.SubchannelMode = CDRF_SUBM_RW_RAW;
 
          } // end to TRACK
          else if(cmdbuf == "FIFO")
-         {
-            log_cb(RETRO_LOG_INFO, "Unsupported directive: %s\n", cmdbuf.c_str());
             return false;
-         }
          else if(cmdbuf == "FILE" || cmdbuf == "AUDIOFILE")
          {
             const char *binoffset = NULL;
@@ -544,18 +498,11 @@ bool CDAccess_Image::ImageOpen(const std::string& path, bool image_memcache)
                return false;
          }
          else if(cmdbuf == "INDEX")
-         {
-            // FIXME
-            log_cb(RETRO_LOG_ERROR, "Unsupported directive: %s", cmdbuf.c_str());
             return false;
-         }
          else if(cmdbuf == "PREGAP")
          {
             if(active_track < 0)
-            {
-               log_cb(RETRO_LOG_ERROR, "Command %s is outside of a TRACK definition!\n", cmdbuf.c_str());
                return false;
-            }
 
             unsigned int m,s,f;
 
@@ -567,10 +514,7 @@ bool CDAccess_Image::ImageOpen(const std::string& path, bool image_memcache)
          else if(cmdbuf == "START")
          {
             if(active_track < 0)
-            {
-               log_cb(RETRO_LOG_ERROR, "Command %s is outside of a TRACK definition!\n", cmdbuf.c_str());
                return false;
-            }
 
             unsigned int m,s,f;
 
@@ -592,18 +536,11 @@ bool CDAccess_Image::ImageOpen(const std::string& path, bool image_memcache)
             MDFN_strtoupper(args[0]);
 
             if(args[0] == "COPY")
-            {
                TmpTrack.subq_control &= ~SUBQ_CTRLF_DCP; 
-            }
             else if(args[0] == "PRE_EMPHASIS")
-            {
                TmpTrack.subq_control &= ~SUBQ_CTRLF_PRE;
-            }
             else
-            {
-               log_cb(RETRO_LOG_ERROR, "Unsupported argument to \"NO\" directive: %s", args[0].c_str());
                return false;
-            }
          }
          else if(cmdbuf == "COPY")
          {
@@ -663,16 +600,10 @@ bool CDAccess_Image::ImageOpen(const std::string& path, bool image_memcache)
             {
                TmpTrack.AReader = CDAFR_Open(TmpTrack.fp);
                if(!TmpTrack.AReader)
-               {
-                  log_cb(RETRO_LOG_ERROR, "Unsupported audio track file format: %s\n", args[0].c_str());
                   return false;
-               }
             }
             else
-            {
-               log_cb(RETRO_LOG_ERROR, "Unsupported track format: %s\n", args[1].c_str());
                return false;
-            }
          }
          else if(cmdbuf == "TRACK")
          {
@@ -693,10 +624,7 @@ bool CDAccess_Image::ImageOpen(const std::string& path, bool image_memcache)
             active_track = atoi(args[0].c_str());
 
             if(active_track < 1 || active_track > 99)
-            {
-               log_cb(RETRO_LOG_ERROR, "Invalid track number: %d\n", active_track);
                return false;
-            }
 
             if(active_track < FirstTrack)
                FirstTrack = active_track;
@@ -714,10 +642,7 @@ bool CDAccess_Image::ImageOpen(const std::string& path, bool image_memcache)
             }
 
             if(format_lookup == _DI_FORMAT_COUNT)
-            {
-               log_cb(RETRO_LOG_ERROR, "Invalid track format: %s\n", args[1].c_str());
                return false;
-            }
          }
          else if(cmdbuf == "INDEX")
          {
@@ -732,10 +657,7 @@ bool CDAccess_Image::ImageOpen(const std::string& path, bool image_memcache)
                if(sscanf(args[0].c_str(), "%u", &wi) == 1 && wi < 100)
                   TmpTrack.index[wi] = (m * 60 + s) * 75 + f;
                else
-               {
-                  log_cb(RETRO_LOG_ERROR, "Malformed \"INDEX\" directive: %s\n", cmdbuf.c_str());
                   return false;
-               }
             }
          }
          else if(cmdbuf == "PREGAP")
@@ -789,22 +711,15 @@ bool CDAccess_Image::ImageOpen(const std::string& path, bool image_memcache)
                   // alternate between 1 and 0 at 9.375 Hz(four 1, four 0, four 1, four 0, etc.).
                }
                else
-               {
-                  log_cb(RETRO_LOG_ERROR, "Unknown CUE sheet \"FLAGS\" directive flag \"%s\".\n", args[i].c_str());
                   return false;
-               }
             }
          }
          else if(cmdbuf == "CDTEXTFILE" || cmdbuf == "CATALOG" || cmdbuf == "ISRC" ||
                cmdbuf == "TITLE" || cmdbuf == "PERFORMER" || cmdbuf == "SONGWRITER")
          {
-            log_cb(RETRO_LOG_WARN, "Unsupported CUE sheet directive: \"%s\".\n", cmdbuf.c_str());	/* FIXME, generic logger passed by pointer to constructor */
          }
          else
-         {
-            log_cb(RETRO_LOG_ERROR, "Unknown CUE sheet directive \"%s\".\n", cmdbuf.c_str());
             return false;
-         }
       } // end of CUE sheet handling
    } // end of fgets() loop
 
@@ -812,10 +727,7 @@ bool CDAccess_Image::ImageOpen(const std::string& path, bool image_memcache)
       memcpy(&Tracks[active_track], &TmpTrack, sizeof(TmpTrack));
 
    if(FirstTrack > LastTrack)
-   {
-      log_cb(RETRO_LOG_ERROR, "No tracks found!\n");
       return false;
-   }
 
    FirstTrack = FirstTrack;
    NumTracks = 1 + LastTrack - FirstTrack;
@@ -829,10 +741,7 @@ bool CDAccess_Image::ImageOpen(const std::string& path, bool image_memcache)
    for(int x = FirstTrack; x < (FirstTrack + NumTracks); x++)
    {
       if(!Tracks[x].fp && !Tracks[x].AReader)
-      {
-         log_cb(RETRO_LOG_ERROR, "Missing track %u.\n", x);
          return false;
-      }
 
       if(Tracks[x].DIFormat == DI_FORMAT_AUDIO)
          Tracks[x].subq_control &= ~SUBQ_CTRLF_DATA;
@@ -1313,5 +1222,3 @@ void CDAccess_Image::GenerateTOC(void)
    toc.tracks[100].control = Tracks[FirstTrack + NumTracks - 1].subq_control;
    toc.tracks[100].valid = true;
 }
-
-

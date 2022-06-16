@@ -1,12 +1,6 @@
 #ifndef __MDFN_STREAM_H
 #define __MDFN_STREAM_H
 
-// TODO/WIP
-
-// TODO?: BufferedStream, no virtual functions, yes inline functions, constructor takes a Stream* argument.
-
-#include "mednafen.h"
-
 #include <string>
 
 #define MODE_READ          0
@@ -24,7 +18,7 @@ class Stream
       virtual uint64_t read(void *data, uint64_t count) = 0;
       virtual void write(const void *data, uint64_t count) = 0;
 
-      virtual void truncate(uint64 length) = 0;	/* Should have ftruncate()-like semantics; but avoid using it to extend files. */
+      virtual void truncate(uint64_t length) = 0;	/* Should have ftruncate()-like semantics; but avoid using it to extend files. */
       virtual void flush(void) = 0;
 
       virtual void seek(int64_t offset, int whence) = 0;

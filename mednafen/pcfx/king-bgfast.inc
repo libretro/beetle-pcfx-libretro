@@ -1,3 +1,5 @@
+#include "../math_ops.h"
+
 // Loop prefix non-endless
 #define DRAWBG8x1_LPRE() if(bat_x < bat_width) {
 

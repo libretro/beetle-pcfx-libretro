@@ -26,6 +26,7 @@
 #include "../cdrom/scsicd.h"
 #include "../sound/OwlResampler.h"
 #include "../clamp.h"
+#include "../settings.h"
 #include "../state_helpers.h"
 
 static const int StepSizes[49] =

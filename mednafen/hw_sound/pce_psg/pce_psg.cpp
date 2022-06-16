@@ -18,8 +18,8 @@
 #include <math.h>
 #include <string.h>
 
-#include "mednafen/mednafen.h"
-#include "mednafen/state_helpers.h"
+#include "../../mednafen-types.h"
+#include "../../state_helpers.h"
 #include "pce_psg.h"
 
 // Frequency cache cutoff optimization threshold (<= FREQC7M_COT)

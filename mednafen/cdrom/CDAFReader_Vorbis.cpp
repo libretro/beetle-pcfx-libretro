@@ -19,11 +19,12 @@
 ** 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include <mednafen/mednafen.h>
+#include <string.h>
+
 #include "CDAFReader.h"
 #include "CDAFReader_Vorbis.h"
 
-#include <mednafen/tremor/ivorbisfile.h>
+#include "../tremor/ivorbisfile.h"
 
 class CDAFReader_Vorbis : public CDAFReader
 {
@@ -94,7 +95,7 @@ CDAFReader_Vorbis::~CDAFReader_Vorbis()
 
 uint64_t CDAFReader_Vorbis::Read_(int16_t *buffer, uint64_t frames)
 {
-   uint8 *tw_buf = (uint8 *)buffer;
+   uint8_t *tw_buf = (uint8_t*)buffer;
    int cursection = 0;
    long toread = frames * sizeof(int16_t) * 2;
 
@@ -105,7 +106,7 @@ uint64_t CDAFReader_Vorbis::Read_(int16_t *buffer, uint64_t frames)
       if(didread == 0)
          break;
 
-      tw_buf = (uint8 *)tw_buf + didread;
+      tw_buf = (uint8_t *)tw_buf + didread;
       toread -= didread;
    }
 

@@ -19,13 +19,15 @@
 //   22050-192000 in mind, though preferably output rates between 48000 to 96000(inclusive) will be used.
 //*/
 
-#include "../mednafen.h"
+#include <stdint.h>
 #include <math.h>
 #include <limits.h>
 #include <algorithm>
+#include <string.h>
 
 #include <libretro.h>
 
+#include "../mednafen-types.h"
 #include "OwlResampler.h"
 
 extern retro_get_cpu_features_t perf_get_cpu_features_cb;

@@ -18,8 +18,8 @@
 /* VDC emulation */
 
 #include <math.h>
+#include <string.h>
 
-#include "mednafen/mednafen.h"
 #include "mednafen/lepacker.h"
 #include "mednafen/state_helpers.h"
 
