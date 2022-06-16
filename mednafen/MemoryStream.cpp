@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <string.h>
 #include "math_ops.h"
 #include "MemoryStream.h"
 
