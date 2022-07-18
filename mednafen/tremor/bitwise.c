@@ -520,3 +520,5 @@ unsigned char *oggpack_get_buffer(oggpack_buffer *b){
 unsigned char *oggpackB_get_buffer(oggpack_buffer *b){
   return oggpack_get_buffer(b);
 }
+
+#undef BUFFER_INCREMENT
