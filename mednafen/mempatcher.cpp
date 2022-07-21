@@ -285,14 +285,6 @@ static bool TestConditions(const char *string)
  {
   uint64 v_value;
   uint64 value_at_address;
-#if 0
-  uint32 v_address;
-
-  if(address[0] == '0' && address[1] == 'x')
-   v_address = strtoul(address + 2, NULL, 16);
-  else
-   v_address = strtoul(address, NULL, 10);
-#endif
 
   if(value[0] == '0' && value[1] == 'x')
    v_value = strtoull(value + 2, NULL, 16);
@@ -361,11 +353,9 @@ static bool TestConditions(const char *string)
    if(value_at_address | v_value)
     passed = 0;
   }
-  string = strchr(string, ',');
-  if(string == NULL)
+  if (!(string = strchr(string, ',')))
    break;
-  else
-   string++;
+  string++;
  }
 
  return(passed);
@@ -379,8 +369,6 @@ void MDFNMP_ApplyPeriodicCheats(void)
  if(!CheatsActive)
   return;
 
- //TestConditions("2 L 0x1F00F5 == 0xDEAD");
- //if(TestConditions("1 L 0x1F0058 > 0")) //, 1 L 0xC000 == 0x01"));
  for(chit = cheats.begin(); chit != cheats.end(); chit++)
  {
   if(chit->status && chit->type == 'R')
@@ -436,26 +424,24 @@ int MDFNI_GetCheat(uint32 which, char **name, uint32 *a, uint64 *v, uint64 *comp
   *length = next->length;
  if(bigendian)
   *bigendian = next->bigendian;
- return(1);
+ return 1;
 }
 
 static uint8 CharToNibble(char thechar)
 {
  const char lut[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
-
+ int x;
  thechar = toupper(thechar);
-
- for(int x = 0; x < 16; x++)
+ for(x = 0; x < 16; x++)
   if(lut[x] == thechar)
    return(x);
-
- return(0xFF);
+ return 0xFF;
 }
 
 bool MDFNI_DecodeGBGG(const char *instr, uint32 *a, uint8 *v, uint8 *c, char *type)
 {
  char str[10];
- int len;
+ size_t len;
 
  for(int x = 0; x < 9; x++)
  {
@@ -500,32 +486,26 @@ bool MDFNI_DecodeGBGG(const char *instr, uint32 *a, uint8 *v, uint8 *c, char *ty
   *type = 'S';
  }
 
- return(1);
+ return 1;
 }
 
 static int GGtobin(char c)
 {
  static char lets[16]={'A','P','Z','L','G','I','T','Y','E','O','X','U','K','S','V','N'};
  int x;
-
  for(x=0;x<16;x++)
   if(lets[x] == toupper(c)) return(x);
- return(0);
+ return 0;
 }
 
 /* Returns 1 on success, 0 on failure. Sets *a,*v,*c. */
 int MDFNI_DecodeGG(const char *str, uint32 *a, uint8 *v, uint8 *c, char *type)
 {
- uint16 A;
- uint8 V,C;
  uint8 t;
- int s;
-
- A=0x8000;
- V=0;
- C=0;
-
- s=strlen(str);
+ uint16 A=0x8000;
+ uint8  V=0;
+ uint8  C=0;
+ size_t s=strlen(str);
  if(s!=6 && s!=8) return(0);
 
  t=GGtobin(*str++);
@@ -538,7 +518,6 @@ int MDFNI_DecodeGG(const char *str, uint32 *a, uint8 *v, uint8 *c, char *type)
 
  t=GGtobin(*str++);
  A|=(t&0x07)<<4;
- //if(t&0x08) return(0);	/* 8-character code?! */
 
  t=GGtobin(*str++);
  A|=(t&0x07)<<12;
@@ -558,7 +537,6 @@ int MDFNI_DecodeGG(const char *str, uint32 *a, uint8 *v, uint8 *c, char *type)
   *v=V;
   *type = 'S';
   *c = 0;
-  return(1);
  }
  else
  {
@@ -578,7 +556,8 @@ int MDFNI_DecodeGG(const char *str, uint32 *a, uint8 *v, uint8 *c, char *type)
   *c=C;
   *type = 'C';
  }
- return(1);
+
+ return 1;
 }
 
 int MDFNI_DecodePAR(const char *str, uint32 *a, uint8 *v, uint8 *c, char *type)
@@ -588,21 +567,12 @@ int MDFNI_DecodePAR(const char *str, uint32 *a, uint8 *v, uint8 *c, char *type)
 
  sscanf(str,"%02x%02x%02x%02x",boo,boo+1,boo+2,boo+3);
 
- *c = 0;
-
- if(1)
- {
-  *a=(boo[3]<<8)|(boo[2]+0x7F);
-  *v=0;
- }
- else
- {
-  *v=boo[3];
-  *a=boo[2]|(boo[1]<<8);
- }
-
+ *c    = 0;
+ *a    = (boo[3]<<8)|(boo[2]+0x7F);
+ *v    = 0;
  *type = 'S';
- return(1);
+
+ return 1;
 }
 
 /* name can be NULL if the name isn't going to be changed. */
@@ -613,14 +583,10 @@ int MDFNI_SetCheat(uint32 which, const char *name, uint32 a, uint64 v, uint64 co
  if(name)
  {
   char *t;
-
-  if((t=(char *)realloc(next->name,strlen(name+1))))
-  {
-   next->name=t;
-   strcpy(next->name,name);
-  }
-  else
-   return(0);
+  if(!(t=(char *)realloc(next->name,strlen(name+1))))
+   return 0;
+  next->name=t;
+  strcpy(next->name,name);
  }
  next->addr=a;
  next->val=v;
@@ -633,7 +599,7 @@ int MDFNI_SetCheat(uint32 which, const char *name, uint32 a, uint64 v, uint64 co
  RebuildSubCheats();
  savecheats=1;
 
- return(1);
+ return 1;
 }
 
 /* Convenience function. */

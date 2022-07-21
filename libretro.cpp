@@ -1220,7 +1220,8 @@ void MDFND_DispMessage(unsigned char *str)
 
 static bool MDFNI_LoadCD(const char *devicename)
 {
-   if (devicename && strlen(devicename) > 4 && !strcasecmp(devicename + strlen(devicename) - 4, ".m3u"))
+   size_t devicename_len = strlen(devicename);
+   if (devicename && devicename_len > 4 && !strcasecmp(devicename + devicename_len - 4, ".m3u"))
    {
       ReadM3U(disk_control_ext_info.image_paths, devicename);
 
@@ -1270,7 +1271,9 @@ static bool MDFNI_LoadCD(const char *devicename)
 
 bool retro_load_game(const struct retro_game_info *info)
 {
-   bool ret = false;
+   bpp_t *pixbuf;
+   size_t info_path_len;
+   struct MDFN_PixelFormat pix_fmt;
 
    if (!info || failed_init)
       return false;
@@ -1331,19 +1334,20 @@ bool retro_load_game(const struct retro_game_info *info)
 
    check_variables(false);
 
-   if ((strlen(info->path) > 4) && (
-         (!strcasecmp(info->path + strlen(info->path) - 4, ".cue")) ||
-         (!strcasecmp(info->path + strlen(info->path) - 4, ".ccd")) ||
-         (!strcasecmp(info->path + strlen(info->path) - 4, ".chd")) ||
-         (!strcasecmp(info->path + strlen(info->path) - 4, ".toc")) ||
-         (!strcasecmp(info->path + strlen(info->path) - 4, ".m3u"))))
-      ret = MDFNI_LoadCD(info->path);
+   info_path_len = strlen(info->path);
 
-   if (!ret)
+   if ((info_path_len > 4) && (
+         (!strcasecmp(info->path + info_path_len - 4, ".cue")) ||
+         (!strcasecmp(info->path + info_path_len - 4, ".ccd")) ||
+         (!strcasecmp(info->path + info_path_len - 4, ".chd")) ||
+         (!strcasecmp(info->path + info_path_len - 4, ".toc")) ||
+         (!strcasecmp(info->path + info_path_len - 4, ".m3u"))))
+   {
+      if (!MDFNI_LoadCD(info->path))
+         return false;
+   }
+   else
       return false;
-
-   struct MDFN_PixelFormat pix_fmt;
-   bpp_t *pixbuf;
 
 #ifdef WANT_32BPP
    pix_fmt.bpp        = 32;
