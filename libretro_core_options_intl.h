@@ -312,29 +312,29 @@ struct retro_core_options_v2 options_ar = {
 #define PCFX_NOSPRITELIMIT_INFO_0_AST NULL
 #define PCFX_INITIAL_SCANLINE_LABEL_AST NULL
 #define PCFX_INITIAL_SCANLINE_INFO_0_AST NULL
-#define OPTION_VAL_4_AST NULL
+#define OPTION_VAL_4_AST "4 (Por defeutu)"
 #define PCFX_LAST_SCANLINE_LABEL_AST NULL
 #define PCFX_LAST_SCANLINE_INFO_0_AST NULL
-#define OPTION_VAL_235_AST NULL
-#define PCFX_MOUSE_SENSITIVITY_LABEL_AST NULL
+#define OPTION_VAL_235_AST "235 (Por defeutu)"
+#define PCFX_MOUSE_SENSITIVITY_LABEL_AST "Sensibilidá del mur"
 #define PCFX_MOUSE_SENSITIVITY_INFO_0_AST NULL
-#define OPTION_VAL_1_00_AST NULL
-#define OPTION_VAL_1_25_AST NULL
-#define OPTION_VAL_1_50_AST NULL
-#define OPTION_VAL_1_75_AST NULL
-#define OPTION_VAL_2_00_AST NULL
-#define OPTION_VAL_2_25_AST NULL
-#define OPTION_VAL_2_50_AST NULL
-#define OPTION_VAL_2_75_AST NULL
-#define OPTION_VAL_3_00_AST NULL
-#define OPTION_VAL_3_25_AST NULL
-#define OPTION_VAL_3_50_AST NULL
-#define OPTION_VAL_3_75_AST NULL
-#define OPTION_VAL_4_00_AST NULL
-#define OPTION_VAL_4_25_AST NULL
-#define OPTION_VAL_4_50_AST NULL
-#define OPTION_VAL_4_75_AST NULL
-#define OPTION_VAL_5_00_AST NULL
+#define OPTION_VAL_1_00_AST "1,00"
+#define OPTION_VAL_1_25_AST "1,25"
+#define OPTION_VAL_1_50_AST "1,50"
+#define OPTION_VAL_1_75_AST "1,75"
+#define OPTION_VAL_2_00_AST "2,00"
+#define OPTION_VAL_2_25_AST "2,25"
+#define OPTION_VAL_2_50_AST "2,50"
+#define OPTION_VAL_2_75_AST "2,75"
+#define OPTION_VAL_3_00_AST "3,00"
+#define OPTION_VAL_3_25_AST "3,25"
+#define OPTION_VAL_3_50_AST "3,50"
+#define OPTION_VAL_3_75_AST "3,75"
+#define OPTION_VAL_4_00_AST "4,00"
+#define OPTION_VAL_4_25_AST "4,25"
+#define OPTION_VAL_4_50_AST "4,50"
+#define OPTION_VAL_4_75_AST "4,75"
+#define OPTION_VAL_5_00_AST "5,00"
 
 struct retro_core_option_v2_category option_cats_ast[] = {
    { NULL, NULL, NULL },
@@ -600,23 +600,23 @@ struct retro_core_options_v2 options_ast = {
 #define OPTION_VAL_235_CA NULL
 #define PCFX_MOUSE_SENSITIVITY_LABEL_CA NULL
 #define PCFX_MOUSE_SENSITIVITY_INFO_0_CA NULL
-#define OPTION_VAL_1_00_CA NULL
-#define OPTION_VAL_1_25_CA NULL
-#define OPTION_VAL_1_50_CA NULL
-#define OPTION_VAL_1_75_CA NULL
-#define OPTION_VAL_2_00_CA NULL
-#define OPTION_VAL_2_25_CA NULL
-#define OPTION_VAL_2_50_CA NULL
-#define OPTION_VAL_2_75_CA NULL
-#define OPTION_VAL_3_00_CA NULL
-#define OPTION_VAL_3_25_CA NULL
-#define OPTION_VAL_3_50_CA NULL
-#define OPTION_VAL_3_75_CA NULL
-#define OPTION_VAL_4_00_CA NULL
-#define OPTION_VAL_4_25_CA NULL
-#define OPTION_VAL_4_50_CA NULL
-#define OPTION_VAL_4_75_CA NULL
-#define OPTION_VAL_5_00_CA NULL
+#define OPTION_VAL_1_00_CA "1,00"
+#define OPTION_VAL_1_25_CA "1,25"
+#define OPTION_VAL_1_50_CA "1,50"
+#define OPTION_VAL_1_75_CA "1,75"
+#define OPTION_VAL_2_00_CA "2,00"
+#define OPTION_VAL_2_25_CA "2,25"
+#define OPTION_VAL_2_50_CA "2,50"
+#define OPTION_VAL_2_75_CA "2,75"
+#define OPTION_VAL_3_00_CA "3,00"
+#define OPTION_VAL_3_25_CA "3,25"
+#define OPTION_VAL_3_50_CA "3,50"
+#define OPTION_VAL_3_75_CA "3,75"
+#define OPTION_VAL_4_00_CA "4,00"
+#define OPTION_VAL_4_25_CA "4,25"
+#define OPTION_VAL_4_50_CA "4,50"
+#define OPTION_VAL_4_75_CA "4,75"
+#define OPTION_VAL_5_00_CA "5,00"
 
 struct retro_core_option_v2_category option_cats_ca[] = {
    { NULL, NULL, NULL },
@@ -876,11 +876,11 @@ struct retro_core_options_v2 options_ca = {
 #define PCFX_NOSPRITELIMIT_INFO_0_CHS NULL
 #define PCFX_INITIAL_SCANLINE_LABEL_CHS NULL
 #define PCFX_INITIAL_SCANLINE_INFO_0_CHS NULL
-#define OPTION_VAL_4_CHS NULL
+#define OPTION_VAL_4_CHS "4 (默认)"
 #define PCFX_LAST_SCANLINE_LABEL_CHS NULL
 #define PCFX_LAST_SCANLINE_INFO_0_CHS NULL
-#define OPTION_VAL_235_CHS NULL
-#define PCFX_MOUSE_SENSITIVITY_LABEL_CHS NULL
+#define OPTION_VAL_235_CHS "235 (默认)"
+#define PCFX_MOUSE_SENSITIVITY_LABEL_CHS "鼠标灵敏度"
 #define PCFX_MOUSE_SENSITIVITY_INFO_0_CHS NULL
 #define OPTION_VAL_1_00_CHS NULL
 #define OPTION_VAL_1_25_CHS NULL
@@ -1142,27 +1142,27 @@ struct retro_core_options_v2 options_chs = {
 
 /* RETRO_LANGUAGE_CHT */
 
-#define PCFX_CDIMAGECACHE_LABEL_CHT NULL
-#define PCFX_CDIMAGECACHE_INFO_0_CHT NULL
+#define PCFX_CDIMAGECACHE_LABEL_CHT "光碟映像檔快取 (需要重新啟動)"
+#define PCFX_CDIMAGECACHE_INFO_0_CHT "執行時將光碟映像檔，完整載入到記憶體中。拖延開啟時間，縮短讀取時間。"
 #define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_CHT NULL
 #define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_CHT NULL
 #define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_CHT NULL
 #define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_CHT NULL
 #define PCFX_EMULATE_BUGGY_CODEC_LABEL_CHT NULL
 #define PCFX_EMULATE_BUGGY_CODEC_INFO_0_CHT NULL
-#define PCFX_RESAMP_QUALITY_LABEL_CHT NULL
+#define PCFX_RESAMP_QUALITY_LABEL_CHT "音效品質(必須重新啟動)"
 #define PCFX_RESAMP_QUALITY_INFO_0_CHT NULL
 #define PCFX_RAINBOW_CHROMAIP_LABEL_CHT NULL
 #define PCFX_RAINBOW_CHROMAIP_INFO_0_CHT NULL
-#define PCFX_NOSPRITELIMIT_LABEL_CHT NULL
-#define PCFX_NOSPRITELIMIT_INFO_0_CHT NULL
-#define PCFX_INITIAL_SCANLINE_LABEL_CHT NULL
-#define PCFX_INITIAL_SCANLINE_INFO_0_CHT NULL
-#define OPTION_VAL_4_CHT NULL
-#define PCFX_LAST_SCANLINE_LABEL_CHT NULL
-#define PCFX_LAST_SCANLINE_INFO_0_CHT NULL
-#define OPTION_VAL_235_CHT NULL
-#define PCFX_MOUSE_SENSITIVITY_LABEL_CHT NULL
+#define PCFX_NOSPRITELIMIT_LABEL_CHT "沒有素材限制 (需要重新啟動)"
+#define PCFX_NOSPRITELIMIT_INFO_0_CHT "刪除每條掃描線16張素材的硬體限制。警告: 可能導致遊戲圖形故障。"
+#define PCFX_INITIAL_SCANLINE_LABEL_CHT "初始掃描線"
+#define PCFX_INITIAL_SCANLINE_INFO_0_CHT "設定最初渲染的掃描線。過高的值將裁剪影像頂部。"
+#define OPTION_VAL_4_CHT "4(預設)"
+#define PCFX_LAST_SCANLINE_LABEL_CHT "最後掃描線"
+#define PCFX_LAST_SCANLINE_INFO_0_CHT "設定最後渲染的掃描線。過低的值將裁剪影像底部。"
+#define OPTION_VAL_235_CHT "235 (預設)"
+#define PCFX_MOUSE_SENSITIVITY_LABEL_CHT "滑鼠靈敏度"
 #define PCFX_MOUSE_SENSITIVITY_INFO_0_CHT NULL
 #define OPTION_VAL_1_00_CHT NULL
 #define OPTION_VAL_1_25_CHT NULL
@@ -1424,28 +1424,28 @@ struct retro_core_options_v2 options_cht = {
 
 /* RETRO_LANGUAGE_CS */
 
-#define PCFX_CDIMAGECACHE_LABEL_CS NULL
-#define PCFX_CDIMAGECACHE_INFO_0_CS NULL
-#define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_CS NULL
+#define PCFX_CDIMAGECACHE_LABEL_CS "Vyrovnávací Paměť Obrazu CD (Nutný Restart)"
+#define PCFX_CDIMAGECACHE_INFO_0_CS "Načíst kompletní obraz do paměti při spuštění. Může potenciálně zkrátit dobu načítání za cenu prodloužení doby spouštění."
+#define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_CS "Vysoká Šířka Taktu (Nutný Restart)"
 #define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_CS NULL
-#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_CS NULL
-#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_CS NULL
-#define PCFX_EMULATE_BUGGY_CODEC_LABEL_CS NULL
-#define PCFX_EMULATE_BUGGY_CODEC_INFO_0_CS NULL
-#define PCFX_RESAMP_QUALITY_LABEL_CS NULL
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_CS "Potlačení Kliknutí pro Resetování Kanálu (Nutný Restart)"
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_CS "Hack pro potlačení cvakání zvuku způsobeného vynuceným resetováním kanálu."
+#define PCFX_EMULATE_BUGGY_CODEC_LABEL_CS "Emulovat Chybný Kodek (Nutný Restart)"
+#define PCFX_EMULATE_BUGGY_CODEC_INFO_0_CS "Hack, který emuluje chybný kodér ADPCM používaný pro ADPCM v některých hrách."
+#define PCFX_RESAMP_QUALITY_LABEL_CS "Kvalita Zvuku (Nutný Restart)"
 #define PCFX_RESAMP_QUALITY_INFO_0_CS NULL
-#define PCFX_RAINBOW_CHROMAIP_LABEL_CS NULL
-#define PCFX_RAINBOW_CHROMAIP_INFO_0_CS NULL
-#define PCFX_NOSPRITELIMIT_LABEL_CS NULL
-#define PCFX_NOSPRITELIMIT_INFO_0_CS NULL
-#define PCFX_INITIAL_SCANLINE_LABEL_CS NULL
-#define PCFX_INITIAL_SCANLINE_INFO_0_CS NULL
-#define OPTION_VAL_4_CS NULL
-#define PCFX_LAST_SCANLINE_LABEL_CS NULL
-#define PCFX_LAST_SCANLINE_INFO_0_CS NULL
-#define OPTION_VAL_235_CS NULL
-#define PCFX_MOUSE_SENSITIVITY_LABEL_CS NULL
-#define PCFX_MOUSE_SENSITIVITY_INFO_0_CS NULL
+#define PCFX_RAINBOW_CHROMAIP_LABEL_CS "Bilineární Interpolace Chromatického Kanálu (Nutný Restart)"
+#define PCFX_RAINBOW_CHROMAIP_INFO_0_CS "Povolení bilineární interpolace v chromatickém kanálu výstupu RAINBOW YUV. V některých hrách může způsobovat grafické závady."
+#define PCFX_NOSPRITELIMIT_LABEL_CS "Žádný Limit Spritu (Nutný Restart)"
+#define PCFX_NOSPRITELIMIT_INFO_0_CS "Odstranění hardwarového limitu 16 bodů na řádek. UPOZORNĚNÍ: V některých hrách může způsobovat grafické závady."
+#define PCFX_INITIAL_SCANLINE_LABEL_CS "Počáteční Skenovací Linie"
+#define PCFX_INITIAL_SCANLINE_INFO_0_CS "První vykreslená skenovací linie. Vyšší hodnoty oříznou horní část obrázku."
+#define OPTION_VAL_4_CS "4 (Výchozí)"
+#define PCFX_LAST_SCANLINE_LABEL_CS "Poslední Skenovací Linie"
+#define PCFX_LAST_SCANLINE_INFO_0_CS "Poslední vykreslená skenovací linie. Nižší hodnoty oříznou spodní část obrázku."
+#define OPTION_VAL_235_CS "235 (Výchozí)"
+#define PCFX_MOUSE_SENSITIVITY_LABEL_CS "Citlivost Myší"
+#define PCFX_MOUSE_SENSITIVITY_INFO_0_CS "Konfigurace citlivosti typu zařízení 'PCFX Myš'. Při vyšších hodnotách se kurzor myši bude pohybovat rychleji."
 #define OPTION_VAL_1_00_CS NULL
 #define OPTION_VAL_1_25_CS NULL
 #define OPTION_VAL_1_50_CS NULL
@@ -1462,7 +1462,7 @@ struct retro_core_options_v2 options_cht = {
 #define OPTION_VAL_4_25_CS NULL
 #define OPTION_VAL_4_50_CS NULL
 #define OPTION_VAL_4_75_CS NULL
-#define OPTION_VAL_5_00_CS NULL
+#define OPTION_VAL_5_00_CS "2.50"
 
 struct retro_core_option_v2_category option_cats_cs[] = {
    { NULL, NULL, NULL },
@@ -2270,45 +2270,45 @@ struct retro_core_options_v2 options_da = {
 
 /* RETRO_LANGUAGE_DE */
 
-#define PCFX_CDIMAGECACHE_LABEL_DE NULL
-#define PCFX_CDIMAGECACHE_INFO_0_DE NULL
-#define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_DE NULL
+#define PCFX_CDIMAGECACHE_LABEL_DE "CD-Abbild-Cache (Neustart erforderlich)"
+#define PCFX_CDIMAGECACHE_INFO_0_DE "Das komplette Abbild beim Start in den Arbeitsspeicher laden. Kann die Ladezeiten auf Kosten einer längeren Startzeit verkürzen."
+#define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_DE "Dotclock-Breite (Neustart erforderlich)"
 #define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_DE NULL
-#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_DE NULL
-#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_DE NULL
-#define PCFX_EMULATE_BUGGY_CODEC_LABEL_DE NULL
-#define PCFX_EMULATE_BUGGY_CODEC_INFO_0_DE NULL
-#define PCFX_RESAMP_QUALITY_LABEL_DE NULL
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_DE "Klicks beim Zurücksetzen des Kanals unterdrücken (Neustart erforderlich)"
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_DE "Hack zur Unterdrückung von Audioklicks, die durch erzwungene Kanalresets verursacht werden."
+#define PCFX_EMULATE_BUGGY_CODEC_LABEL_DE "Fehlerhaften Codec emulieren (Neustart erforderlich)"
+#define PCFX_EMULATE_BUGGY_CODEC_INFO_0_DE "Hack, der einen fehlerhaften ADPCM-Encoder emuliert, der als ADPCM in einigen Spiele verwendet wird."
+#define PCFX_RESAMP_QUALITY_LABEL_DE "Klangqualität (Neustart erforderlich)"
 #define PCFX_RESAMP_QUALITY_INFO_0_DE NULL
-#define PCFX_RAINBOW_CHROMAIP_LABEL_DE NULL
-#define PCFX_RAINBOW_CHROMAIP_INFO_0_DE NULL
-#define PCFX_NOSPRITELIMIT_LABEL_DE NULL
-#define PCFX_NOSPRITELIMIT_INFO_0_DE NULL
-#define PCFX_INITIAL_SCANLINE_LABEL_DE NULL
-#define PCFX_INITIAL_SCANLINE_INFO_0_DE NULL
-#define OPTION_VAL_4_DE NULL
-#define PCFX_LAST_SCANLINE_LABEL_DE NULL
-#define PCFX_LAST_SCANLINE_INFO_0_DE NULL
-#define OPTION_VAL_235_DE NULL
-#define PCFX_MOUSE_SENSITIVITY_LABEL_DE NULL
-#define PCFX_MOUSE_SENSITIVITY_INFO_0_DE NULL
-#define OPTION_VAL_1_00_DE NULL
-#define OPTION_VAL_1_25_DE NULL
-#define OPTION_VAL_1_50_DE NULL
-#define OPTION_VAL_1_75_DE NULL
-#define OPTION_VAL_2_00_DE NULL
-#define OPTION_VAL_2_25_DE NULL
-#define OPTION_VAL_2_50_DE NULL
-#define OPTION_VAL_2_75_DE NULL
-#define OPTION_VAL_3_00_DE NULL
-#define OPTION_VAL_3_25_DE NULL
-#define OPTION_VAL_3_50_DE NULL
-#define OPTION_VAL_3_75_DE NULL
-#define OPTION_VAL_4_00_DE NULL
-#define OPTION_VAL_4_25_DE NULL
-#define OPTION_VAL_4_50_DE NULL
-#define OPTION_VAL_4_75_DE NULL
-#define OPTION_VAL_5_00_DE NULL
+#define PCFX_RAINBOW_CHROMAIP_LABEL_DE "Bilineare Interpolation des Chromakanals (Neustart erforderlich)"
+#define PCFX_RAINBOW_CHROMAIP_INFO_0_DE "Bilineare Interpolation auf dem Chromakanal der RAINBOW-YUV-Ausgabe aktivieren. Kann bei einigen Spielen grafische Glitches verursachen."
+#define PCFX_NOSPRITELIMIT_LABEL_DE "Keine Sprite-Begrenzung (Neustart erforderlich)"
+#define PCFX_NOSPRITELIMIT_INFO_0_DE "Die Hardware-Beschränkung von 16 Sprites pro Scanline entfernen. WARNUNG: Kann bei einigen Spielen zu Grafikfehlern führen."
+#define PCFX_INITIAL_SCANLINE_LABEL_DE "Erste Scanline"
+#define PCFX_INITIAL_SCANLINE_INFO_0_DE "Erste gerenderte Scanline. Höhere Werte schneiden den oberen Teil des Bildes ab."
+#define OPTION_VAL_4_DE "4 (Standard)"
+#define PCFX_LAST_SCANLINE_LABEL_DE "Letzte Scanline"
+#define PCFX_LAST_SCANLINE_INFO_0_DE "Letzte gerenderte Scanline. Niedrigere Werte schneiden den unteren Teil des Bildes ab."
+#define OPTION_VAL_235_DE "235 (Standard)"
+#define PCFX_MOUSE_SENSITIVITY_LABEL_DE "Mausempfindlichkeit"
+#define PCFX_MOUSE_SENSITIVITY_INFO_0_DE "Die Empfindlichkeit des Gerätetyps „PCFX-Maus“ einstellen. Je höher der Wert, desto schneller bewegt sich der Mauszeiger."
+#define OPTION_VAL_1_00_DE "1,00"
+#define OPTION_VAL_1_25_DE "1,25"
+#define OPTION_VAL_1_50_DE "1,50"
+#define OPTION_VAL_1_75_DE "1,75"
+#define OPTION_VAL_2_00_DE "2,00"
+#define OPTION_VAL_2_25_DE "2,25"
+#define OPTION_VAL_2_50_DE "2,50"
+#define OPTION_VAL_2_75_DE "2,75"
+#define OPTION_VAL_3_00_DE "3,00"
+#define OPTION_VAL_3_25_DE "3,25"
+#define OPTION_VAL_3_50_DE "3,50"
+#define OPTION_VAL_3_75_DE "3,75"
+#define OPTION_VAL_4_00_DE "4,00"
+#define OPTION_VAL_4_25_DE "4,25"
+#define OPTION_VAL_4_50_DE "4,50"
+#define OPTION_VAL_4_75_DE "4,75"
+#define OPTION_VAL_5_00_DE "5,00"
 
 struct retro_core_option_v2_category option_cats_de[] = {
    { NULL, NULL, NULL },
@@ -2568,11 +2568,11 @@ struct retro_core_options_v2 options_de = {
 #define PCFX_NOSPRITELIMIT_INFO_0_EL NULL
 #define PCFX_INITIAL_SCANLINE_LABEL_EL NULL
 #define PCFX_INITIAL_SCANLINE_INFO_0_EL NULL
-#define OPTION_VAL_4_EL NULL
+#define OPTION_VAL_4_EL "4 (Προεπιλογή)"
 #define PCFX_LAST_SCANLINE_LABEL_EL NULL
 #define PCFX_LAST_SCANLINE_INFO_0_EL NULL
-#define OPTION_VAL_235_EL NULL
-#define PCFX_MOUSE_SENSITIVITY_LABEL_EL NULL
+#define OPTION_VAL_235_EL "235 (Προεπιλογή)"
+#define PCFX_MOUSE_SENSITIVITY_LABEL_EL "Ευαισθησία Ποντικιού"
 #define PCFX_MOUSE_SENSITIVITY_INFO_0_EL NULL
 #define OPTION_VAL_1_00_EL NULL
 #define OPTION_VAL_1_25_EL NULL
@@ -2830,6 +2830,288 @@ struct retro_core_option_v2_definition option_defs_el[] = {
 struct retro_core_options_v2 options_el = {
    option_cats_el,
    option_defs_el
+};
+
+/* RETRO_LANGUAGE_EN */
+
+#define PCFX_CDIMAGECACHE_LABEL_EN NULL
+#define PCFX_CDIMAGECACHE_INFO_0_EN "Load the complete image into memory at start-up. Can potentially decrease loading times at the cost of an increased start-up time."
+#define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_EN "High Dot-clock Width (Restart Required)"
+#define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_EN NULL
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_EN NULL
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_EN NULL
+#define PCFX_EMULATE_BUGGY_CODEC_LABEL_EN NULL
+#define PCFX_EMULATE_BUGGY_CODEC_INFO_0_EN NULL
+#define PCFX_RESAMP_QUALITY_LABEL_EN NULL
+#define PCFX_RESAMP_QUALITY_INFO_0_EN NULL
+#define PCFX_RAINBOW_CHROMAIP_LABEL_EN NULL
+#define PCFX_RAINBOW_CHROMAIP_INFO_0_EN NULL
+#define PCFX_NOSPRITELIMIT_LABEL_EN NULL
+#define PCFX_NOSPRITELIMIT_INFO_0_EN "Remove 16-sprites-per-scan-line hardware limit. WARNING: May cause graphics glitching on some games."
+#define PCFX_INITIAL_SCANLINE_LABEL_EN "Initial Scan-line"
+#define PCFX_INITIAL_SCANLINE_INFO_0_EN "First rendered scan-line. Higher values will crop the top of the image."
+#define OPTION_VAL_4_EN NULL
+#define PCFX_LAST_SCANLINE_LABEL_EN "Last Scan-line"
+#define PCFX_LAST_SCANLINE_INFO_0_EN "Last rendered scan-line. Lower values will crop the bottom of the image."
+#define OPTION_VAL_235_EN NULL
+#define PCFX_MOUSE_SENSITIVITY_LABEL_EN NULL
+#define PCFX_MOUSE_SENSITIVITY_INFO_0_EN NULL
+#define OPTION_VAL_1_00_EN NULL
+#define OPTION_VAL_1_25_EN NULL
+#define OPTION_VAL_1_50_EN NULL
+#define OPTION_VAL_1_75_EN NULL
+#define OPTION_VAL_2_00_EN NULL
+#define OPTION_VAL_2_25_EN NULL
+#define OPTION_VAL_2_50_EN NULL
+#define OPTION_VAL_2_75_EN NULL
+#define OPTION_VAL_3_00_EN NULL
+#define OPTION_VAL_3_25_EN NULL
+#define OPTION_VAL_3_50_EN NULL
+#define OPTION_VAL_3_75_EN NULL
+#define OPTION_VAL_4_00_EN NULL
+#define OPTION_VAL_4_25_EN NULL
+#define OPTION_VAL_4_50_EN NULL
+#define OPTION_VAL_4_75_EN NULL
+#define OPTION_VAL_5_00_EN NULL
+
+struct retro_core_option_v2_category option_cats_en[] = {
+   { NULL, NULL, NULL },
+};
+struct retro_core_option_v2_definition option_defs_en[] = {
+   {
+      "pcfx_cdimagecache",
+      PCFX_CDIMAGECACHE_LABEL_EN,
+      NULL,
+      PCFX_CDIMAGECACHE_INFO_0_EN,
+      NULL,
+      NULL,
+      {
+         { "disabled", NULL },
+         { "enabled", NULL },
+         { NULL, NULL},
+      },
+      "disabled"
+   },
+   {
+      "pcfx_high_dotclock_width",
+      PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_EN,
+      NULL,
+      PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_EN,
+      NULL,
+      NULL,
+      {
+         { "256",  NULL },
+         { "341",  NULL },
+         { "1024",  NULL },
+         { NULL, NULL},
+      },
+      "1024",
+   },
+   {
+      "pcfx_suppress_channel_reset_clicks",
+      PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_EN,
+      NULL,
+      PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_EN,
+      NULL,
+      NULL,
+      {
+         { "enabled", NULL },
+         { "disabled",     NULL },
+         { NULL, NULL},
+      },
+      "enabled",
+   },
+   {
+      "pcfx_emulate_buggy_codec",
+      PCFX_EMULATE_BUGGY_CODEC_LABEL_EN,
+      NULL,
+      PCFX_EMULATE_BUGGY_CODEC_INFO_0_EN,
+      NULL,
+      NULL,
+      {
+         { "disabled", NULL },
+         { "enabled",  NULL },
+         { NULL, NULL},
+      },
+      "disabled",
+   },
+   {
+      "pcfx_resamp_quality",
+      PCFX_RESAMP_QUALITY_LABEL_EN,
+      NULL,
+      PCFX_RESAMP_QUALITY_INFO_0_EN,
+      NULL,
+      NULL,
+      {
+         { "0",  NULL },
+         { "1",  NULL },
+         { "2",  NULL },
+         { "3",  NULL },
+         { "4",  NULL },
+         { "5",  NULL },
+         { NULL, NULL },
+      },
+      "3",
+   },
+   {
+      "pcfx_rainbow_chromaip",
+      PCFX_RAINBOW_CHROMAIP_LABEL_EN,
+      NULL,
+      PCFX_RAINBOW_CHROMAIP_INFO_0_EN,
+      NULL,
+      NULL,
+      {
+         { "disabled",      NULL },
+         { "enabled",      NULL },
+         { NULL, NULL},
+      },
+      "disabled",
+   },
+   {
+      "pcfx_nospritelimit",
+      PCFX_NOSPRITELIMIT_LABEL_EN,
+      NULL,
+      PCFX_NOSPRITELIMIT_INFO_0_EN,
+      NULL,
+      NULL,
+      {
+         { "disabled",              NULL },
+         { "enabled",             NULL },
+         { NULL, NULL},
+      },
+      "disabled",
+   },
+   {
+      "pcfx_initial_scanline",
+      PCFX_INITIAL_SCANLINE_LABEL_EN,
+      NULL,
+      PCFX_INITIAL_SCANLINE_INFO_0_EN,
+      NULL,
+      NULL,
+      {
+         { "0", NULL },
+         { "1",  NULL },
+         { "2",  NULL },
+         { "3",  NULL },
+         { "4",  OPTION_VAL_4_EN },
+         { "5",  NULL },
+         { "6",  NULL },
+         { "7",  NULL },
+         { "8",  NULL },
+         { "9",  NULL },
+         { "10",  NULL },
+         { "11",  NULL },
+         { "12",  NULL },
+         { "13",  NULL },
+         { "14",  NULL },
+         { "15",  NULL },
+         { "16",  NULL },
+         { "17",  NULL },
+         { "18",  NULL },
+         { "19",  NULL },
+         { "20",  NULL },
+         { "21",  NULL },
+         { "22",  NULL },
+         { "23",  NULL },
+         { "24",  NULL },
+         { "25",  NULL },
+         { "26",  NULL },
+         { "27",  NULL },
+         { "28",  NULL },
+         { "29",  NULL },
+         { "30",  NULL },
+         { "31",  NULL },
+         { "32",  NULL },
+         { "33",  NULL },
+         { "34",  NULL },
+         { "35",  NULL },
+         { "36",  NULL },
+         { "37",  NULL },
+         { "38",  NULL },
+         { "39",  NULL },
+         { "40",  NULL },
+         { NULL, NULL},
+      },
+      "4",
+   },
+   {
+      "pcfx_last_scanline",
+      PCFX_LAST_SCANLINE_LABEL_EN,
+      NULL,
+      PCFX_LAST_SCANLINE_INFO_0_EN,
+      NULL,
+      NULL,
+      {
+         { "208",   NULL },
+         { "209",   NULL },
+         { "210",   NULL },
+         { "211",   NULL },
+         { "212",   NULL },
+         { "213",   NULL },
+         { "214",   NULL },
+         { "215",   NULL },
+         { "216",   NULL },
+         { "217",   NULL },
+         { "218",   NULL },
+         { "219",   NULL },
+         { "220",   NULL },
+         { "221",   NULL },
+         { "222",   NULL },
+         { "223",   NULL },
+         { "224",   NULL },
+         { "225",   NULL },
+         { "226",   NULL },
+         { "227",   NULL },
+         { "228",   NULL },
+         { "229",   NULL },
+         { "230",   NULL },
+         { "231",   NULL },
+         { "232",   NULL },
+         { "233",   NULL },
+         { "234",   NULL },
+         { "235",   OPTION_VAL_235_EN },
+         { "236",   NULL },
+         { "237",   NULL },
+         { "238",   NULL },
+         { "239",   NULL },
+         { NULL, NULL},
+      },
+      "235",
+   },
+   {
+      "pcfx_mouse_sensitivity",
+      PCFX_MOUSE_SENSITIVITY_LABEL_EN,
+      NULL,
+      PCFX_MOUSE_SENSITIVITY_INFO_0_EN,
+      NULL,
+      NULL,
+      {
+         { "1.00",   OPTION_VAL_1_00_EN },
+         { "1.25",   OPTION_VAL_1_25_EN },
+         { "1.50",   OPTION_VAL_1_50_EN },
+         { "1.75",   OPTION_VAL_1_75_EN },
+         { "2.00",   OPTION_VAL_2_00_EN },
+         { "2.25",   OPTION_VAL_2_25_EN },
+         { "2.50",   OPTION_VAL_2_50_EN },
+         { "2.75",   OPTION_VAL_2_75_EN },
+         { "3.00",   OPTION_VAL_3_00_EN },
+         { "3.25",   OPTION_VAL_3_25_EN },
+         { "3.50",   OPTION_VAL_3_50_EN },
+         { "3.75",   OPTION_VAL_3_75_EN },
+         { "4.00",   OPTION_VAL_4_00_EN },
+         { "4.25",   OPTION_VAL_4_25_EN },
+         { "4.50",   OPTION_VAL_4_50_EN },
+         { "4.75",   OPTION_VAL_4_75_EN },
+         { "5.00",   OPTION_VAL_5_00_EN },
+         { NULL, NULL},
+      },
+      "1.25",
+   },
+   { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
+};
+struct retro_core_options_v2 options_en = {
+   option_cats_en,
+   option_defs_en
 };
 
 /* RETRO_LANGUAGE_EO */
@@ -3116,45 +3398,45 @@ struct retro_core_options_v2 options_eo = {
 
 /* RETRO_LANGUAGE_ES */
 
-#define PCFX_CDIMAGECACHE_LABEL_ES NULL
-#define PCFX_CDIMAGECACHE_INFO_0_ES NULL
-#define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_ES NULL
+#define PCFX_CDIMAGECACHE_LABEL_ES "Cachear imagen de CD (es necesario reiniciar)"
+#define PCFX_CDIMAGECACHE_INFO_0_ES "Carga la imagen de CD entera en la memoria al arrancar. Podría reducir los tiempos de carga a costa de aumentar el tiempo de arranque."
+#define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_ES "Ancho al acelerar la frecuencia de vídeo (es necesario reiniciar)"
 #define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_ES NULL
-#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_ES NULL
-#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_ES NULL
-#define PCFX_EMULATE_BUGGY_CODEC_LABEL_ES NULL
-#define PCFX_EMULATE_BUGGY_CODEC_INFO_0_ES NULL
-#define PCFX_RESAMP_QUALITY_LABEL_ES NULL
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_ES "Suprimir chasquidos al reiniciar los canales (es necesario reiniciar)"
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_ES "Un arreglo que elimina los chasquidos de audio provocados al reiniciar canales forzosamente."
+#define PCFX_EMULATE_BUGGY_CODEC_LABEL_ES "Emular códec defectuoso (es necesario reiniciar)"
+#define PCFX_EMULATE_BUGGY_CODEC_INFO_0_ES "Un arreglo que emula un codificador de ADPCM defectuoso que utilizan algunos juegos."
+#define PCFX_RESAMP_QUALITY_LABEL_ES "Calidad del sonido (es necesario reiniciar)"
 #define PCFX_RESAMP_QUALITY_INFO_0_ES NULL
-#define PCFX_RAINBOW_CHROMAIP_LABEL_ES NULL
-#define PCFX_RAINBOW_CHROMAIP_INFO_0_ES NULL
-#define PCFX_NOSPRITELIMIT_LABEL_ES NULL
-#define PCFX_NOSPRITELIMIT_INFO_0_ES NULL
-#define PCFX_INITIAL_SCANLINE_LABEL_ES NULL
-#define PCFX_INITIAL_SCANLINE_INFO_0_ES NULL
-#define OPTION_VAL_4_ES NULL
-#define PCFX_LAST_SCANLINE_LABEL_ES NULL
-#define PCFX_LAST_SCANLINE_INFO_0_ES NULL
-#define OPTION_VAL_235_ES NULL
-#define PCFX_MOUSE_SENSITIVITY_LABEL_ES NULL
-#define PCFX_MOUSE_SENSITIVITY_INFO_0_ES NULL
-#define OPTION_VAL_1_00_ES NULL
-#define OPTION_VAL_1_25_ES NULL
-#define OPTION_VAL_1_50_ES NULL
-#define OPTION_VAL_1_75_ES NULL
-#define OPTION_VAL_2_00_ES NULL
-#define OPTION_VAL_2_25_ES NULL
-#define OPTION_VAL_2_50_ES NULL
-#define OPTION_VAL_2_75_ES NULL
-#define OPTION_VAL_3_00_ES NULL
-#define OPTION_VAL_3_25_ES NULL
-#define OPTION_VAL_3_50_ES NULL
-#define OPTION_VAL_3_75_ES NULL
-#define OPTION_VAL_4_00_ES NULL
-#define OPTION_VAL_4_25_ES NULL
-#define OPTION_VAL_4_50_ES NULL
-#define OPTION_VAL_4_75_ES NULL
-#define OPTION_VAL_5_00_ES NULL
+#define PCFX_RAINBOW_CHROMAIP_LABEL_ES "Interpolación bilineal de los canales de croma (es necesario reiniciar)"
+#define PCFX_RAINBOW_CHROMAIP_INFO_0_ES "Activa la interpolación bilineal en el canal de croma de la salida de vídeo YUV RAINBOW. Puede provocar defectos gráficos en algunos juegos."
+#define PCFX_NOSPRITELIMIT_LABEL_ES "Desactivar límite de sprites (es necesario reiniciar)"
+#define PCFX_NOSPRITELIMIT_INFO_0_ES "Elimina el límite de 16 sprites por línea de barrido que tenía el hardware original. ADVERTENCIA: puede provocar fallos gráficos en algunos juegos."
+#define PCFX_INITIAL_SCANLINE_LABEL_ES "Línea de barrido inicial"
+#define PCFX_INITIAL_SCANLINE_INFO_0_ES "Indica la primera línea de barrido que se renderizará. Un valor muy alto recortará la parte superior de la imagen."
+#define OPTION_VAL_4_ES "4 (por defecto)"
+#define PCFX_LAST_SCANLINE_LABEL_ES "Línea de barrido final"
+#define PCFX_LAST_SCANLINE_INFO_0_ES "Indica la última línea de barrido que se renderizará. Un valor muy bajo recortará la parte inferior de la imagen."
+#define OPTION_VAL_235_ES "235 (por defecto)"
+#define PCFX_MOUSE_SENSITIVITY_LABEL_ES "Sensibilidad del ratón"
+#define PCFX_MOUSE_SENSITIVITY_INFO_0_ES "Configura la sensibilidad del dispositivo «PCFX Mouse». Un valor elevado hará que el cursor del ratón se mueva más rápido."
+#define OPTION_VAL_1_00_ES "1,00"
+#define OPTION_VAL_1_25_ES "1,25"
+#define OPTION_VAL_1_50_ES "1,50"
+#define OPTION_VAL_1_75_ES "1,75"
+#define OPTION_VAL_2_00_ES "2,00"
+#define OPTION_VAL_2_25_ES "2,25"
+#define OPTION_VAL_2_50_ES "2,50"
+#define OPTION_VAL_2_75_ES "2,75"
+#define OPTION_VAL_3_00_ES "3,00"
+#define OPTION_VAL_3_25_ES "3,25"
+#define OPTION_VAL_3_50_ES "3,50"
+#define OPTION_VAL_3_75_ES "3,75"
+#define OPTION_VAL_4_00_ES "4,00"
+#define OPTION_VAL_4_25_ES "4,25"
+#define OPTION_VAL_4_50_ES "4,50"
+#define OPTION_VAL_4_75_ES "4,75"
+#define OPTION_VAL_5_00_ES "5,00"
 
 struct retro_core_option_v2_category option_cats_es[] = {
    { NULL, NULL, NULL },
@@ -3680,27 +3962,27 @@ struct retro_core_options_v2 options_fa = {
 
 /* RETRO_LANGUAGE_FI */
 
-#define PCFX_CDIMAGECACHE_LABEL_FI NULL
-#define PCFX_CDIMAGECACHE_INFO_0_FI NULL
+#define PCFX_CDIMAGECACHE_LABEL_FI "CD-levykuvan välimuisti (Uudelleenkäynnistys vaaditaan)"
+#define PCFX_CDIMAGECACHE_INFO_0_FI "Lataa koko levykuva muistiin käynnistyksen yhteydessä. Voi mahdollisesti lyhentää latausaikoja kasvavan käynnistysajan kustannuksella."
 #define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_FI NULL
 #define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_FI NULL
 #define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_FI NULL
 #define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_FI NULL
 #define PCFX_EMULATE_BUGGY_CODEC_LABEL_FI NULL
 #define PCFX_EMULATE_BUGGY_CODEC_INFO_0_FI NULL
-#define PCFX_RESAMP_QUALITY_LABEL_FI NULL
+#define PCFX_RESAMP_QUALITY_LABEL_FI "Äänen laatu (uudelleenkäynnistys vaaditaan)"
 #define PCFX_RESAMP_QUALITY_INFO_0_FI NULL
 #define PCFX_RAINBOW_CHROMAIP_LABEL_FI NULL
 #define PCFX_RAINBOW_CHROMAIP_INFO_0_FI NULL
 #define PCFX_NOSPRITELIMIT_LABEL_FI NULL
-#define PCFX_NOSPRITELIMIT_INFO_0_FI NULL
-#define PCFX_INITIAL_SCANLINE_LABEL_FI NULL
-#define PCFX_INITIAL_SCANLINE_INFO_0_FI NULL
-#define OPTION_VAL_4_FI NULL
-#define PCFX_LAST_SCANLINE_LABEL_FI NULL
-#define PCFX_LAST_SCANLINE_INFO_0_FI NULL
-#define OPTION_VAL_235_FI NULL
-#define PCFX_MOUSE_SENSITIVITY_LABEL_FI NULL
+#define PCFX_NOSPRITELIMIT_INFO_0_FI "Poista laitteiston 16-spriten-per-juova raja. VAROITUS: Saattaa aiheuttaa grafiikkaa virheitä joissakin peleissä."
+#define PCFX_INITIAL_SCANLINE_LABEL_FI "Ensimmäinen juova"
+#define PCFX_INITIAL_SCANLINE_INFO_0_FI "Ensimmäinen renderöity juova. Suuremmat arvot rajaavat kuvan yläreunan."
+#define OPTION_VAL_4_FI "4 (Oletus)"
+#define PCFX_LAST_SCANLINE_LABEL_FI "Viimeinen juova"
+#define PCFX_LAST_SCANLINE_INFO_0_FI "Viimeinen renderöity juova. pienemmät arvot rajaavat kuvan alareunan."
+#define OPTION_VAL_235_FI "235 (Oletus)"
+#define PCFX_MOUSE_SENSITIVITY_LABEL_FI "Hiiren herkkyys"
 #define PCFX_MOUSE_SENSITIVITY_INFO_0_FI NULL
 #define OPTION_VAL_1_00_FI NULL
 #define OPTION_VAL_1_25_FI NULL
@@ -3962,45 +4244,45 @@ struct retro_core_options_v2 options_fi = {
 
 /* RETRO_LANGUAGE_FR */
 
-#define PCFX_CDIMAGECACHE_LABEL_FR NULL
-#define PCFX_CDIMAGECACHE_INFO_0_FR NULL
-#define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_FR NULL
+#define PCFX_CDIMAGECACHE_LABEL_FR "Mise en cache des images CD (Redémarrage requis)"
+#define PCFX_CDIMAGECACHE_INFO_0_FR "Charger l'image disque complète dans la mémoire au démarrage. Peut potentiellement diminuer le temps de chargement au prix d'une augmentation du temps de démarrage."
+#define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_FR "Grande largeur d'horloge pour les pixels (Redémarrage requis)"
 #define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_FR NULL
-#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_FR NULL
-#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_FR NULL
-#define PCFX_EMULATE_BUGGY_CODEC_LABEL_FR NULL
-#define PCFX_EMULATE_BUGGY_CODEC_INFO_0_FR NULL
-#define PCFX_RESAMP_QUALITY_LABEL_FR NULL
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_FR "Supprimer les clics de réinitialisation du canal (Redémarrage requis)"
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_FR "Hack pour supprimer les clics audio causés par les réinitialisations forcées des canaux."
+#define PCFX_EMULATE_BUGGY_CODEC_LABEL_FR "Émuler le Codec buggé (Redémaragge requis)"
+#define PCFX_EMULATE_BUGGY_CODEC_INFO_0_FR "Hack qui émule un encodeur ADPCM buggé utilisé pour l'ADPCM de certains jeux."
+#define PCFX_RESAMP_QUALITY_LABEL_FR "Qualité du son (Redémarrage requis)"
 #define PCFX_RESAMP_QUALITY_INFO_0_FR NULL
-#define PCFX_RAINBOW_CHROMAIP_LABEL_FR NULL
-#define PCFX_RAINBOW_CHROMAIP_INFO_0_FR NULL
-#define PCFX_NOSPRITELIMIT_LABEL_FR NULL
-#define PCFX_NOSPRITELIMIT_INFO_0_FR NULL
-#define PCFX_INITIAL_SCANLINE_LABEL_FR NULL
-#define PCFX_INITIAL_SCANLINE_INFO_0_FR NULL
-#define OPTION_VAL_4_FR NULL
-#define PCFX_LAST_SCANLINE_LABEL_FR NULL
-#define PCFX_LAST_SCANLINE_INFO_0_FR NULL
-#define OPTION_VAL_235_FR NULL
-#define PCFX_MOUSE_SENSITIVITY_LABEL_FR NULL
-#define PCFX_MOUSE_SENSITIVITY_INFO_0_FR NULL
-#define OPTION_VAL_1_00_FR NULL
-#define OPTION_VAL_1_25_FR NULL
-#define OPTION_VAL_1_50_FR NULL
-#define OPTION_VAL_1_75_FR NULL
-#define OPTION_VAL_2_00_FR NULL
-#define OPTION_VAL_2_25_FR NULL
-#define OPTION_VAL_2_50_FR NULL
-#define OPTION_VAL_2_75_FR NULL
-#define OPTION_VAL_3_00_FR NULL
-#define OPTION_VAL_3_25_FR NULL
-#define OPTION_VAL_3_50_FR NULL
-#define OPTION_VAL_3_75_FR NULL
-#define OPTION_VAL_4_00_FR NULL
-#define OPTION_VAL_4_25_FR NULL
-#define OPTION_VAL_4_50_FR NULL
-#define OPTION_VAL_4_75_FR NULL
-#define OPTION_VAL_5_00_FR NULL
+#define PCFX_RAINBOW_CHROMAIP_LABEL_FR "Interpolation bilinéaire du canal chromatique (Redémarrage requis)"
+#define PCFX_RAINBOW_CHROMAIP_INFO_0_FR "Activer l'interpolation bilinéaire sur le canal chromatique de la sortie RAINBOW YUV. Peut causer des bugs graphiques avec certains jeux."
+#define PCFX_NOSPRITELIMIT_LABEL_FR "Aucune limite de sprites (Redémarrage requis)"
+#define PCFX_NOSPRITELIMIT_INFO_0_FR "Supprimer la limite matérielle de 16 sprites par ligne de balayage. ATTENTION : peut causer des problèmes graphiques sur certains jeux."
+#define PCFX_INITIAL_SCANLINE_LABEL_FR "Ligne de balayage initiale"
+#define PCFX_INITIAL_SCANLINE_INFO_0_FR "Première ligne de balayage rendue. Des valeurs plus élevées recadreront le haut de l'image."
+#define OPTION_VAL_4_FR "4 (par défaut)"
+#define PCFX_LAST_SCANLINE_LABEL_FR "Dernière ligne de balayage"
+#define PCFX_LAST_SCANLINE_INFO_0_FR "Dernière ligne de balayage rendue. Des valeurs moins élevées recadreront le bas de l'image."
+#define OPTION_VAL_235_FR "235 (par défaut)"
+#define PCFX_MOUSE_SENSITIVITY_LABEL_FR "Sensibilité de la souris"
+#define PCFX_MOUSE_SENSITIVITY_INFO_0_FR "Configurer la sensibilité du type de périphérique 'Souris PCFX' (PCFX Mouse). Des valeurs plus élevées rendront le curseur de la souris plus rapide."
+#define OPTION_VAL_1_00_FR "1,00"
+#define OPTION_VAL_1_25_FR "1,25"
+#define OPTION_VAL_1_50_FR "1,50"
+#define OPTION_VAL_1_75_FR "1,75"
+#define OPTION_VAL_2_00_FR "2,00"
+#define OPTION_VAL_2_25_FR "2,25"
+#define OPTION_VAL_2_50_FR "2,50"
+#define OPTION_VAL_2_75_FR "2,75"
+#define OPTION_VAL_3_00_FR "3,00"
+#define OPTION_VAL_3_25_FR "3,25"
+#define OPTION_VAL_3_50_FR "3,50"
+#define OPTION_VAL_3_75_FR "3,75"
+#define OPTION_VAL_4_00_FR "4,00"
+#define OPTION_VAL_4_25_FR "4,25"
+#define OPTION_VAL_4_50_FR "4,50"
+#define OPTION_VAL_4_75_FR "4,75"
+#define OPTION_VAL_5_00_FR "5,00"
 
 struct retro_core_option_v2_category option_cats_fr[] = {
    { NULL, NULL, NULL },
@@ -4806,10 +5088,292 @@ struct retro_core_options_v2 options_he = {
    option_defs_he
 };
 
+/* RETRO_LANGUAGE_HR */
+
+#define PCFX_CDIMAGECACHE_LABEL_HR NULL
+#define PCFX_CDIMAGECACHE_INFO_0_HR NULL
+#define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_HR NULL
+#define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_HR NULL
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_HR NULL
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_HR NULL
+#define PCFX_EMULATE_BUGGY_CODEC_LABEL_HR NULL
+#define PCFX_EMULATE_BUGGY_CODEC_INFO_0_HR NULL
+#define PCFX_RESAMP_QUALITY_LABEL_HR NULL
+#define PCFX_RESAMP_QUALITY_INFO_0_HR NULL
+#define PCFX_RAINBOW_CHROMAIP_LABEL_HR NULL
+#define PCFX_RAINBOW_CHROMAIP_INFO_0_HR NULL
+#define PCFX_NOSPRITELIMIT_LABEL_HR NULL
+#define PCFX_NOSPRITELIMIT_INFO_0_HR NULL
+#define PCFX_INITIAL_SCANLINE_LABEL_HR NULL
+#define PCFX_INITIAL_SCANLINE_INFO_0_HR NULL
+#define OPTION_VAL_4_HR NULL
+#define PCFX_LAST_SCANLINE_LABEL_HR NULL
+#define PCFX_LAST_SCANLINE_INFO_0_HR NULL
+#define OPTION_VAL_235_HR NULL
+#define PCFX_MOUSE_SENSITIVITY_LABEL_HR NULL
+#define PCFX_MOUSE_SENSITIVITY_INFO_0_HR NULL
+#define OPTION_VAL_1_00_HR NULL
+#define OPTION_VAL_1_25_HR NULL
+#define OPTION_VAL_1_50_HR NULL
+#define OPTION_VAL_1_75_HR NULL
+#define OPTION_VAL_2_00_HR NULL
+#define OPTION_VAL_2_25_HR NULL
+#define OPTION_VAL_2_50_HR NULL
+#define OPTION_VAL_2_75_HR NULL
+#define OPTION_VAL_3_00_HR NULL
+#define OPTION_VAL_3_25_HR NULL
+#define OPTION_VAL_3_50_HR NULL
+#define OPTION_VAL_3_75_HR NULL
+#define OPTION_VAL_4_00_HR NULL
+#define OPTION_VAL_4_25_HR NULL
+#define OPTION_VAL_4_50_HR NULL
+#define OPTION_VAL_4_75_HR NULL
+#define OPTION_VAL_5_00_HR NULL
+
+struct retro_core_option_v2_category option_cats_hr[] = {
+   { NULL, NULL, NULL },
+};
+struct retro_core_option_v2_definition option_defs_hr[] = {
+   {
+      "pcfx_cdimagecache",
+      PCFX_CDIMAGECACHE_LABEL_HR,
+      NULL,
+      PCFX_CDIMAGECACHE_INFO_0_HR,
+      NULL,
+      NULL,
+      {
+         { "disabled", NULL },
+         { "enabled", NULL },
+         { NULL, NULL},
+      },
+      "disabled"
+   },
+   {
+      "pcfx_high_dotclock_width",
+      PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_HR,
+      NULL,
+      PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_HR,
+      NULL,
+      NULL,
+      {
+         { "256",  NULL },
+         { "341",  NULL },
+         { "1024",  NULL },
+         { NULL, NULL},
+      },
+      "1024",
+   },
+   {
+      "pcfx_suppress_channel_reset_clicks",
+      PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_HR,
+      NULL,
+      PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_HR,
+      NULL,
+      NULL,
+      {
+         { "enabled", NULL },
+         { "disabled",     NULL },
+         { NULL, NULL},
+      },
+      "enabled",
+   },
+   {
+      "pcfx_emulate_buggy_codec",
+      PCFX_EMULATE_BUGGY_CODEC_LABEL_HR,
+      NULL,
+      PCFX_EMULATE_BUGGY_CODEC_INFO_0_HR,
+      NULL,
+      NULL,
+      {
+         { "disabled", NULL },
+         { "enabled",  NULL },
+         { NULL, NULL},
+      },
+      "disabled",
+   },
+   {
+      "pcfx_resamp_quality",
+      PCFX_RESAMP_QUALITY_LABEL_HR,
+      NULL,
+      PCFX_RESAMP_QUALITY_INFO_0_HR,
+      NULL,
+      NULL,
+      {
+         { "0",  NULL },
+         { "1",  NULL },
+         { "2",  NULL },
+         { "3",  NULL },
+         { "4",  NULL },
+         { "5",  NULL },
+         { NULL, NULL },
+      },
+      "3",
+   },
+   {
+      "pcfx_rainbow_chromaip",
+      PCFX_RAINBOW_CHROMAIP_LABEL_HR,
+      NULL,
+      PCFX_RAINBOW_CHROMAIP_INFO_0_HR,
+      NULL,
+      NULL,
+      {
+         { "disabled",      NULL },
+         { "enabled",      NULL },
+         { NULL, NULL},
+      },
+      "disabled",
+   },
+   {
+      "pcfx_nospritelimit",
+      PCFX_NOSPRITELIMIT_LABEL_HR,
+      NULL,
+      PCFX_NOSPRITELIMIT_INFO_0_HR,
+      NULL,
+      NULL,
+      {
+         { "disabled",              NULL },
+         { "enabled",             NULL },
+         { NULL, NULL},
+      },
+      "disabled",
+   },
+   {
+      "pcfx_initial_scanline",
+      PCFX_INITIAL_SCANLINE_LABEL_HR,
+      NULL,
+      PCFX_INITIAL_SCANLINE_INFO_0_HR,
+      NULL,
+      NULL,
+      {
+         { "0", NULL },
+         { "1",  NULL },
+         { "2",  NULL },
+         { "3",  NULL },
+         { "4",  OPTION_VAL_4_HR },
+         { "5",  NULL },
+         { "6",  NULL },
+         { "7",  NULL },
+         { "8",  NULL },
+         { "9",  NULL },
+         { "10",  NULL },
+         { "11",  NULL },
+         { "12",  NULL },
+         { "13",  NULL },
+         { "14",  NULL },
+         { "15",  NULL },
+         { "16",  NULL },
+         { "17",  NULL },
+         { "18",  NULL },
+         { "19",  NULL },
+         { "20",  NULL },
+         { "21",  NULL },
+         { "22",  NULL },
+         { "23",  NULL },
+         { "24",  NULL },
+         { "25",  NULL },
+         { "26",  NULL },
+         { "27",  NULL },
+         { "28",  NULL },
+         { "29",  NULL },
+         { "30",  NULL },
+         { "31",  NULL },
+         { "32",  NULL },
+         { "33",  NULL },
+         { "34",  NULL },
+         { "35",  NULL },
+         { "36",  NULL },
+         { "37",  NULL },
+         { "38",  NULL },
+         { "39",  NULL },
+         { "40",  NULL },
+         { NULL, NULL},
+      },
+      "4",
+   },
+   {
+      "pcfx_last_scanline",
+      PCFX_LAST_SCANLINE_LABEL_HR,
+      NULL,
+      PCFX_LAST_SCANLINE_INFO_0_HR,
+      NULL,
+      NULL,
+      {
+         { "208",   NULL },
+         { "209",   NULL },
+         { "210",   NULL },
+         { "211",   NULL },
+         { "212",   NULL },
+         { "213",   NULL },
+         { "214",   NULL },
+         { "215",   NULL },
+         { "216",   NULL },
+         { "217",   NULL },
+         { "218",   NULL },
+         { "219",   NULL },
+         { "220",   NULL },
+         { "221",   NULL },
+         { "222",   NULL },
+         { "223",   NULL },
+         { "224",   NULL },
+         { "225",   NULL },
+         { "226",   NULL },
+         { "227",   NULL },
+         { "228",   NULL },
+         { "229",   NULL },
+         { "230",   NULL },
+         { "231",   NULL },
+         { "232",   NULL },
+         { "233",   NULL },
+         { "234",   NULL },
+         { "235",   OPTION_VAL_235_HR },
+         { "236",   NULL },
+         { "237",   NULL },
+         { "238",   NULL },
+         { "239",   NULL },
+         { NULL, NULL},
+      },
+      "235",
+   },
+   {
+      "pcfx_mouse_sensitivity",
+      PCFX_MOUSE_SENSITIVITY_LABEL_HR,
+      NULL,
+      PCFX_MOUSE_SENSITIVITY_INFO_0_HR,
+      NULL,
+      NULL,
+      {
+         { "1.00",   OPTION_VAL_1_00_HR },
+         { "1.25",   OPTION_VAL_1_25_HR },
+         { "1.50",   OPTION_VAL_1_50_HR },
+         { "1.75",   OPTION_VAL_1_75_HR },
+         { "2.00",   OPTION_VAL_2_00_HR },
+         { "2.25",   OPTION_VAL_2_25_HR },
+         { "2.50",   OPTION_VAL_2_50_HR },
+         { "2.75",   OPTION_VAL_2_75_HR },
+         { "3.00",   OPTION_VAL_3_00_HR },
+         { "3.25",   OPTION_VAL_3_25_HR },
+         { "3.50",   OPTION_VAL_3_50_HR },
+         { "3.75",   OPTION_VAL_3_75_HR },
+         { "4.00",   OPTION_VAL_4_00_HR },
+         { "4.25",   OPTION_VAL_4_25_HR },
+         { "4.50",   OPTION_VAL_4_50_HR },
+         { "4.75",   OPTION_VAL_4_75_HR },
+         { "5.00",   OPTION_VAL_5_00_HR },
+         { NULL, NULL},
+      },
+      "1.25",
+   },
+   { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
+};
+struct retro_core_options_v2 options_hr = {
+   option_cats_hr,
+   option_defs_hr
+};
+
 /* RETRO_LANGUAGE_HU */
 
-#define PCFX_CDIMAGECACHE_LABEL_HU NULL
-#define PCFX_CDIMAGECACHE_INFO_0_HU NULL
+#define PCFX_CDIMAGECACHE_LABEL_HU "Gyorsítótár a CD képfájlhoz (újraindítás szükséges)"
+#define PCFX_CDIMAGECACHE_INFO_0_HU "Indításkor beolvassa a teljes képfájlt a memóriába. Csökkentheti a töltési időket a lassabb indulásért cserébe."
 #define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_HU NULL
 #define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_HU NULL
 #define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_HU NULL
@@ -4821,14 +5385,14 @@ struct retro_core_options_v2 options_he = {
 #define PCFX_RAINBOW_CHROMAIP_LABEL_HU NULL
 #define PCFX_RAINBOW_CHROMAIP_INFO_0_HU NULL
 #define PCFX_NOSPRITELIMIT_LABEL_HU NULL
-#define PCFX_NOSPRITELIMIT_INFO_0_HU NULL
-#define PCFX_INITIAL_SCANLINE_LABEL_HU NULL
+#define PCFX_NOSPRITELIMIT_INFO_0_HU "Megszünteti a hardver soronként legfeljebb 16 sprite-os korlátozását. Figyelem: grafikus hibákat okozhat néhány játéknál."
+#define PCFX_INITIAL_SCANLINE_LABEL_HU "Kezdő scanline"
 #define PCFX_INITIAL_SCANLINE_INFO_0_HU NULL
-#define OPTION_VAL_4_HU NULL
-#define PCFX_LAST_SCANLINE_LABEL_HU NULL
+#define OPTION_VAL_4_HU "4 (alapértelmezett)"
+#define PCFX_LAST_SCANLINE_LABEL_HU "Utolsó scanline"
 #define PCFX_LAST_SCANLINE_INFO_0_HU NULL
-#define OPTION_VAL_235_HU NULL
-#define PCFX_MOUSE_SENSITIVITY_LABEL_HU NULL
+#define OPTION_VAL_235_HU "235 (alapértelmezett)"
+#define PCFX_MOUSE_SENSITIVITY_LABEL_HU "Egér érzékenysége"
 #define PCFX_MOUSE_SENSITIVITY_INFO_0_HU NULL
 #define OPTION_VAL_1_00_HU NULL
 #define OPTION_VAL_1_25_HU NULL
@@ -5372,28 +5936,28 @@ struct retro_core_options_v2 options_id = {
 
 /* RETRO_LANGUAGE_IT */
 
-#define PCFX_CDIMAGECACHE_LABEL_IT NULL
-#define PCFX_CDIMAGECACHE_INFO_0_IT NULL
-#define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_IT NULL
+#define PCFX_CDIMAGECACHE_LABEL_IT "Cache Immagine CD (Riavvio Richiesto)"
+#define PCFX_CDIMAGECACHE_INFO_0_IT "Carica l'immagine completa in memoria all'avvio. Può potenzialmente diminuire i tempi di caricamento al costo di un aumento del tempo di avvio."
+#define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_IT "Alta Larghezza Dotclock (RiavvioRichiesto)"
 #define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_IT NULL
-#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_IT NULL
-#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_IT NULL
-#define PCFX_EMULATE_BUGGY_CODEC_LABEL_IT NULL
-#define PCFX_EMULATE_BUGGY_CODEC_INFO_0_IT NULL
-#define PCFX_RESAMP_QUALITY_LABEL_IT NULL
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_IT "Sopprimi I Clic Di Ripristino Dei Canali (Riavvio Richiesto)"
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_IT "Hack per sopprimere clic audio causati da riavvio del canale forzato."
+#define PCFX_EMULATE_BUGGY_CODEC_LABEL_IT "Emula Codec Buggato (Riavvio Richiesto)"
+#define PCFX_EMULATE_BUGGY_CODEC_INFO_0_IT "Hack che emula un codificatore ADPCM buggy utilizzato per l'ADPCM di alcuni giochi."
+#define PCFX_RESAMP_QUALITY_LABEL_IT "Qualità Del Suono (Riavvio Richiesto)"
 #define PCFX_RESAMP_QUALITY_INFO_0_IT NULL
-#define PCFX_RAINBOW_CHROMAIP_LABEL_IT NULL
-#define PCFX_RAINBOW_CHROMAIP_INFO_0_IT NULL
-#define PCFX_NOSPRITELIMIT_LABEL_IT NULL
-#define PCFX_NOSPRITELIMIT_INFO_0_IT NULL
-#define PCFX_INITIAL_SCANLINE_LABEL_IT NULL
-#define PCFX_INITIAL_SCANLINE_INFO_0_IT NULL
-#define OPTION_VAL_4_IT NULL
-#define PCFX_LAST_SCANLINE_LABEL_IT NULL
-#define PCFX_LAST_SCANLINE_INFO_0_IT NULL
-#define OPTION_VAL_235_IT NULL
-#define PCFX_MOUSE_SENSITIVITY_LABEL_IT NULL
-#define PCFX_MOUSE_SENSITIVITY_INFO_0_IT NULL
+#define PCFX_RAINBOW_CHROMAIP_LABEL_IT "Interpolazione Bilineare Canale Croma (Riavvio Richiesto)"
+#define PCFX_RAINBOW_CHROMAIP_INFO_0_IT "Abilita l'interpolazione bilineare sul canale cromatico dell'uscita RAINBOW YUV. Può causare problemi grafici con alcuni giochi."
+#define PCFX_NOSPRITELIMIT_LABEL_IT "Nessun Limite Di Sprite (Riavvio Richiesto)"
+#define PCFX_NOSPRITELIMIT_INFO_0_IT "Rimuovere 16-sprites-per-scanline limite hardware. ATTENZIONE: Può causare problemi grafici su alcuni giochi."
+#define PCFX_INITIAL_SCANLINE_LABEL_IT "Scanline Iniziale"
+#define PCFX_INITIAL_SCANLINE_INFO_0_IT "Prima scanline renderizzata. Valori più alti ritaglieranno la parte superiore dell'immagine."
+#define OPTION_VAL_4_IT "4 (Predefinito)"
+#define PCFX_LAST_SCANLINE_LABEL_IT "Ultima Scanline"
+#define PCFX_LAST_SCANLINE_INFO_0_IT "Ultima scanline renderizzata. I valori più bassi ritaglieranno la parte inferiore dell'immagine."
+#define OPTION_VAL_235_IT "235 (Predefinito)"
+#define PCFX_MOUSE_SENSITIVITY_LABEL_IT "Sensibilità Mouse"
+#define PCFX_MOUSE_SENSITIVITY_INFO_0_IT "Configura la sensibilità del tipo di dispositivo 'PCFX Mouse'. Valori più alti renderanno il cursore del mouse più veloce."
 #define OPTION_VAL_1_00_IT NULL
 #define OPTION_VAL_1_25_IT NULL
 #define OPTION_VAL_1_50_IT NULL
@@ -5670,10 +6234,10 @@ struct retro_core_options_v2 options_it = {
 #define PCFX_NOSPRITELIMIT_INFO_0_JA NULL
 #define PCFX_INITIAL_SCANLINE_LABEL_JA NULL
 #define PCFX_INITIAL_SCANLINE_INFO_0_JA NULL
-#define OPTION_VAL_4_JA NULL
+#define OPTION_VAL_4_JA "4 (デフォルト)"
 #define PCFX_LAST_SCANLINE_LABEL_JA NULL
 #define PCFX_LAST_SCANLINE_INFO_0_JA NULL
-#define OPTION_VAL_235_JA NULL
+#define OPTION_VAL_235_JA "235 (デフォルト)"
 #define PCFX_MOUSE_SENSITIVITY_LABEL_JA NULL
 #define PCFX_MOUSE_SENSITIVITY_INFO_0_JA NULL
 #define OPTION_VAL_1_00_JA NULL
@@ -5952,11 +6516,11 @@ struct retro_core_options_v2 options_ja = {
 #define PCFX_NOSPRITELIMIT_INFO_0_KO NULL
 #define PCFX_INITIAL_SCANLINE_LABEL_KO NULL
 #define PCFX_INITIAL_SCANLINE_INFO_0_KO NULL
-#define OPTION_VAL_4_KO NULL
+#define OPTION_VAL_4_KO "4 (기본)"
 #define PCFX_LAST_SCANLINE_LABEL_KO NULL
 #define PCFX_LAST_SCANLINE_INFO_0_KO NULL
-#define OPTION_VAL_235_KO NULL
-#define PCFX_MOUSE_SENSITIVITY_LABEL_KO NULL
+#define OPTION_VAL_235_KO "235 (기본)"
+#define PCFX_MOUSE_SENSITIVITY_LABEL_KO "마우스 감도"
 #define PCFX_MOUSE_SENSITIVITY_INFO_0_KO NULL
 #define OPTION_VAL_1_00_KO NULL
 #define OPTION_VAL_1_25_KO NULL
@@ -6780,6 +7344,288 @@ struct retro_core_options_v2 options_nl = {
    option_defs_nl
 };
 
+/* RETRO_LANGUAGE_NO */
+
+#define PCFX_CDIMAGECACHE_LABEL_NO NULL
+#define PCFX_CDIMAGECACHE_INFO_0_NO NULL
+#define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_NO NULL
+#define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_NO NULL
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_NO NULL
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_NO NULL
+#define PCFX_EMULATE_BUGGY_CODEC_LABEL_NO NULL
+#define PCFX_EMULATE_BUGGY_CODEC_INFO_0_NO NULL
+#define PCFX_RESAMP_QUALITY_LABEL_NO NULL
+#define PCFX_RESAMP_QUALITY_INFO_0_NO NULL
+#define PCFX_RAINBOW_CHROMAIP_LABEL_NO NULL
+#define PCFX_RAINBOW_CHROMAIP_INFO_0_NO NULL
+#define PCFX_NOSPRITELIMIT_LABEL_NO NULL
+#define PCFX_NOSPRITELIMIT_INFO_0_NO NULL
+#define PCFX_INITIAL_SCANLINE_LABEL_NO NULL
+#define PCFX_INITIAL_SCANLINE_INFO_0_NO NULL
+#define OPTION_VAL_4_NO NULL
+#define PCFX_LAST_SCANLINE_LABEL_NO NULL
+#define PCFX_LAST_SCANLINE_INFO_0_NO NULL
+#define OPTION_VAL_235_NO NULL
+#define PCFX_MOUSE_SENSITIVITY_LABEL_NO NULL
+#define PCFX_MOUSE_SENSITIVITY_INFO_0_NO NULL
+#define OPTION_VAL_1_00_NO NULL
+#define OPTION_VAL_1_25_NO NULL
+#define OPTION_VAL_1_50_NO NULL
+#define OPTION_VAL_1_75_NO NULL
+#define OPTION_VAL_2_00_NO NULL
+#define OPTION_VAL_2_25_NO NULL
+#define OPTION_VAL_2_50_NO NULL
+#define OPTION_VAL_2_75_NO NULL
+#define OPTION_VAL_3_00_NO NULL
+#define OPTION_VAL_3_25_NO NULL
+#define OPTION_VAL_3_50_NO NULL
+#define OPTION_VAL_3_75_NO NULL
+#define OPTION_VAL_4_00_NO NULL
+#define OPTION_VAL_4_25_NO NULL
+#define OPTION_VAL_4_50_NO NULL
+#define OPTION_VAL_4_75_NO NULL
+#define OPTION_VAL_5_00_NO NULL
+
+struct retro_core_option_v2_category option_cats_no[] = {
+   { NULL, NULL, NULL },
+};
+struct retro_core_option_v2_definition option_defs_no[] = {
+   {
+      "pcfx_cdimagecache",
+      PCFX_CDIMAGECACHE_LABEL_NO,
+      NULL,
+      PCFX_CDIMAGECACHE_INFO_0_NO,
+      NULL,
+      NULL,
+      {
+         { "disabled", NULL },
+         { "enabled", NULL },
+         { NULL, NULL},
+      },
+      "disabled"
+   },
+   {
+      "pcfx_high_dotclock_width",
+      PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_NO,
+      NULL,
+      PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_NO,
+      NULL,
+      NULL,
+      {
+         { "256",  NULL },
+         { "341",  NULL },
+         { "1024",  NULL },
+         { NULL, NULL},
+      },
+      "1024",
+   },
+   {
+      "pcfx_suppress_channel_reset_clicks",
+      PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_NO,
+      NULL,
+      PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_NO,
+      NULL,
+      NULL,
+      {
+         { "enabled", NULL },
+         { "disabled",     NULL },
+         { NULL, NULL},
+      },
+      "enabled",
+   },
+   {
+      "pcfx_emulate_buggy_codec",
+      PCFX_EMULATE_BUGGY_CODEC_LABEL_NO,
+      NULL,
+      PCFX_EMULATE_BUGGY_CODEC_INFO_0_NO,
+      NULL,
+      NULL,
+      {
+         { "disabled", NULL },
+         { "enabled",  NULL },
+         { NULL, NULL},
+      },
+      "disabled",
+   },
+   {
+      "pcfx_resamp_quality",
+      PCFX_RESAMP_QUALITY_LABEL_NO,
+      NULL,
+      PCFX_RESAMP_QUALITY_INFO_0_NO,
+      NULL,
+      NULL,
+      {
+         { "0",  NULL },
+         { "1",  NULL },
+         { "2",  NULL },
+         { "3",  NULL },
+         { "4",  NULL },
+         { "5",  NULL },
+         { NULL, NULL },
+      },
+      "3",
+   },
+   {
+      "pcfx_rainbow_chromaip",
+      PCFX_RAINBOW_CHROMAIP_LABEL_NO,
+      NULL,
+      PCFX_RAINBOW_CHROMAIP_INFO_0_NO,
+      NULL,
+      NULL,
+      {
+         { "disabled",      NULL },
+         { "enabled",      NULL },
+         { NULL, NULL},
+      },
+      "disabled",
+   },
+   {
+      "pcfx_nospritelimit",
+      PCFX_NOSPRITELIMIT_LABEL_NO,
+      NULL,
+      PCFX_NOSPRITELIMIT_INFO_0_NO,
+      NULL,
+      NULL,
+      {
+         { "disabled",              NULL },
+         { "enabled",             NULL },
+         { NULL, NULL},
+      },
+      "disabled",
+   },
+   {
+      "pcfx_initial_scanline",
+      PCFX_INITIAL_SCANLINE_LABEL_NO,
+      NULL,
+      PCFX_INITIAL_SCANLINE_INFO_0_NO,
+      NULL,
+      NULL,
+      {
+         { "0", NULL },
+         { "1",  NULL },
+         { "2",  NULL },
+         { "3",  NULL },
+         { "4",  OPTION_VAL_4_NO },
+         { "5",  NULL },
+         { "6",  NULL },
+         { "7",  NULL },
+         { "8",  NULL },
+         { "9",  NULL },
+         { "10",  NULL },
+         { "11",  NULL },
+         { "12",  NULL },
+         { "13",  NULL },
+         { "14",  NULL },
+         { "15",  NULL },
+         { "16",  NULL },
+         { "17",  NULL },
+         { "18",  NULL },
+         { "19",  NULL },
+         { "20",  NULL },
+         { "21",  NULL },
+         { "22",  NULL },
+         { "23",  NULL },
+         { "24",  NULL },
+         { "25",  NULL },
+         { "26",  NULL },
+         { "27",  NULL },
+         { "28",  NULL },
+         { "29",  NULL },
+         { "30",  NULL },
+         { "31",  NULL },
+         { "32",  NULL },
+         { "33",  NULL },
+         { "34",  NULL },
+         { "35",  NULL },
+         { "36",  NULL },
+         { "37",  NULL },
+         { "38",  NULL },
+         { "39",  NULL },
+         { "40",  NULL },
+         { NULL, NULL},
+      },
+      "4",
+   },
+   {
+      "pcfx_last_scanline",
+      PCFX_LAST_SCANLINE_LABEL_NO,
+      NULL,
+      PCFX_LAST_SCANLINE_INFO_0_NO,
+      NULL,
+      NULL,
+      {
+         { "208",   NULL },
+         { "209",   NULL },
+         { "210",   NULL },
+         { "211",   NULL },
+         { "212",   NULL },
+         { "213",   NULL },
+         { "214",   NULL },
+         { "215",   NULL },
+         { "216",   NULL },
+         { "217",   NULL },
+         { "218",   NULL },
+         { "219",   NULL },
+         { "220",   NULL },
+         { "221",   NULL },
+         { "222",   NULL },
+         { "223",   NULL },
+         { "224",   NULL },
+         { "225",   NULL },
+         { "226",   NULL },
+         { "227",   NULL },
+         { "228",   NULL },
+         { "229",   NULL },
+         { "230",   NULL },
+         { "231",   NULL },
+         { "232",   NULL },
+         { "233",   NULL },
+         { "234",   NULL },
+         { "235",   OPTION_VAL_235_NO },
+         { "236",   NULL },
+         { "237",   NULL },
+         { "238",   NULL },
+         { "239",   NULL },
+         { NULL, NULL},
+      },
+      "235",
+   },
+   {
+      "pcfx_mouse_sensitivity",
+      PCFX_MOUSE_SENSITIVITY_LABEL_NO,
+      NULL,
+      PCFX_MOUSE_SENSITIVITY_INFO_0_NO,
+      NULL,
+      NULL,
+      {
+         { "1.00",   OPTION_VAL_1_00_NO },
+         { "1.25",   OPTION_VAL_1_25_NO },
+         { "1.50",   OPTION_VAL_1_50_NO },
+         { "1.75",   OPTION_VAL_1_75_NO },
+         { "2.00",   OPTION_VAL_2_00_NO },
+         { "2.25",   OPTION_VAL_2_25_NO },
+         { "2.50",   OPTION_VAL_2_50_NO },
+         { "2.75",   OPTION_VAL_2_75_NO },
+         { "3.00",   OPTION_VAL_3_00_NO },
+         { "3.25",   OPTION_VAL_3_25_NO },
+         { "3.50",   OPTION_VAL_3_50_NO },
+         { "3.75",   OPTION_VAL_3_75_NO },
+         { "4.00",   OPTION_VAL_4_00_NO },
+         { "4.25",   OPTION_VAL_4_25_NO },
+         { "4.50",   OPTION_VAL_4_50_NO },
+         { "4.75",   OPTION_VAL_4_75_NO },
+         { "5.00",   OPTION_VAL_5_00_NO },
+         { NULL, NULL},
+      },
+      "1.25",
+   },
+   { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
+};
+struct retro_core_options_v2 options_no = {
+   option_cats_no,
+   option_defs_no
+};
+
 /* RETRO_LANGUAGE_OC */
 
 #define PCFX_CDIMAGECACHE_LABEL_OC NULL
@@ -7080,11 +7926,11 @@ struct retro_core_options_v2 options_oc = {
 #define PCFX_NOSPRITELIMIT_INFO_0_PL NULL
 #define PCFX_INITIAL_SCANLINE_LABEL_PL NULL
 #define PCFX_INITIAL_SCANLINE_INFO_0_PL NULL
-#define OPTION_VAL_4_PL NULL
+#define OPTION_VAL_4_PL "4 (domyślnie)"
 #define PCFX_LAST_SCANLINE_LABEL_PL NULL
 #define PCFX_LAST_SCANLINE_INFO_0_PL NULL
-#define OPTION_VAL_235_PL NULL
-#define PCFX_MOUSE_SENSITIVITY_LABEL_PL NULL
+#define OPTION_VAL_235_PL "235 (domyślnie)"
+#define PCFX_MOUSE_SENSITIVITY_LABEL_PL "Czułość myszy"
 #define PCFX_MOUSE_SENSITIVITY_INFO_0_PL NULL
 #define OPTION_VAL_1_00_PL NULL
 #define OPTION_VAL_1_25_PL NULL
@@ -7346,45 +8192,45 @@ struct retro_core_options_v2 options_pl = {
 
 /* RETRO_LANGUAGE_PT_BR */
 
-#define PCFX_CDIMAGECACHE_LABEL_PT_BR NULL
-#define PCFX_CDIMAGECACHE_INFO_0_PT_BR NULL
-#define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_PT_BR NULL
+#define PCFX_CDIMAGECACHE_LABEL_PT_BR "Cache de imagens do CD (requer reinício)"
+#define PCFX_CDIMAGECACHE_INFO_0_PT_BR "Carrega a imagem completa na memória na inicialização. Eventualmente, pode diminuir o tempo de carregamento ao custo de um tempo de inicialização maior."
+#define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_PT_BR "Frequência de píxel horizontal veloz (requer reinicio)"
 #define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_PT_BR NULL
-#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_PT_BR NULL
-#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_PT_BR NULL
-#define PCFX_EMULATE_BUGGY_CODEC_LABEL_PT_BR NULL
-#define PCFX_EMULATE_BUGGY_CODEC_INFO_0_PT_BR NULL
-#define PCFX_RESAMP_QUALITY_LABEL_PT_BR NULL
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_PT_BR "Remover cliques de redefinições de canal (requer reinício)"
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_PT_BR "Hack para remover cliques de áudio causados por redefinições de canal forçadas."
+#define PCFX_EMULATE_BUGGY_CODEC_LABEL_PT_BR "Emular Codec defeituoso (requer reinício)"
+#define PCFX_EMULATE_BUGGY_CODEC_INFO_0_PT_BR "Hack que emula um codificador de ADPCM defeituoso usado por alguns jogos."
+#define PCFX_RESAMP_QUALITY_LABEL_PT_BR "Qualidade do áudio (requer reinício)"
 #define PCFX_RESAMP_QUALITY_INFO_0_PT_BR NULL
-#define PCFX_RAINBOW_CHROMAIP_LABEL_PT_BR NULL
-#define PCFX_RAINBOW_CHROMAIP_INFO_0_PT_BR NULL
-#define PCFX_NOSPRITELIMIT_LABEL_PT_BR NULL
-#define PCFX_NOSPRITELIMIT_INFO_0_PT_BR NULL
-#define PCFX_INITIAL_SCANLINE_LABEL_PT_BR NULL
-#define PCFX_INITIAL_SCANLINE_INFO_0_PT_BR NULL
-#define OPTION_VAL_4_PT_BR NULL
-#define PCFX_LAST_SCANLINE_LABEL_PT_BR NULL
-#define PCFX_LAST_SCANLINE_INFO_0_PT_BR NULL
-#define OPTION_VAL_235_PT_BR NULL
-#define PCFX_MOUSE_SENSITIVITY_LABEL_PT_BR NULL
-#define PCFX_MOUSE_SENSITIVITY_INFO_0_PT_BR NULL
-#define OPTION_VAL_1_00_PT_BR NULL
-#define OPTION_VAL_1_25_PT_BR NULL
-#define OPTION_VAL_1_50_PT_BR NULL
-#define OPTION_VAL_1_75_PT_BR NULL
-#define OPTION_VAL_2_00_PT_BR NULL
-#define OPTION_VAL_2_25_PT_BR NULL
-#define OPTION_VAL_2_50_PT_BR NULL
-#define OPTION_VAL_2_75_PT_BR NULL
-#define OPTION_VAL_3_00_PT_BR NULL
-#define OPTION_VAL_3_25_PT_BR NULL
-#define OPTION_VAL_3_50_PT_BR NULL
-#define OPTION_VAL_3_75_PT_BR NULL
-#define OPTION_VAL_4_00_PT_BR NULL
-#define OPTION_VAL_4_25_PT_BR NULL
-#define OPTION_VAL_4_50_PT_BR NULL
-#define OPTION_VAL_4_75_PT_BR NULL
-#define OPTION_VAL_5_00_PT_BR NULL
+#define PCFX_RAINBOW_CHROMAIP_LABEL_PT_BR "Interpolação bilinear de canal cromático (requer reinício)"
+#define PCFX_RAINBOW_CHROMAIP_INFO_0_PT_BR "Habilita interpolação bilinear no canal crómatico da saída RAINBOW YUV. Pode causar falhas gráficas em alguns jogos."
+#define PCFX_NOSPRITELIMIT_LABEL_PT_BR "Sem limite de sprite (requer reinício)"
+#define PCFX_NOSPRITELIMIT_INFO_0_PT_BR "Remove o limite de hardware de 16 sprites por linha de verificação. ATENÇÃO: pode causar falhas gráficas em alguns jogos."
+#define PCFX_INITIAL_SCANLINE_LABEL_PT_BR "Linha de verificação inicial"
+#define PCFX_INITIAL_SCANLINE_INFO_0_PT_BR "Primeira linha de verificação renderizada. Valores maiores cortarão a parte superior da imagem."
+#define OPTION_VAL_4_PT_BR "4 (padrão)"
+#define PCFX_LAST_SCANLINE_LABEL_PT_BR "Linha de verificação final"
+#define PCFX_LAST_SCANLINE_INFO_0_PT_BR "Última linha de verificação renderizada. Valores menores cortarão a parte inferior da imagem."
+#define OPTION_VAL_235_PT_BR "235 (padrão)"
+#define PCFX_MOUSE_SENSITIVITY_LABEL_PT_BR "Sensibilidade do mouse"
+#define PCFX_MOUSE_SENSITIVITY_INFO_0_PT_BR "Configura a sensibilidade do dispositivo \"PCFX Mouse\". Valores maiores tornarão a movimentação do cursor do mouse mais rápida."
+#define OPTION_VAL_1_00_PT_BR "1,00"
+#define OPTION_VAL_1_25_PT_BR "1,25"
+#define OPTION_VAL_1_50_PT_BR "1,50"
+#define OPTION_VAL_1_75_PT_BR "1,75"
+#define OPTION_VAL_2_00_PT_BR "2,00"
+#define OPTION_VAL_2_25_PT_BR "2,25"
+#define OPTION_VAL_2_50_PT_BR "2,50"
+#define OPTION_VAL_2_75_PT_BR "2,75"
+#define OPTION_VAL_3_00_PT_BR "3,00"
+#define OPTION_VAL_3_25_PT_BR "3,25"
+#define OPTION_VAL_3_50_PT_BR "3,50"
+#define OPTION_VAL_3_75_PT_BR "3,75"
+#define OPTION_VAL_4_00_PT_BR "4,00"
+#define OPTION_VAL_4_25_PT_BR "4,25"
+#define OPTION_VAL_4_50_PT_BR "4,50"
+#define OPTION_VAL_4_75_PT_BR "4,75"
+#define OPTION_VAL_5_00_PT_BR "5,00"
 
 struct retro_core_option_v2_category option_cats_pt_br[] = {
    { NULL, NULL, NULL },
@@ -7628,7 +8474,7 @@ struct retro_core_options_v2 options_pt_br = {
 
 /* RETRO_LANGUAGE_PT_PT */
 
-#define PCFX_CDIMAGECACHE_LABEL_PT_PT NULL
+#define PCFX_CDIMAGECACHE_LABEL_PT_PT "Cache da Imagem do CD (Reinicialização necessária)"
 #define PCFX_CDIMAGECACHE_INFO_0_PT_PT NULL
 #define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_PT_PT NULL
 #define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_PT_PT NULL
@@ -7644,10 +8490,10 @@ struct retro_core_options_v2 options_pt_br = {
 #define PCFX_NOSPRITELIMIT_INFO_0_PT_PT NULL
 #define PCFX_INITIAL_SCANLINE_LABEL_PT_PT NULL
 #define PCFX_INITIAL_SCANLINE_INFO_0_PT_PT NULL
-#define OPTION_VAL_4_PT_PT NULL
+#define OPTION_VAL_4_PT_PT "4 (Padrão)"
 #define PCFX_LAST_SCANLINE_LABEL_PT_PT NULL
 #define PCFX_LAST_SCANLINE_INFO_0_PT_PT NULL
-#define OPTION_VAL_235_PT_PT NULL
+#define OPTION_VAL_235_PT_PT "235 (Padrão)"
 #define PCFX_MOUSE_SENSITIVITY_LABEL_PT_PT NULL
 #define PCFX_MOUSE_SENSITIVITY_INFO_0_PT_PT NULL
 #define OPTION_VAL_1_00_PT_PT NULL
@@ -8192,28 +9038,28 @@ struct retro_core_options_v2 options_ro = {
 
 /* RETRO_LANGUAGE_RU */
 
-#define PCFX_CDIMAGECACHE_LABEL_RU NULL
-#define PCFX_CDIMAGECACHE_INFO_0_RU NULL
-#define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_RU NULL
+#define PCFX_CDIMAGECACHE_LABEL_RU "Кэшировать образ CD (требуется перезапуск)"
+#define PCFX_CDIMAGECACHE_INFO_0_RU "При запуске загружать полный образ диска в память. Может снижать время загрузок, но увеличивает время запуска."
+#define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_RU "Ширина высокой частоты пикселизации (перезапуск)"
 #define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_RU NULL
-#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_RU NULL
-#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_RU NULL
-#define PCFX_EMULATE_BUGGY_CODEC_LABEL_RU NULL
-#define PCFX_EMULATE_BUGGY_CODEC_INFO_0_RU NULL
-#define PCFX_RESAMP_QUALITY_LABEL_RU NULL
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_RU "Подавлять щелчки при сбросах канала (требуется перезапуск)"
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_RU "Хак, подавляющий щелчки, вызванные принудительными сбросами канала."
+#define PCFX_EMULATE_BUGGY_CODEC_LABEL_RU "Эмулировать ошибки кодека (требуется перезапуск)"
+#define PCFX_EMULATE_BUGGY_CODEC_INFO_0_RU "Хак, эмулирующий ошибки ADPCM-кодировщика, используемого для ADPCM в некоторых играх."
+#define PCFX_RESAMP_QUALITY_LABEL_RU "Качество звука (требуется перезапуск)"
 #define PCFX_RESAMP_QUALITY_INFO_0_RU NULL
-#define PCFX_RAINBOW_CHROMAIP_LABEL_RU NULL
-#define PCFX_RAINBOW_CHROMAIP_INFO_0_RU NULL
-#define PCFX_NOSPRITELIMIT_LABEL_RU NULL
-#define PCFX_NOSPRITELIMIT_INFO_0_RU NULL
-#define PCFX_INITIAL_SCANLINE_LABEL_RU NULL
-#define PCFX_INITIAL_SCANLINE_INFO_0_RU NULL
-#define OPTION_VAL_4_RU NULL
-#define PCFX_LAST_SCANLINE_LABEL_RU NULL
-#define PCFX_LAST_SCANLINE_INFO_0_RU NULL
-#define OPTION_VAL_235_RU NULL
-#define PCFX_MOUSE_SENSITIVITY_LABEL_RU NULL
-#define PCFX_MOUSE_SENSITIVITY_INFO_0_RU NULL
+#define PCFX_RAINBOW_CHROMAIP_LABEL_RU "Билинейная интерполяция цветности (требуется перезапуск)"
+#define PCFX_RAINBOW_CHROMAIP_INFO_0_RU "Включает билинейную интерполяцию для канала цветности на выходе RAINBOW YUV. В некоторых играх может вызывать графические баги."
+#define PCFX_NOSPRITELIMIT_LABEL_RU "Без ограничения спрайтов (требуется перезапуск)"
+#define PCFX_NOSPRITELIMIT_INFO_0_RU "Снимает аппаратное ограничение в 16 спрайтов на линии развёртки. ВНИМАНИЕ: в некоторых играх может вызывать графические баги."
+#define PCFX_INITIAL_SCANLINE_LABEL_RU "Первая строка развёртки"
+#define PCFX_INITIAL_SCANLINE_INFO_0_RU "Начальная отображаемая строка развёртки. Более высокие значения обрезают верхнюю часть изображения."
+#define OPTION_VAL_4_RU "4 (по умолчанию)"
+#define PCFX_LAST_SCANLINE_LABEL_RU "Последняя строка развёртки"
+#define PCFX_LAST_SCANLINE_INFO_0_RU "Последняя отображаемая строка развёртки. Более высокие значения обрезают нижнюю часть изображения."
+#define OPTION_VAL_235_RU "235 (по умолчанию)"
+#define PCFX_MOUSE_SENSITIVITY_LABEL_RU "Чувствительность мыши"
+#define PCFX_MOUSE_SENSITIVITY_INFO_0_RU "Настройка чувствительности устройства типа 'PCFX Mouse'. Более высокие значения повышают скорость перемещения курсора мыши."
 #define OPTION_VAL_1_00_RU NULL
 #define OPTION_VAL_1_25_RU NULL
 #define OPTION_VAL_1_50_RU NULL
@@ -9602,28 +10448,28 @@ struct retro_core_options_v2 options_sv = {
 
 /* RETRO_LANGUAGE_TR */
 
-#define PCFX_CDIMAGECACHE_LABEL_TR NULL
-#define PCFX_CDIMAGECACHE_INFO_0_TR NULL
-#define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_TR NULL
+#define PCFX_CDIMAGECACHE_LABEL_TR "CD Kalıbı Önbelleği (Yeniden Başlatılmalı)"
+#define PCFX_CDIMAGECACHE_INFO_0_TR "Başlangıç sırasında bütün kalıbı hafızaya yükler. Başlangıç sürecini uzatmak pahasına oyundaki yüklenme sürelerini kısaltabilir."
+#define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_TR "Yüksek Nokta Saat Genişliği (Yeniden Başlatılmalı)"
 #define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_TR NULL
-#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_TR NULL
-#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_TR NULL
-#define PCFX_EMULATE_BUGGY_CODEC_LABEL_TR NULL
-#define PCFX_EMULATE_BUGGY_CODEC_INFO_0_TR NULL
-#define PCFX_RESAMP_QUALITY_LABEL_TR NULL
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_TR "Kanal Sıfırlama Tıklamalarını Bastır (Yeniden Başlatılmalı)"
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_TR "Zorla kanal sıfırlamalarının neden olduğu ses tıklamalarını bastırmak için geliştirme."
+#define PCFX_EMULATE_BUGGY_CODEC_LABEL_TR "Buggy Çözücü Taklidi (Yeniden Başlatılmalı)"
+#define PCFX_EMULATE_BUGGY_CODEC_INFO_0_TR "Bazı oyunlarda ADPCM için kullanılan 'buggy ADPCM' kodlayıcısını taklit eden gelişitirici."
+#define PCFX_RESAMP_QUALITY_LABEL_TR "Ses Kalitesi (Yeniden Başlatılmalı)"
 #define PCFX_RESAMP_QUALITY_INFO_0_TR NULL
-#define PCFX_RAINBOW_CHROMAIP_LABEL_TR NULL
-#define PCFX_RAINBOW_CHROMAIP_INFO_0_TR NULL
-#define PCFX_NOSPRITELIMIT_LABEL_TR NULL
-#define PCFX_NOSPRITELIMIT_INFO_0_TR NULL
-#define PCFX_INITIAL_SCANLINE_LABEL_TR NULL
-#define PCFX_INITIAL_SCANLINE_INFO_0_TR NULL
-#define OPTION_VAL_4_TR NULL
-#define PCFX_LAST_SCANLINE_LABEL_TR NULL
-#define PCFX_LAST_SCANLINE_INFO_0_TR NULL
-#define OPTION_VAL_235_TR NULL
-#define PCFX_MOUSE_SENSITIVITY_LABEL_TR NULL
-#define PCFX_MOUSE_SENSITIVITY_INFO_0_TR NULL
+#define PCFX_RAINBOW_CHROMAIP_LABEL_TR "Chroma Kanalı Doğrusal Ara Değer (Yeniden Başlatılmalı)"
+#define PCFX_RAINBOW_CHROMAIP_INFO_0_TR "RAINBOW YUV çıktısının renk kanalında çift doğrusal ara değeri etkinleştirin. Bazı oyunlarda grafik hatalarına neden olabilir."
+#define PCFX_NOSPRITELIMIT_LABEL_TR "Hareket Sınırını Kaldır (Yeniden Başlatılmalı)"
+#define PCFX_NOSPRITELIMIT_INFO_0_TR "Tarama çizgisi başına 16 hareket donanım sınırını kaldırır. UYARI: Bazı oyunlarda bozulmlara sebep olabilir."
+#define PCFX_INITIAL_SCANLINE_LABEL_TR "İlk Tarama Çizgisi"
+#define PCFX_INITIAL_SCANLINE_INFO_0_TR "İlk işlenen tarama çizgisi. Yükseltilen değerler görüntünün üstünü kırpacaktır."
+#define OPTION_VAL_4_TR "4 (Varsayılan)"
+#define PCFX_LAST_SCANLINE_LABEL_TR "Son Tarama Çizgisi"
+#define PCFX_LAST_SCANLINE_INFO_0_TR "Son işlenen tarama çizgisi. Düşürülen değerler görüntünün alt kısmını kırpacaktır."
+#define OPTION_VAL_235_TR "235 (Varsayılan)"
+#define PCFX_MOUSE_SENSITIVITY_LABEL_TR "Fare Hassasiyeti"
+#define PCFX_MOUSE_SENSITIVITY_INFO_0_TR "'PCFX Fare'  cihaz türünün hassasiyetini yapılandırın. Daha yüksek değerler, fare imlecinin daha hızlı hareket etmesini sağlar."
 #define OPTION_VAL_1_00_TR NULL
 #define OPTION_VAL_1_25_TR NULL
 #define OPTION_VAL_1_50_TR NULL
@@ -9884,15 +10730,15 @@ struct retro_core_options_v2 options_tr = {
 
 /* RETRO_LANGUAGE_UK */
 
-#define PCFX_CDIMAGECACHE_LABEL_UK NULL
-#define PCFX_CDIMAGECACHE_INFO_0_UK NULL
+#define PCFX_CDIMAGECACHE_LABEL_UK "Кеш образу CD (потрібен перезапуск)"
+#define PCFX_CDIMAGECACHE_INFO_0_UK "Завантажувати повне зображення в пам'ять під час запуску. Може зменшувати час завантаження за рахунок збільшення часу запуску."
 #define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_UK NULL
 #define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_UK NULL
 #define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_UK NULL
-#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_UK NULL
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_UK "Хак для придушення звукових клацань, спричинених примусовим скиданням каналів."
 #define PCFX_EMULATE_BUGGY_CODEC_LABEL_UK NULL
 #define PCFX_EMULATE_BUGGY_CODEC_INFO_0_UK NULL
-#define PCFX_RESAMP_QUALITY_LABEL_UK NULL
+#define PCFX_RESAMP_QUALITY_LABEL_UK "Якість звуку (потрібен перезапуск)"
 #define PCFX_RESAMP_QUALITY_INFO_0_UK NULL
 #define PCFX_RAINBOW_CHROMAIP_LABEL_UK NULL
 #define PCFX_RAINBOW_CHROMAIP_INFO_0_UK NULL
@@ -9900,11 +10746,11 @@ struct retro_core_options_v2 options_tr = {
 #define PCFX_NOSPRITELIMIT_INFO_0_UK NULL
 #define PCFX_INITIAL_SCANLINE_LABEL_UK NULL
 #define PCFX_INITIAL_SCANLINE_INFO_0_UK NULL
-#define OPTION_VAL_4_UK NULL
+#define OPTION_VAL_4_UK "4 (за замовчуванням)"
 #define PCFX_LAST_SCANLINE_LABEL_UK NULL
 #define PCFX_LAST_SCANLINE_INFO_0_UK NULL
-#define OPTION_VAL_235_UK NULL
-#define PCFX_MOUSE_SENSITIVITY_LABEL_UK NULL
+#define OPTION_VAL_235_UK "235 (за замовчуванням)"
+#define PCFX_MOUSE_SENSITIVITY_LABEL_UK "Чутливість миші"
 #define PCFX_MOUSE_SENSITIVITY_INFO_0_UK NULL
 #define OPTION_VAL_1_00_UK NULL
 #define OPTION_VAL_1_25_UK NULL
@@ -10164,6 +11010,288 @@ struct retro_core_options_v2 options_uk = {
    option_defs_uk
 };
 
+/* RETRO_LANGUAGE_VAL */
+
+#define PCFX_CDIMAGECACHE_LABEL_VAL NULL
+#define PCFX_CDIMAGECACHE_INFO_0_VAL NULL
+#define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_VAL NULL
+#define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_VAL NULL
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_VAL NULL
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_VAL NULL
+#define PCFX_EMULATE_BUGGY_CODEC_LABEL_VAL NULL
+#define PCFX_EMULATE_BUGGY_CODEC_INFO_0_VAL NULL
+#define PCFX_RESAMP_QUALITY_LABEL_VAL NULL
+#define PCFX_RESAMP_QUALITY_INFO_0_VAL NULL
+#define PCFX_RAINBOW_CHROMAIP_LABEL_VAL NULL
+#define PCFX_RAINBOW_CHROMAIP_INFO_0_VAL NULL
+#define PCFX_NOSPRITELIMIT_LABEL_VAL NULL
+#define PCFX_NOSPRITELIMIT_INFO_0_VAL NULL
+#define PCFX_INITIAL_SCANLINE_LABEL_VAL NULL
+#define PCFX_INITIAL_SCANLINE_INFO_0_VAL NULL
+#define OPTION_VAL_4_VAL NULL
+#define PCFX_LAST_SCANLINE_LABEL_VAL NULL
+#define PCFX_LAST_SCANLINE_INFO_0_VAL NULL
+#define OPTION_VAL_235_VAL NULL
+#define PCFX_MOUSE_SENSITIVITY_LABEL_VAL NULL
+#define PCFX_MOUSE_SENSITIVITY_INFO_0_VAL NULL
+#define OPTION_VAL_1_00_VAL "1,00"
+#define OPTION_VAL_1_25_VAL "1,25"
+#define OPTION_VAL_1_50_VAL "1,50"
+#define OPTION_VAL_1_75_VAL "1,75"
+#define OPTION_VAL_2_00_VAL "2,00"
+#define OPTION_VAL_2_25_VAL "2,25"
+#define OPTION_VAL_2_50_VAL "2,50"
+#define OPTION_VAL_2_75_VAL "2,75"
+#define OPTION_VAL_3_00_VAL "3,00"
+#define OPTION_VAL_3_25_VAL "3,25"
+#define OPTION_VAL_3_50_VAL "3,50"
+#define OPTION_VAL_3_75_VAL "3,75"
+#define OPTION_VAL_4_00_VAL "4,00"
+#define OPTION_VAL_4_25_VAL "4,25"
+#define OPTION_VAL_4_50_VAL "4,50"
+#define OPTION_VAL_4_75_VAL "4,75"
+#define OPTION_VAL_5_00_VAL "5,00"
+
+struct retro_core_option_v2_category option_cats_val[] = {
+   { NULL, NULL, NULL },
+};
+struct retro_core_option_v2_definition option_defs_val[] = {
+   {
+      "pcfx_cdimagecache",
+      PCFX_CDIMAGECACHE_LABEL_VAL,
+      NULL,
+      PCFX_CDIMAGECACHE_INFO_0_VAL,
+      NULL,
+      NULL,
+      {
+         { "disabled", NULL },
+         { "enabled", NULL },
+         { NULL, NULL},
+      },
+      "disabled"
+   },
+   {
+      "pcfx_high_dotclock_width",
+      PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_VAL,
+      NULL,
+      PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_VAL,
+      NULL,
+      NULL,
+      {
+         { "256",  NULL },
+         { "341",  NULL },
+         { "1024",  NULL },
+         { NULL, NULL},
+      },
+      "1024",
+   },
+   {
+      "pcfx_suppress_channel_reset_clicks",
+      PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_VAL,
+      NULL,
+      PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_VAL,
+      NULL,
+      NULL,
+      {
+         { "enabled", NULL },
+         { "disabled",     NULL },
+         { NULL, NULL},
+      },
+      "enabled",
+   },
+   {
+      "pcfx_emulate_buggy_codec",
+      PCFX_EMULATE_BUGGY_CODEC_LABEL_VAL,
+      NULL,
+      PCFX_EMULATE_BUGGY_CODEC_INFO_0_VAL,
+      NULL,
+      NULL,
+      {
+         { "disabled", NULL },
+         { "enabled",  NULL },
+         { NULL, NULL},
+      },
+      "disabled",
+   },
+   {
+      "pcfx_resamp_quality",
+      PCFX_RESAMP_QUALITY_LABEL_VAL,
+      NULL,
+      PCFX_RESAMP_QUALITY_INFO_0_VAL,
+      NULL,
+      NULL,
+      {
+         { "0",  NULL },
+         { "1",  NULL },
+         { "2",  NULL },
+         { "3",  NULL },
+         { "4",  NULL },
+         { "5",  NULL },
+         { NULL, NULL },
+      },
+      "3",
+   },
+   {
+      "pcfx_rainbow_chromaip",
+      PCFX_RAINBOW_CHROMAIP_LABEL_VAL,
+      NULL,
+      PCFX_RAINBOW_CHROMAIP_INFO_0_VAL,
+      NULL,
+      NULL,
+      {
+         { "disabled",      NULL },
+         { "enabled",      NULL },
+         { NULL, NULL},
+      },
+      "disabled",
+   },
+   {
+      "pcfx_nospritelimit",
+      PCFX_NOSPRITELIMIT_LABEL_VAL,
+      NULL,
+      PCFX_NOSPRITELIMIT_INFO_0_VAL,
+      NULL,
+      NULL,
+      {
+         { "disabled",              NULL },
+         { "enabled",             NULL },
+         { NULL, NULL},
+      },
+      "disabled",
+   },
+   {
+      "pcfx_initial_scanline",
+      PCFX_INITIAL_SCANLINE_LABEL_VAL,
+      NULL,
+      PCFX_INITIAL_SCANLINE_INFO_0_VAL,
+      NULL,
+      NULL,
+      {
+         { "0", NULL },
+         { "1",  NULL },
+         { "2",  NULL },
+         { "3",  NULL },
+         { "4",  OPTION_VAL_4_VAL },
+         { "5",  NULL },
+         { "6",  NULL },
+         { "7",  NULL },
+         { "8",  NULL },
+         { "9",  NULL },
+         { "10",  NULL },
+         { "11",  NULL },
+         { "12",  NULL },
+         { "13",  NULL },
+         { "14",  NULL },
+         { "15",  NULL },
+         { "16",  NULL },
+         { "17",  NULL },
+         { "18",  NULL },
+         { "19",  NULL },
+         { "20",  NULL },
+         { "21",  NULL },
+         { "22",  NULL },
+         { "23",  NULL },
+         { "24",  NULL },
+         { "25",  NULL },
+         { "26",  NULL },
+         { "27",  NULL },
+         { "28",  NULL },
+         { "29",  NULL },
+         { "30",  NULL },
+         { "31",  NULL },
+         { "32",  NULL },
+         { "33",  NULL },
+         { "34",  NULL },
+         { "35",  NULL },
+         { "36",  NULL },
+         { "37",  NULL },
+         { "38",  NULL },
+         { "39",  NULL },
+         { "40",  NULL },
+         { NULL, NULL},
+      },
+      "4",
+   },
+   {
+      "pcfx_last_scanline",
+      PCFX_LAST_SCANLINE_LABEL_VAL,
+      NULL,
+      PCFX_LAST_SCANLINE_INFO_0_VAL,
+      NULL,
+      NULL,
+      {
+         { "208",   NULL },
+         { "209",   NULL },
+         { "210",   NULL },
+         { "211",   NULL },
+         { "212",   NULL },
+         { "213",   NULL },
+         { "214",   NULL },
+         { "215",   NULL },
+         { "216",   NULL },
+         { "217",   NULL },
+         { "218",   NULL },
+         { "219",   NULL },
+         { "220",   NULL },
+         { "221",   NULL },
+         { "222",   NULL },
+         { "223",   NULL },
+         { "224",   NULL },
+         { "225",   NULL },
+         { "226",   NULL },
+         { "227",   NULL },
+         { "228",   NULL },
+         { "229",   NULL },
+         { "230",   NULL },
+         { "231",   NULL },
+         { "232",   NULL },
+         { "233",   NULL },
+         { "234",   NULL },
+         { "235",   OPTION_VAL_235_VAL },
+         { "236",   NULL },
+         { "237",   NULL },
+         { "238",   NULL },
+         { "239",   NULL },
+         { NULL, NULL},
+      },
+      "235",
+   },
+   {
+      "pcfx_mouse_sensitivity",
+      PCFX_MOUSE_SENSITIVITY_LABEL_VAL,
+      NULL,
+      PCFX_MOUSE_SENSITIVITY_INFO_0_VAL,
+      NULL,
+      NULL,
+      {
+         { "1.00",   OPTION_VAL_1_00_VAL },
+         { "1.25",   OPTION_VAL_1_25_VAL },
+         { "1.50",   OPTION_VAL_1_50_VAL },
+         { "1.75",   OPTION_VAL_1_75_VAL },
+         { "2.00",   OPTION_VAL_2_00_VAL },
+         { "2.25",   OPTION_VAL_2_25_VAL },
+         { "2.50",   OPTION_VAL_2_50_VAL },
+         { "2.75",   OPTION_VAL_2_75_VAL },
+         { "3.00",   OPTION_VAL_3_00_VAL },
+         { "3.25",   OPTION_VAL_3_25_VAL },
+         { "3.50",   OPTION_VAL_3_50_VAL },
+         { "3.75",   OPTION_VAL_3_75_VAL },
+         { "4.00",   OPTION_VAL_4_00_VAL },
+         { "4.25",   OPTION_VAL_4_25_VAL },
+         { "4.50",   OPTION_VAL_4_50_VAL },
+         { "4.75",   OPTION_VAL_4_75_VAL },
+         { "5.00",   OPTION_VAL_5_00_VAL },
+         { NULL, NULL},
+      },
+      "1.25",
+   },
+   { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
+};
+struct retro_core_options_v2 options_val = {
+   option_cats_val,
+   option_defs_val
+};
+
 /* RETRO_LANGUAGE_VN */
 
 #define PCFX_CDIMAGECACHE_LABEL_VN NULL
@@ -10182,10 +11310,10 @@ struct retro_core_options_v2 options_uk = {
 #define PCFX_NOSPRITELIMIT_INFO_0_VN NULL
 #define PCFX_INITIAL_SCANLINE_LABEL_VN NULL
 #define PCFX_INITIAL_SCANLINE_INFO_0_VN NULL
-#define OPTION_VAL_4_VN NULL
+#define OPTION_VAL_4_VN "4 (Mặc định)"
 #define PCFX_LAST_SCANLINE_LABEL_VN NULL
 #define PCFX_LAST_SCANLINE_INFO_0_VN NULL
-#define OPTION_VAL_235_VN NULL
+#define OPTION_VAL_235_VN "235 (Mặc định)"
 #define PCFX_MOUSE_SENSITIVITY_LABEL_VN NULL
 #define PCFX_MOUSE_SENSITIVITY_INFO_0_VN NULL
 #define OPTION_VAL_1_00_VN NULL
