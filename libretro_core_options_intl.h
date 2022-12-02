@@ -2273,13 +2273,13 @@ struct retro_core_options_v2 options_da = {
 #define PCFX_CDIMAGECACHE_LABEL_DE "CD-Abbild-Cache (Neustart erforderlich)"
 #define PCFX_CDIMAGECACHE_INFO_0_DE "Das komplette Abbild beim Start in den Arbeitsspeicher laden. Kann die Ladezeiten auf Kosten einer längeren Startzeit verkürzen."
 #define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_DE "Dotclock-Breite (Neustart erforderlich)"
-#define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_DE NULL
+#define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_DE "Emulierte Breite für den 7,16 MHz dot-clock-Modus. Niedrigere Werte sind schneller, verursachen aber eine gewisse Verzerrung der Pixel."
 #define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_DE "Klicks beim Zurücksetzen des Kanals unterdrücken (Neustart erforderlich)"
 #define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_DE "Hack zur Unterdrückung von Audioklicks, die durch erzwungene Kanalresets verursacht werden."
 #define PCFX_EMULATE_BUGGY_CODEC_LABEL_DE "Fehlerhaften Codec emulieren (Neustart erforderlich)"
 #define PCFX_EMULATE_BUGGY_CODEC_INFO_0_DE "Hack, der einen fehlerhaften ADPCM-Encoder emuliert, der als ADPCM in einigen Spiele verwendet wird."
 #define PCFX_RESAMP_QUALITY_LABEL_DE "Klangqualität (Neustart erforderlich)"
-#define PCFX_RESAMP_QUALITY_INFO_0_DE NULL
+#define PCFX_RESAMP_QUALITY_INFO_0_DE "Höhere Werte entsprechen einem besseren Signal-Rausch-Verhältnis und einer besseren Erhaltung höherer Frequenzen ('Helligkeit'), auf Kosten einer erhöhten Rechenkomplexität und einer vernachlässigbaren Latenzsteigerung."
 #define PCFX_RAINBOW_CHROMAIP_LABEL_DE "Bilineare Interpolation des Chromakanals (Neustart erforderlich)"
 #define PCFX_RAINBOW_CHROMAIP_INFO_0_DE "Bilineare Interpolation auf dem Chromakanal der RAINBOW-YUV-Ausgabe aktivieren. Kann bei einigen Spielen grafische Glitches verursachen."
 #define PCFX_NOSPRITELIMIT_LABEL_DE "Keine Sprite-Begrenzung (Neustart erforderlich)"
@@ -3401,13 +3401,13 @@ struct retro_core_options_v2 options_eo = {
 #define PCFX_CDIMAGECACHE_LABEL_ES "Cachear imagen de CD (es necesario reiniciar)"
 #define PCFX_CDIMAGECACHE_INFO_0_ES "Carga la imagen de CD entera en la memoria al arrancar. Podría reducir los tiempos de carga a costa de aumentar el tiempo de arranque."
 #define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_ES "Ancho al acelerar la frecuencia de vídeo (es necesario reiniciar)"
-#define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_ES NULL
+#define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_ES "Indica el ancho emulado para el modo de frecuencia de vídeo a 7,16 MHz. Un valor inferior es más rápido, pero producirá cierta distorsión en los píxeles."
 #define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_ES "Suprimir chasquidos al reiniciar los canales (es necesario reiniciar)"
 #define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_ES "Un arreglo que elimina los chasquidos de audio provocados al reiniciar canales forzosamente."
 #define PCFX_EMULATE_BUGGY_CODEC_LABEL_ES "Emular códec defectuoso (es necesario reiniciar)"
 #define PCFX_EMULATE_BUGGY_CODEC_INFO_0_ES "Un arreglo que emula un codificador de ADPCM defectuoso que utilizan algunos juegos."
 #define PCFX_RESAMP_QUALITY_LABEL_ES "Calidad del sonido (es necesario reiniciar)"
-#define PCFX_RESAMP_QUALITY_INFO_0_ES NULL
+#define PCFX_RESAMP_QUALITY_INFO_0_ES "Un valor alto producirá una mejor relación señal/ruido y preservará mejor las frecuencias agudas («más claridad») a costa de provocar una mayor complejidad computacional y aumentar muy levemente la latencia."
 #define PCFX_RAINBOW_CHROMAIP_LABEL_ES "Interpolación bilineal de los canales de croma (es necesario reiniciar)"
 #define PCFX_RAINBOW_CHROMAIP_INFO_0_ES "Activa la interpolación bilineal en el canal de croma de la salida de vídeo YUV RAINBOW. Puede provocar defectos gráficos en algunos juegos."
 #define PCFX_NOSPRITELIMIT_LABEL_ES "Desactivar límite de sprites (es necesario reiniciar)"
@@ -4247,13 +4247,13 @@ struct retro_core_options_v2 options_fi = {
 #define PCFX_CDIMAGECACHE_LABEL_FR "Mise en cache des images CD (Redémarrage requis)"
 #define PCFX_CDIMAGECACHE_INFO_0_FR "Charger l'image disque complète dans la mémoire au démarrage. Peut potentiellement diminuer le temps de chargement au prix d'une augmentation du temps de démarrage."
 #define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_FR "Grande largeur d'horloge pour les pixels (Redémarrage requis)"
-#define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_FR NULL
+#define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_FR "Largeur émulée du mode d'horloge d'affichage des pixels à 7,16 MHz. Des valeurs plus basses sont plus rapides, mais provoqueront un certain degré de distorsion des pixels."
 #define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_FR "Supprimer les clics de réinitialisation du canal (Redémarrage requis)"
 #define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_FR "Hack pour supprimer les clics audio causés par les réinitialisations forcées des canaux."
 #define PCFX_EMULATE_BUGGY_CODEC_LABEL_FR "Émuler le Codec buggé (Redémaragge requis)"
 #define PCFX_EMULATE_BUGGY_CODEC_INFO_0_FR "Hack qui émule un encodeur ADPCM buggé utilisé pour l'ADPCM de certains jeux."
 #define PCFX_RESAMP_QUALITY_LABEL_FR "Qualité du son (Redémarrage requis)"
-#define PCFX_RESAMP_QUALITY_INFO_0_FR NULL
+#define PCFX_RESAMP_QUALITY_INFO_0_FR "Des valeurs plus élevées correspondent à un meilleur rapport de signal/bruit et à une meilleure préservation des fréquences plus élevées ('luminosité'), au prix d'une complexité de calcul accrue et d'une augmentation négligeable de la latence."
 #define PCFX_RAINBOW_CHROMAIP_LABEL_FR "Interpolation bilinéaire du canal chromatique (Redémarrage requis)"
 #define PCFX_RAINBOW_CHROMAIP_INFO_0_FR "Activer l'interpolation bilinéaire sur le canal chromatique de la sortie RAINBOW YUV. Peut causer des bugs graphiques avec certains jeux."
 #define PCFX_NOSPRITELIMIT_LABEL_FR "Aucune limite de sprites (Redémarrage requis)"
@@ -5374,26 +5374,26 @@ struct retro_core_options_v2 options_hr = {
 
 #define PCFX_CDIMAGECACHE_LABEL_HU "Gyorsítótár a CD képfájlhoz (újraindítás szükséges)"
 #define PCFX_CDIMAGECACHE_INFO_0_HU "Indításkor beolvassa a teljes képfájlt a memóriába. Csökkentheti a töltési időket a lassabb indulásért cserébe."
-#define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_HU NULL
-#define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_HU NULL
-#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_HU NULL
-#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_HU NULL
-#define PCFX_EMULATE_BUGGY_CODEC_LABEL_HU NULL
-#define PCFX_EMULATE_BUGGY_CODEC_INFO_0_HU NULL
-#define PCFX_RESAMP_QUALITY_LABEL_HU NULL
-#define PCFX_RESAMP_QUALITY_INFO_0_HU NULL
-#define PCFX_RAINBOW_CHROMAIP_LABEL_HU NULL
-#define PCFX_RAINBOW_CHROMAIP_INFO_0_HU NULL
-#define PCFX_NOSPRITELIMIT_LABEL_HU NULL
+#define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_HU "Nagy szélességű pixelórajel (újraindítás szükséges)"
+#define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_HU "A 7.16 MHz-es pixelórajel mód emulált szélessége. Az alacsonyabb értékek gyorsabbak, de némi pixeltorzulást eredményeznek."
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_HU "A csatorna reset kattanások elnyomása (újraindítás szükséges)"
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_HU "A kényszerített csatornaújraindítások által kiváltott hallható kattanások elnyomása."
+#define PCFX_EMULATE_BUGGY_CODEC_LABEL_HU "Hibás codec emulálása (újraindítás szükséges)"
+#define PCFX_EMULATE_BUGGY_CODEC_INFO_0_HU "Hibás ADPCM kódoló emulálása, amelyet néhány játék használ."
+#define PCFX_RESAMP_QUALITY_LABEL_HU "Hangminőség (újraindítás szükséges)"
+#define PCFX_RESAMP_QUALITY_INFO_0_HU "A nagyobb értékek jobb jel-zaj arányt és a magas frekvenciák (\"fényesség\") jobb megőrzését jelentik, nagyobb számításigény és a késleltetés elhanyagolható növekedése árán."
+#define PCFX_RAINBOW_CHROMAIP_LABEL_HU "Színcsatorna kettős lineáris interpolációja (újraindítás szükséges)"
+#define PCFX_RAINBOW_CHROMAIP_INFO_0_HU "A RAINBOW YUV kimenet színcsatornájának kettős lináris interpolációja. Néhány játéknál grafikai hibákat okozhat."
+#define PCFX_NOSPRITELIMIT_LABEL_HU "Nincs sprite limit (újraindítás szükséges)"
 #define PCFX_NOSPRITELIMIT_INFO_0_HU "Megszünteti a hardver soronként legfeljebb 16 sprite-os korlátozását. Figyelem: grafikus hibákat okozhat néhány játéknál."
 #define PCFX_INITIAL_SCANLINE_LABEL_HU "Kezdő scanline"
-#define PCFX_INITIAL_SCANLINE_INFO_0_HU NULL
+#define PCFX_INITIAL_SCANLINE_INFO_0_HU "Az első megjelenített scanline. Nagyobb értékek többet vágnak a kép tetejéből."
 #define OPTION_VAL_4_HU "4 (alapértelmezett)"
 #define PCFX_LAST_SCANLINE_LABEL_HU "Utolsó scanline"
-#define PCFX_LAST_SCANLINE_INFO_0_HU NULL
+#define PCFX_LAST_SCANLINE_INFO_0_HU "Az utolsó megjelenített scanline. Nagyobb értékek többet vágnak a kép aljából."
 #define OPTION_VAL_235_HU "235 (alapértelmezett)"
 #define PCFX_MOUSE_SENSITIVITY_LABEL_HU "Egér érzékenysége"
-#define PCFX_MOUSE_SENSITIVITY_INFO_0_HU NULL
+#define PCFX_MOUSE_SENSITIVITY_INFO_0_HU "A \"PCFX Egér\" eszköztípus érzékenysége. Nagyobb értékek esetén az egérkurzor gyorsabban mozog."
 #define OPTION_VAL_1_00_HU NULL
 #define OPTION_VAL_1_25_HU NULL
 #define OPTION_VAL_1_50_HU NULL
@@ -8754,300 +8754,18 @@ struct retro_core_options_v2 options_pt_pt = {
    option_defs_pt_pt
 };
 
-/* RETRO_LANGUAGE_RO */
-
-#define PCFX_CDIMAGECACHE_LABEL_RO NULL
-#define PCFX_CDIMAGECACHE_INFO_0_RO NULL
-#define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_RO NULL
-#define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_RO NULL
-#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_RO NULL
-#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_RO NULL
-#define PCFX_EMULATE_BUGGY_CODEC_LABEL_RO NULL
-#define PCFX_EMULATE_BUGGY_CODEC_INFO_0_RO NULL
-#define PCFX_RESAMP_QUALITY_LABEL_RO NULL
-#define PCFX_RESAMP_QUALITY_INFO_0_RO NULL
-#define PCFX_RAINBOW_CHROMAIP_LABEL_RO NULL
-#define PCFX_RAINBOW_CHROMAIP_INFO_0_RO NULL
-#define PCFX_NOSPRITELIMIT_LABEL_RO NULL
-#define PCFX_NOSPRITELIMIT_INFO_0_RO NULL
-#define PCFX_INITIAL_SCANLINE_LABEL_RO NULL
-#define PCFX_INITIAL_SCANLINE_INFO_0_RO NULL
-#define OPTION_VAL_4_RO NULL
-#define PCFX_LAST_SCANLINE_LABEL_RO NULL
-#define PCFX_LAST_SCANLINE_INFO_0_RO NULL
-#define OPTION_VAL_235_RO NULL
-#define PCFX_MOUSE_SENSITIVITY_LABEL_RO NULL
-#define PCFX_MOUSE_SENSITIVITY_INFO_0_RO NULL
-#define OPTION_VAL_1_00_RO NULL
-#define OPTION_VAL_1_25_RO NULL
-#define OPTION_VAL_1_50_RO NULL
-#define OPTION_VAL_1_75_RO NULL
-#define OPTION_VAL_2_00_RO NULL
-#define OPTION_VAL_2_25_RO NULL
-#define OPTION_VAL_2_50_RO NULL
-#define OPTION_VAL_2_75_RO NULL
-#define OPTION_VAL_3_00_RO NULL
-#define OPTION_VAL_3_25_RO NULL
-#define OPTION_VAL_3_50_RO NULL
-#define OPTION_VAL_3_75_RO NULL
-#define OPTION_VAL_4_00_RO NULL
-#define OPTION_VAL_4_25_RO NULL
-#define OPTION_VAL_4_50_RO NULL
-#define OPTION_VAL_4_75_RO NULL
-#define OPTION_VAL_5_00_RO NULL
-
-struct retro_core_option_v2_category option_cats_ro[] = {
-   { NULL, NULL, NULL },
-};
-struct retro_core_option_v2_definition option_defs_ro[] = {
-   {
-      "pcfx_cdimagecache",
-      PCFX_CDIMAGECACHE_LABEL_RO,
-      NULL,
-      PCFX_CDIMAGECACHE_INFO_0_RO,
-      NULL,
-      NULL,
-      {
-         { "disabled", NULL },
-         { "enabled", NULL },
-         { NULL, NULL},
-      },
-      "disabled"
-   },
-   {
-      "pcfx_high_dotclock_width",
-      PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_RO,
-      NULL,
-      PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_RO,
-      NULL,
-      NULL,
-      {
-         { "256",  NULL },
-         { "341",  NULL },
-         { "1024",  NULL },
-         { NULL, NULL},
-      },
-      "1024",
-   },
-   {
-      "pcfx_suppress_channel_reset_clicks",
-      PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_RO,
-      NULL,
-      PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_RO,
-      NULL,
-      NULL,
-      {
-         { "enabled", NULL },
-         { "disabled",     NULL },
-         { NULL, NULL},
-      },
-      "enabled",
-   },
-   {
-      "pcfx_emulate_buggy_codec",
-      PCFX_EMULATE_BUGGY_CODEC_LABEL_RO,
-      NULL,
-      PCFX_EMULATE_BUGGY_CODEC_INFO_0_RO,
-      NULL,
-      NULL,
-      {
-         { "disabled", NULL },
-         { "enabled",  NULL },
-         { NULL, NULL},
-      },
-      "disabled",
-   },
-   {
-      "pcfx_resamp_quality",
-      PCFX_RESAMP_QUALITY_LABEL_RO,
-      NULL,
-      PCFX_RESAMP_QUALITY_INFO_0_RO,
-      NULL,
-      NULL,
-      {
-         { "0",  NULL },
-         { "1",  NULL },
-         { "2",  NULL },
-         { "3",  NULL },
-         { "4",  NULL },
-         { "5",  NULL },
-         { NULL, NULL },
-      },
-      "3",
-   },
-   {
-      "pcfx_rainbow_chromaip",
-      PCFX_RAINBOW_CHROMAIP_LABEL_RO,
-      NULL,
-      PCFX_RAINBOW_CHROMAIP_INFO_0_RO,
-      NULL,
-      NULL,
-      {
-         { "disabled",      NULL },
-         { "enabled",      NULL },
-         { NULL, NULL},
-      },
-      "disabled",
-   },
-   {
-      "pcfx_nospritelimit",
-      PCFX_NOSPRITELIMIT_LABEL_RO,
-      NULL,
-      PCFX_NOSPRITELIMIT_INFO_0_RO,
-      NULL,
-      NULL,
-      {
-         { "disabled",              NULL },
-         { "enabled",             NULL },
-         { NULL, NULL},
-      },
-      "disabled",
-   },
-   {
-      "pcfx_initial_scanline",
-      PCFX_INITIAL_SCANLINE_LABEL_RO,
-      NULL,
-      PCFX_INITIAL_SCANLINE_INFO_0_RO,
-      NULL,
-      NULL,
-      {
-         { "0", NULL },
-         { "1",  NULL },
-         { "2",  NULL },
-         { "3",  NULL },
-         { "4",  OPTION_VAL_4_RO },
-         { "5",  NULL },
-         { "6",  NULL },
-         { "7",  NULL },
-         { "8",  NULL },
-         { "9",  NULL },
-         { "10",  NULL },
-         { "11",  NULL },
-         { "12",  NULL },
-         { "13",  NULL },
-         { "14",  NULL },
-         { "15",  NULL },
-         { "16",  NULL },
-         { "17",  NULL },
-         { "18",  NULL },
-         { "19",  NULL },
-         { "20",  NULL },
-         { "21",  NULL },
-         { "22",  NULL },
-         { "23",  NULL },
-         { "24",  NULL },
-         { "25",  NULL },
-         { "26",  NULL },
-         { "27",  NULL },
-         { "28",  NULL },
-         { "29",  NULL },
-         { "30",  NULL },
-         { "31",  NULL },
-         { "32",  NULL },
-         { "33",  NULL },
-         { "34",  NULL },
-         { "35",  NULL },
-         { "36",  NULL },
-         { "37",  NULL },
-         { "38",  NULL },
-         { "39",  NULL },
-         { "40",  NULL },
-         { NULL, NULL},
-      },
-      "4",
-   },
-   {
-      "pcfx_last_scanline",
-      PCFX_LAST_SCANLINE_LABEL_RO,
-      NULL,
-      PCFX_LAST_SCANLINE_INFO_0_RO,
-      NULL,
-      NULL,
-      {
-         { "208",   NULL },
-         { "209",   NULL },
-         { "210",   NULL },
-         { "211",   NULL },
-         { "212",   NULL },
-         { "213",   NULL },
-         { "214",   NULL },
-         { "215",   NULL },
-         { "216",   NULL },
-         { "217",   NULL },
-         { "218",   NULL },
-         { "219",   NULL },
-         { "220",   NULL },
-         { "221",   NULL },
-         { "222",   NULL },
-         { "223",   NULL },
-         { "224",   NULL },
-         { "225",   NULL },
-         { "226",   NULL },
-         { "227",   NULL },
-         { "228",   NULL },
-         { "229",   NULL },
-         { "230",   NULL },
-         { "231",   NULL },
-         { "232",   NULL },
-         { "233",   NULL },
-         { "234",   NULL },
-         { "235",   OPTION_VAL_235_RO },
-         { "236",   NULL },
-         { "237",   NULL },
-         { "238",   NULL },
-         { "239",   NULL },
-         { NULL, NULL},
-      },
-      "235",
-   },
-   {
-      "pcfx_mouse_sensitivity",
-      PCFX_MOUSE_SENSITIVITY_LABEL_RO,
-      NULL,
-      PCFX_MOUSE_SENSITIVITY_INFO_0_RO,
-      NULL,
-      NULL,
-      {
-         { "1.00",   OPTION_VAL_1_00_RO },
-         { "1.25",   OPTION_VAL_1_25_RO },
-         { "1.50",   OPTION_VAL_1_50_RO },
-         { "1.75",   OPTION_VAL_1_75_RO },
-         { "2.00",   OPTION_VAL_2_00_RO },
-         { "2.25",   OPTION_VAL_2_25_RO },
-         { "2.50",   OPTION_VAL_2_50_RO },
-         { "2.75",   OPTION_VAL_2_75_RO },
-         { "3.00",   OPTION_VAL_3_00_RO },
-         { "3.25",   OPTION_VAL_3_25_RO },
-         { "3.50",   OPTION_VAL_3_50_RO },
-         { "3.75",   OPTION_VAL_3_75_RO },
-         { "4.00",   OPTION_VAL_4_00_RO },
-         { "4.25",   OPTION_VAL_4_25_RO },
-         { "4.50",   OPTION_VAL_4_50_RO },
-         { "4.75",   OPTION_VAL_4_75_RO },
-         { "5.00",   OPTION_VAL_5_00_RO },
-         { NULL, NULL},
-      },
-      "1.25",
-   },
-   { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
-};
-struct retro_core_options_v2 options_ro = {
-   option_cats_ro,
-   option_defs_ro
-};
-
 /* RETRO_LANGUAGE_RU */
 
 #define PCFX_CDIMAGECACHE_LABEL_RU "Кэшировать образ CD (требуется перезапуск)"
 #define PCFX_CDIMAGECACHE_INFO_0_RU "При запуске загружать полный образ диска в память. Может снижать время загрузок, но увеличивает время запуска."
 #define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_RU "Ширина высокой частоты пикселизации (перезапуск)"
-#define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_RU NULL
+#define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_RU "Эмулируемая ширина в режиме частоты пикселизации 7.16 МГц. Более низкие значения быстрее, но могут вызывать искажение пикселей."
 #define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_RU "Подавлять щелчки при сбросах канала (требуется перезапуск)"
 #define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_RU "Хак, подавляющий щелчки, вызванные принудительными сбросами канала."
 #define PCFX_EMULATE_BUGGY_CODEC_LABEL_RU "Эмулировать ошибки кодека (требуется перезапуск)"
 #define PCFX_EMULATE_BUGGY_CODEC_INFO_0_RU "Хак, эмулирующий ошибки ADPCM-кодировщика, используемого для ADPCM в некоторых играх."
 #define PCFX_RESAMP_QUALITY_LABEL_RU "Качество звука (требуется перезапуск)"
-#define PCFX_RESAMP_QUALITY_INFO_0_RU NULL
+#define PCFX_RESAMP_QUALITY_INFO_0_RU "Более высокие значения улучшают соотношение сигнал-шум и передачу высоких частот (\"яркости\"), но повышают сложность вычислений и незначительно увеличивают задержку."
 #define PCFX_RAINBOW_CHROMAIP_LABEL_RU "Билинейная интерполяция цветности (требуется перезапуск)"
 #define PCFX_RAINBOW_CHROMAIP_INFO_0_RU "Включает билинейную интерполяцию для канала цветности на выходе RAINBOW YUV. В некоторых играх может вызывать графические баги."
 #define PCFX_NOSPRITELIMIT_LABEL_RU "Без ограничения спрайтов (требуется перезапуск)"
@@ -10451,13 +10169,13 @@ struct retro_core_options_v2 options_sv = {
 #define PCFX_CDIMAGECACHE_LABEL_TR "CD Kalıbı Önbelleği (Yeniden Başlatılmalı)"
 #define PCFX_CDIMAGECACHE_INFO_0_TR "Başlangıç sırasında bütün kalıbı hafızaya yükler. Başlangıç sürecini uzatmak pahasına oyundaki yüklenme sürelerini kısaltabilir."
 #define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_TR "Yüksek Nokta Saat Genişliği (Yeniden Başlatılmalı)"
-#define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_TR NULL
+#define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_TR "7.16 MHz nokta saati kipi için taklit edilmiş genişlik. Daha düşük değerler daha hızlıdır, ancak bir dereceye kadar piksel bozulmasına neden olur."
 #define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_TR "Kanal Sıfırlama Tıklamalarını Bastır (Yeniden Başlatılmalı)"
 #define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_TR "Zorla kanal sıfırlamalarının neden olduğu ses tıklamalarını bastırmak için geliştirme."
 #define PCFX_EMULATE_BUGGY_CODEC_LABEL_TR "Buggy Çözücü Taklidi (Yeniden Başlatılmalı)"
 #define PCFX_EMULATE_BUGGY_CODEC_INFO_0_TR "Bazı oyunlarda ADPCM için kullanılan 'buggy ADPCM' kodlayıcısını taklit eden gelişitirici."
 #define PCFX_RESAMP_QUALITY_LABEL_TR "Ses Kalitesi (Yeniden Başlatılmalı)"
-#define PCFX_RESAMP_QUALITY_INFO_0_TR NULL
+#define PCFX_RESAMP_QUALITY_INFO_0_TR "Daha yüksek değerler, artan hesaplama karmaşıklığı ve gecikmede tölere edilebilir artış pahasına daha iyi gürültü sinyali ve daha yüksek frekansların (parlaklık) daha iyi korunmasına karşılık gelir."
 #define PCFX_RAINBOW_CHROMAIP_LABEL_TR "Chroma Kanalı Doğrusal Ara Değer (Yeniden Başlatılmalı)"
 #define PCFX_RAINBOW_CHROMAIP_INFO_0_TR "RAINBOW YUV çıktısının renk kanalında çift doğrusal ara değeri etkinleştirin. Bazı oyunlarda grafik hatalarına neden olabilir."
 #define PCFX_NOSPRITELIMIT_LABEL_TR "Hareket Sınırını Kaldır (Yeniden Başlatılmalı)"
