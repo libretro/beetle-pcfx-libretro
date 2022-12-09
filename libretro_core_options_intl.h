@@ -1142,28 +1142,28 @@ struct retro_core_options_v2 options_chs = {
 
 /* RETRO_LANGUAGE_CHT */
 
-#define PCFX_CDIMAGECACHE_LABEL_CHT "光碟映像檔快取 (需要重新啟動)"
+#define PCFX_CDIMAGECACHE_LABEL_CHT "映像檔快取 (需要重新啟動)"
 #define PCFX_CDIMAGECACHE_INFO_0_CHT "執行時將光碟映像檔，完整載入到記憶體中。拖延開啟時間，縮短讀取時間。"
-#define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_CHT NULL
-#define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_CHT NULL
-#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_CHT NULL
-#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_CHT NULL
-#define PCFX_EMULATE_BUGGY_CODEC_LABEL_CHT NULL
-#define PCFX_EMULATE_BUGGY_CODEC_INFO_0_CHT NULL
-#define PCFX_RESAMP_QUALITY_LABEL_CHT "音效品質(必須重新啟動)"
-#define PCFX_RESAMP_QUALITY_INFO_0_CHT NULL
-#define PCFX_RAINBOW_CHROMAIP_LABEL_CHT NULL
-#define PCFX_RAINBOW_CHROMAIP_INFO_0_CHT NULL
+#define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_CHT "高像素時脈寬度 (需要重新啟動)"
+#define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_CHT "7.16 MHz 像素時脈模式的模擬寬度。值越低速度越快，但會導致像素失真。"
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_CHT "抑制聲道重置雜音 (需要重新啟動)"
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_CHT "破解抑制由強制聲道重置引起的音訊雜音。"
+#define PCFX_EMULATE_BUGGY_CODEC_LABEL_CHT "模擬錯誤編碼 (需要重新啟動)"
+#define PCFX_EMULATE_BUGGY_CODEC_INFO_0_CHT "破解模擬部分遊戲音頻訊號 ADPCM 錯誤編碼。"
+#define PCFX_RESAMP_QUALITY_LABEL_CHT "音質 (需要重新啟動)"
+#define PCFX_RESAMP_QUALITY_INFO_0_CHT "較高的值可提供更好的訊噪比，並保持較高頻率(亮度)，但增加計算資源且可能導致延遲(可忽略不計)。"
+#define PCFX_RAINBOW_CHROMAIP_LABEL_CHT "色度通道雙線性插值 (需要重新啟動)"
+#define PCFX_RAINBOW_CHROMAIP_INFO_0_CHT "RAINBOW YUV 輸出的色度通道上使用雙線性插值。可能導致部分遊戲圖形故障。"
 #define PCFX_NOSPRITELIMIT_LABEL_CHT "沒有素材限制 (需要重新啟動)"
 #define PCFX_NOSPRITELIMIT_INFO_0_CHT "刪除每條掃描線16張素材的硬體限制。警告: 可能導致遊戲圖形故障。"
 #define PCFX_INITIAL_SCANLINE_LABEL_CHT "初始掃描線"
 #define PCFX_INITIAL_SCANLINE_INFO_0_CHT "設定最初渲染的掃描線。過高的值將裁剪影像頂部。"
-#define OPTION_VAL_4_CHT "4(預設)"
+#define OPTION_VAL_4_CHT "4 (預設)"
 #define PCFX_LAST_SCANLINE_LABEL_CHT "最後掃描線"
 #define PCFX_LAST_SCANLINE_INFO_0_CHT "設定最後渲染的掃描線。過低的值將裁剪影像底部。"
 #define OPTION_VAL_235_CHT "235 (預設)"
 #define PCFX_MOUSE_SENSITIVITY_LABEL_CHT "滑鼠靈敏度"
-#define PCFX_MOUSE_SENSITIVITY_INFO_0_CHT NULL
+#define PCFX_MOUSE_SENSITIVITY_INFO_0_CHT "設定滑鼠靈敏度。較高的值游標移動速度越快。"
 #define OPTION_VAL_1_00_CHT NULL
 #define OPTION_VAL_1_25_CHT NULL
 #define OPTION_VAL_1_50_CHT NULL
