@@ -20,7 +20,6 @@
 
 extern MDFNGI EmulatedPCFX;
 
-void MDFN_PrintError(const char *format, ...);
 void MDFN_DispMessage(const char *format, ...);
 
 void MDFN_LoadGameCheats(void *override);

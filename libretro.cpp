@@ -391,10 +391,7 @@ static bool LoadCommon(std::vector<CDIF *> *CDInterfaces)
       return false;
 
    if (BIOSFile->size != 1024 * 1024)
-   {
-      MDFN_PrintError("BIOS ROM file is incorrect size.\n");
       return false;
-   }
 
    memcpy(BIOSROM, BIOSFile->data, 1024 * 1024);
 
@@ -1779,19 +1776,4 @@ void MDFN_DispMessage(const char *format, ...)
    msg.msg = strc;
 
    environ_cb(RETRO_ENVIRONMENT_SET_MESSAGE, &msg);
-}
-
-void MDFN_PrintError(const char *format, ...)
-{
-   char *temp;
-   va_list ap;
-
-   va_start(ap, format);
-   temp = (char*)malloc(4096 * sizeof(char));
-   vsnprintf(temp, 4096, format, ap);
-   if (log_cb)
-      log_cb(RETRO_LOG_ERROR, "%s\n", temp);
-   free(temp);
-
-   va_end(ap);
 }
