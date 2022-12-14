@@ -1,5 +1,4 @@
 #include <stdarg.h>
-#include <errno.h>
 #include <string.h>
 #include <math.h>
 
@@ -11,7 +10,6 @@
 #include <retro_timers.h>
 #include <streams/file_stream.h>
 
-#include "mednafen/error.h"
 #include "mednafen/mednafen.h"
 #include "mednafen/mempatcher.h"
 #include "mednafen/git.h"
@@ -1187,17 +1185,11 @@ static void ReadM3U(std::vector<std::string> &file_list, std::string path, unsig
 
       if (efp.size() >= 4 && efp.substr(efp.size() - 4) == ".m3u")
       {
-         if (efp == path)
-         {
-            MDFN_Error(0, "M3U at \"%s\" references self.", efp.c_str());
+         if (efp == path) /* M3U references self */
             goto end;
-         }
 
-         if (depth == 99)
-         {
-            MDFN_Error(0, "M3U load recursion too deep!");
+         if (depth == 99) /* M3U load recursion too deep */
             goto end;
-         }
 
          ReadM3U(file_list, efp, depth++);
       }

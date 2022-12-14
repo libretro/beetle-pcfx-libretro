@@ -41,11 +41,10 @@ found freely through public domain sources.
 //////////////////////////////////////////////////////////
 // CPU routines
 
-#include "mednafen/mednafen.h"
-#include <mednafen/masmem.h>
+#include "../../mednafen.h"
+#include "../../masmem.h"
 
 #include <string.h>
-#include <errno.h>
 #include <algorithm>
 
 #include "v810_opt.h"

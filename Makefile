@@ -53,7 +53,6 @@ ifneq ($(platform), osx)
 	PTHREAD_FLAGS = -pthread
 endif
 NEED_TREMOR = 1
-WANT_NEW_API = 1
 NEED_STEREO_SOUND = 1
 NEED_CD = 1
 NEED_SCSI_CD = 1

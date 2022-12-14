@@ -20,7 +20,6 @@
 #include <sys/types.h>
 #include "cdromif.h"
 #include "CDAccess.h"
-#include "../error.h"
 #include "../general.h"
 
 #include <algorithm>
@@ -199,7 +198,7 @@ CDIF_Queue::~CDIF_Queue()
 }
 
 /* Returns false if message not read, true if it was read.  Will always return true if "blocking" is set.
- * Will throw MDFN_Error if the read message code is CDIF_MSG_FATAL_ERROR */
+ * Will return false if the read message code is CDIF_MSG_FATAL_ERROR */
 bool CDIF_Queue::Read(CDIF_Message *message, bool blocking)
 {
    bool ret = false;
@@ -529,11 +528,6 @@ CDIF_ST::CDIF_ST(CDAccess *cda) : disc_cdaccess(cda)
    UnrecoverableError = false;
 
    disc_cdaccess->Read_TOC(&disc_toc);
-
-   if(disc_toc.first_track < 1 || disc_toc.last_track > 99 || disc_toc.first_track > disc_toc.last_track)
-   {
-      throw(MDFN_Error(0, "TOC first(%d)/last(%d) track numbers bad.", disc_toc.first_track, disc_toc.last_track));
-   }
 }
 
 CDIF_ST::~CDIF_ST()

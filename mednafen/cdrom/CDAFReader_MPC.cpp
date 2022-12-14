@@ -87,39 +87,37 @@ static mpc_bool_t impc_canseek(mpc_reader *p_reader)
 
 CDAFReader_MPC::CDAFReader_MPC(Stream *fp) : fw(fp)
 {
-   demux = NULL;
+   demux           = NULL;
    memset(&si, 0, sizeof(si));
    memset(MPCBuffer, 0, sizeof(MPCBuffer));
-   MPCBufferOffs = 0;
-   MPCBufferIn = 0;
+   MPCBufferOffs   = 0;
+   MPCBufferIn     = 0;
 
    memset(&reader, 0, sizeof(reader));
-   reader.read = impc_read;
-   reader.seek = impc_seek;
-   reader.tell = impc_tell;
+   reader.read     = impc_read;
+   reader.seek     = impc_seek;
+   reader.tell     = impc_tell;
    reader.get_size = impc_get_size;
-   reader.canseek = impc_canseek;
-   reader.data = (void*)fp;
+   reader.canseek  = impc_canseek;
+   reader.data     = (void*)fp;
 
    if(!(demux = mpc_demux_init(&reader)))
-   {
-      throw(0);
-   }
+      throw 0;
+
    mpc_demux_get_info(demux, &si);
 
    if(si.channels != 2)
-   {
-      mpc_demux_exit(demux);
-      demux = NULL;
-      throw MDFN_Error(0, _("MusePack stream has wrong number of channels(%u); the correct number is 2."), si.channels);
-   }
+      goto error;
 
    if(si.sample_freq != 44100)
-   {
-      mpc_demux_exit(demux);
-      demux = NULL;
-      throw MDFN_Error(0, _("MusePack stream has wrong samplerate(%u Hz); the correct samplerate is 44100 Hz."), si.sample_freq);
-   }
+      goto error;
+
+   return;
+
+error:
+   mpc_demux_exit(demux);
+   demux = NULL;
+   throw 0;
 }
 
 CDAFReader_MPC::~CDAFReader_MPC()

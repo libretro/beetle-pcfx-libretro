@@ -33,14 +33,12 @@
 #include <stdint.h>
 
 #include <string.h>
-#include <errno.h>
 #include <time.h>
 #include <memory>
 #include <algorithm>
 
 #include <retro_stat.h>
 
-#include "../error.h"
 #include "../general.h"
 #include "../mednafen-endian.h"
 #include "../FileStream.h"
@@ -1181,19 +1179,12 @@ int32_t CDAccess_Image::MakeSubPQ(int32_t lba, uint8_t *SubPWBuf) const
    uint32_t ma, sa, fa;
    uint32_t m, s, f;
    uint8_t pause_or = 0x00;
-   bool track_found = false;
 
    for(track = FirstTrack; track < (FirstTrack + NumTracks); track++)
    {
-      if(lba >= (Tracks[track].LBA - Tracks[track].pregap_dv - Tracks[track].pregap) && lba < (Tracks[track].LBA + Tracks[track].sectors + Tracks[track].postgap))
-      {
-         track_found = true;
+      if(lba >= (Tracks[track].LBA - Tracks[track].pregap_dv - Tracks[track].pregap) && lba < (Tracks[track].LBA + Tracks[track].sectors + Tracks[track].postgap)) /* Track found? */
          break;
-      }
    }
-
-   if(!track_found)
-      throw(MDFN_Error(0, "Could not find track for sector %u!", lba));
 
    if(lba < Tracks[track].LBA)
       lba_relative = Tracks[track].LBA - 1 - lba;

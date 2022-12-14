@@ -6,7 +6,6 @@ DEBUG                    := 0
 FRONTEND_SUPPORTS_RGB565 := 1
 CACHE_CD                 := 0
 NEED_BPP                 := 32
-WANT_NEW_API             := 1
 NEED_STEREO_SOUND        := 1
 HAVE_THREADS             := 1
 NEED_CD                  := 1
