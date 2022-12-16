@@ -1427,13 +1427,13 @@ struct retro_core_options_v2 options_cht = {
 #define PCFX_CDIMAGECACHE_LABEL_CS "Vyrovnávací Paměť Obrazu CD (Nutný Restart)"
 #define PCFX_CDIMAGECACHE_INFO_0_CS "Načíst kompletní obraz do paměti při spuštění. Může potenciálně zkrátit dobu načítání za cenu prodloužení doby spouštění."
 #define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_CS "Vysoká Šířka Taktu (Nutný Restart)"
-#define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_CS NULL
+#define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_CS "Emulovaná šířka pro režim bodových hodin 7,16 MHz. Nižší hodnoty jsou rychlejší, ale způsobují určitý stupeň zkreslení pixelů."
 #define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_CS "Potlačení Kliknutí pro Resetování Kanálu (Nutný Restart)"
 #define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_CS "Hack pro potlačení cvakání zvuku způsobeného vynuceným resetováním kanálu."
 #define PCFX_EMULATE_BUGGY_CODEC_LABEL_CS "Emulovat Chybný Kodek (Nutný Restart)"
 #define PCFX_EMULATE_BUGGY_CODEC_INFO_0_CS "Hack, který emuluje chybný kodér ADPCM používaný pro ADPCM v některých hrách."
 #define PCFX_RESAMP_QUALITY_LABEL_CS "Kvalita Zvuku (Nutný Restart)"
-#define PCFX_RESAMP_QUALITY_INFO_0_CS NULL
+#define PCFX_RESAMP_QUALITY_INFO_0_CS "Vyšší hodnoty odpovídají lepšímu odstupu signálu od šumu a lepšímu zachování vyšších frekvencí (\"jasu\") za cenu zvýšené výpočetní náročnosti a zanedbatelného zvýšení latence."
 #define PCFX_RAINBOW_CHROMAIP_LABEL_CS "Bilineární Interpolace Chromatického Kanálu (Nutný Restart)"
 #define PCFX_RAINBOW_CHROMAIP_INFO_0_CS "Povolení bilineární interpolace v chromatickém kanálu výstupu RAINBOW YUV. V některých hrách může způsobovat grafické závady."
 #define PCFX_NOSPRITELIMIT_LABEL_CS "Žádný Limit Spritu (Nutný Restart)"
