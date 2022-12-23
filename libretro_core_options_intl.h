@@ -6500,28 +6500,28 @@ struct retro_core_options_v2 options_ja = {
 
 /* RETRO_LANGUAGE_KO */
 
-#define PCFX_CDIMAGECACHE_LABEL_KO NULL
-#define PCFX_CDIMAGECACHE_INFO_0_KO NULL
-#define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_KO NULL
-#define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_KO NULL
-#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_KO NULL
-#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_KO NULL
-#define PCFX_EMULATE_BUGGY_CODEC_LABEL_KO NULL
-#define PCFX_EMULATE_BUGGY_CODEC_INFO_0_KO NULL
-#define PCFX_RESAMP_QUALITY_LABEL_KO NULL
-#define PCFX_RESAMP_QUALITY_INFO_0_KO NULL
-#define PCFX_RAINBOW_CHROMAIP_LABEL_KO NULL
-#define PCFX_RAINBOW_CHROMAIP_INFO_0_KO NULL
-#define PCFX_NOSPRITELIMIT_LABEL_KO NULL
-#define PCFX_NOSPRITELIMIT_INFO_0_KO NULL
-#define PCFX_INITIAL_SCANLINE_LABEL_KO NULL
-#define PCFX_INITIAL_SCANLINE_INFO_0_KO NULL
+#define PCFX_CDIMAGECACHE_LABEL_KO "CD 이미지 캐시 (재시작 필요)"
+#define PCFX_CDIMAGECACHE_INFO_0_KO "시작할 때 전체 이미지를 메모리에 불러옵니다. 시작 시간이 늘어나는 대신 로딩 시간을 잠재적으로 줄일 수 있습니다."
+#define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_KO "하이 도트클럭 폭 (재시작 필요)"
+#define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_KO "7.16MHz 도트-클록 모드의 에뮬레이트된 폭입니다. 값이 낮을수록 빨라지지만 약간의 픽셀 왜곡이 발생할 수 있습니다."
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_KO "채널 재설정 클릭 감소 (재시작 필요)"
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_KO "강제 채널 재설정으로 인한 오디오 클릭을 억제하는 핵입니다."
+#define PCFX_EMULATE_BUGGY_CODEC_LABEL_KO "버기 코덱 에뮬레이션 (재시작 필요)"
+#define PCFX_EMULATE_BUGGY_CODEC_INFO_0_KO "일부 게임의 ADPCM에 사용되는 버그가 있는 ADPCM 인코더를 에뮬레이트하는 핵입니다."
+#define PCFX_RESAMP_QUALITY_LABEL_KO "사운드 품질 (재시작 필요)"
+#define PCFX_RESAMP_QUALITY_INFO_0_KO "값이 높을수록 더 나은 신호 대비 잡음과 높은 주파수의 더 나은 보존이 가능하지만 계산의 복잡해지고 대기 시간이 증가합니다."
+#define PCFX_RAINBOW_CHROMAIP_LABEL_KO "크로마 채널 이중선형보간 (재시작 필요)"
+#define PCFX_RAINBOW_CHROMAIP_INFO_0_KO "RAINBOW YUV 출력의 크로마 채널에서 이중선형보간을 활성화합니다. 일부 게임에서 그래픽 결함이 발생할 수 있습니다."
+#define PCFX_NOSPRITELIMIT_LABEL_KO "스프라이트 제한 해제 (재시작 필요)"
+#define PCFX_NOSPRITELIMIT_INFO_0_KO "스캔라인 당 16개의 스프라이트 하드웨어 제한을 제거합니다. 경고: 일부 게임에서 그래픽 결함이 발생할 수 있습니다."
+#define PCFX_INITIAL_SCANLINE_LABEL_KO "최초 스캔라인"
+#define PCFX_INITIAL_SCANLINE_INFO_0_KO "첫 번째 렌더링 되는 스캔라인입니다. 값이 높으면 이미지 상단이 잘립니다."
 #define OPTION_VAL_4_KO "4 (기본)"
-#define PCFX_LAST_SCANLINE_LABEL_KO NULL
-#define PCFX_LAST_SCANLINE_INFO_0_KO NULL
+#define PCFX_LAST_SCANLINE_LABEL_KO "마지막 스캔라인"
+#define PCFX_LAST_SCANLINE_INFO_0_KO "마지막으로 렌더링 되는 스캔라인입니다. 값이 높으면 이미지 하단이 잘립니다."
 #define OPTION_VAL_235_KO "235 (기본)"
 #define PCFX_MOUSE_SENSITIVITY_LABEL_KO "마우스 감도"
-#define PCFX_MOUSE_SENSITIVITY_INFO_0_KO NULL
+#define PCFX_MOUSE_SENSITIVITY_INFO_0_KO "'PCFX 마우스' 장치의 감도를 구성합니다. 값이 높을수록 마우스 커서가 더 빠르게 움직입니다."
 #define OPTION_VAL_1_00_KO NULL
 #define OPTION_VAL_1_25_KO NULL
 #define OPTION_VAL_1_50_KO NULL
@@ -9336,10 +9336,10 @@ struct retro_core_options_v2 options_si = {
 #define PCFX_NOSPRITELIMIT_INFO_0_SK NULL
 #define PCFX_INITIAL_SCANLINE_LABEL_SK NULL
 #define PCFX_INITIAL_SCANLINE_INFO_0_SK NULL
-#define OPTION_VAL_4_SK NULL
+#define OPTION_VAL_4_SK "4 (predvolené)"
 #define PCFX_LAST_SCANLINE_LABEL_SK NULL
 #define PCFX_LAST_SCANLINE_INFO_0_SK NULL
-#define OPTION_VAL_235_SK NULL
+#define OPTION_VAL_235_SK "235 (predvolené)"
 #define PCFX_MOUSE_SENSITIVITY_LABEL_SK NULL
 #define PCFX_MOUSE_SENSITIVITY_INFO_0_SK NULL
 #define OPTION_VAL_1_00_SK NULL
