@@ -1143,7 +1143,7 @@ struct retro_core_options_v2 options_chs = {
 /* RETRO_LANGUAGE_CHT */
 
 #define PCFX_CDIMAGECACHE_LABEL_CHT "映像檔快取 (需要重新啟動)"
-#define PCFX_CDIMAGECACHE_INFO_0_CHT "執行時將光碟映像檔，完整載入到記憶體中。拖延開啟時間，縮短讀取時間。"
+#define PCFX_CDIMAGECACHE_INFO_0_CHT "執行時將光碟映像檔, 完整載入到記憶體中, 拖延開啟時間並縮短讀取時間。"
 #define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_CHT "高像素時脈寬度 (需要重新啟動)"
 #define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_CHT "7.16 MHz 像素時脈模式的模擬寬度。值越低速度越快，但會導致像素失真。"
 #define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_CHT "抑制聲道重置雜音 (需要重新啟動)"
@@ -6218,8 +6218,8 @@ struct retro_core_options_v2 options_it = {
 
 /* RETRO_LANGUAGE_JA */
 
-#define PCFX_CDIMAGECACHE_LABEL_JA NULL
-#define PCFX_CDIMAGECACHE_INFO_0_JA NULL
+#define PCFX_CDIMAGECACHE_LABEL_JA "CD イメージキャッシュ (再起動が必要)"
+#define PCFX_CDIMAGECACHE_INFO_0_JA "起動時に完全なイメージをメモリにロードします。起動時間が増す代わりにロード時間が短縮される可能性があります。"
 #define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_JA NULL
 #define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_JA NULL
 #define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_JA NULL
