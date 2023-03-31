@@ -576,6 +576,288 @@ struct retro_core_options_v2 options_ast = {
    option_defs_ast
 };
 
+/* RETRO_LANGUAGE_BE */
+
+#define PCFX_CDIMAGECACHE_LABEL_BE NULL
+#define PCFX_CDIMAGECACHE_INFO_0_BE NULL
+#define PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_BE NULL
+#define PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_BE NULL
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_BE NULL
+#define PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_BE NULL
+#define PCFX_EMULATE_BUGGY_CODEC_LABEL_BE NULL
+#define PCFX_EMULATE_BUGGY_CODEC_INFO_0_BE NULL
+#define PCFX_RESAMP_QUALITY_LABEL_BE NULL
+#define PCFX_RESAMP_QUALITY_INFO_0_BE NULL
+#define PCFX_RAINBOW_CHROMAIP_LABEL_BE NULL
+#define PCFX_RAINBOW_CHROMAIP_INFO_0_BE NULL
+#define PCFX_NOSPRITELIMIT_LABEL_BE NULL
+#define PCFX_NOSPRITELIMIT_INFO_0_BE NULL
+#define PCFX_INITIAL_SCANLINE_LABEL_BE NULL
+#define PCFX_INITIAL_SCANLINE_INFO_0_BE NULL
+#define OPTION_VAL_4_BE NULL
+#define PCFX_LAST_SCANLINE_LABEL_BE NULL
+#define PCFX_LAST_SCANLINE_INFO_0_BE NULL
+#define OPTION_VAL_235_BE NULL
+#define PCFX_MOUSE_SENSITIVITY_LABEL_BE NULL
+#define PCFX_MOUSE_SENSITIVITY_INFO_0_BE NULL
+#define OPTION_VAL_1_00_BE NULL
+#define OPTION_VAL_1_25_BE NULL
+#define OPTION_VAL_1_50_BE NULL
+#define OPTION_VAL_1_75_BE NULL
+#define OPTION_VAL_2_00_BE NULL
+#define OPTION_VAL_2_25_BE NULL
+#define OPTION_VAL_2_50_BE NULL
+#define OPTION_VAL_2_75_BE NULL
+#define OPTION_VAL_3_00_BE NULL
+#define OPTION_VAL_3_25_BE NULL
+#define OPTION_VAL_3_50_BE NULL
+#define OPTION_VAL_3_75_BE NULL
+#define OPTION_VAL_4_00_BE NULL
+#define OPTION_VAL_4_25_BE NULL
+#define OPTION_VAL_4_50_BE NULL
+#define OPTION_VAL_4_75_BE NULL
+#define OPTION_VAL_5_00_BE NULL
+
+struct retro_core_option_v2_category option_cats_be[] = {
+   { NULL, NULL, NULL },
+};
+struct retro_core_option_v2_definition option_defs_be[] = {
+   {
+      "pcfx_cdimagecache",
+      PCFX_CDIMAGECACHE_LABEL_BE,
+      NULL,
+      PCFX_CDIMAGECACHE_INFO_0_BE,
+      NULL,
+      NULL,
+      {
+         { "disabled", NULL },
+         { "enabled", NULL },
+         { NULL, NULL},
+      },
+      "disabled"
+   },
+   {
+      "pcfx_high_dotclock_width",
+      PCFX_HIGH_DOTCLOCK_WIDTH_LABEL_BE,
+      NULL,
+      PCFX_HIGH_DOTCLOCK_WIDTH_INFO_0_BE,
+      NULL,
+      NULL,
+      {
+         { "256",  NULL },
+         { "341",  NULL },
+         { "1024",  NULL },
+         { NULL, NULL},
+      },
+      "1024",
+   },
+   {
+      "pcfx_suppress_channel_reset_clicks",
+      PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_LABEL_BE,
+      NULL,
+      PCFX_SUPPRESS_CHANNEL_RESET_CLICKS_INFO_0_BE,
+      NULL,
+      NULL,
+      {
+         { "enabled", NULL },
+         { "disabled",     NULL },
+         { NULL, NULL},
+      },
+      "enabled",
+   },
+   {
+      "pcfx_emulate_buggy_codec",
+      PCFX_EMULATE_BUGGY_CODEC_LABEL_BE,
+      NULL,
+      PCFX_EMULATE_BUGGY_CODEC_INFO_0_BE,
+      NULL,
+      NULL,
+      {
+         { "disabled", NULL },
+         { "enabled",  NULL },
+         { NULL, NULL},
+      },
+      "disabled",
+   },
+   {
+      "pcfx_resamp_quality",
+      PCFX_RESAMP_QUALITY_LABEL_BE,
+      NULL,
+      PCFX_RESAMP_QUALITY_INFO_0_BE,
+      NULL,
+      NULL,
+      {
+         { "0",  NULL },
+         { "1",  NULL },
+         { "2",  NULL },
+         { "3",  NULL },
+         { "4",  NULL },
+         { "5",  NULL },
+         { NULL, NULL },
+      },
+      "3",
+   },
+   {
+      "pcfx_rainbow_chromaip",
+      PCFX_RAINBOW_CHROMAIP_LABEL_BE,
+      NULL,
+      PCFX_RAINBOW_CHROMAIP_INFO_0_BE,
+      NULL,
+      NULL,
+      {
+         { "disabled",      NULL },
+         { "enabled",      NULL },
+         { NULL, NULL},
+      },
+      "disabled",
+   },
+   {
+      "pcfx_nospritelimit",
+      PCFX_NOSPRITELIMIT_LABEL_BE,
+      NULL,
+      PCFX_NOSPRITELIMIT_INFO_0_BE,
+      NULL,
+      NULL,
+      {
+         { "disabled",              NULL },
+         { "enabled",             NULL },
+         { NULL, NULL},
+      },
+      "disabled",
+   },
+   {
+      "pcfx_initial_scanline",
+      PCFX_INITIAL_SCANLINE_LABEL_BE,
+      NULL,
+      PCFX_INITIAL_SCANLINE_INFO_0_BE,
+      NULL,
+      NULL,
+      {
+         { "0", NULL },
+         { "1",  NULL },
+         { "2",  NULL },
+         { "3",  NULL },
+         { "4",  OPTION_VAL_4_BE },
+         { "5",  NULL },
+         { "6",  NULL },
+         { "7",  NULL },
+         { "8",  NULL },
+         { "9",  NULL },
+         { "10",  NULL },
+         { "11",  NULL },
+         { "12",  NULL },
+         { "13",  NULL },
+         { "14",  NULL },
+         { "15",  NULL },
+         { "16",  NULL },
+         { "17",  NULL },
+         { "18",  NULL },
+         { "19",  NULL },
+         { "20",  NULL },
+         { "21",  NULL },
+         { "22",  NULL },
+         { "23",  NULL },
+         { "24",  NULL },
+         { "25",  NULL },
+         { "26",  NULL },
+         { "27",  NULL },
+         { "28",  NULL },
+         { "29",  NULL },
+         { "30",  NULL },
+         { "31",  NULL },
+         { "32",  NULL },
+         { "33",  NULL },
+         { "34",  NULL },
+         { "35",  NULL },
+         { "36",  NULL },
+         { "37",  NULL },
+         { "38",  NULL },
+         { "39",  NULL },
+         { "40",  NULL },
+         { NULL, NULL},
+      },
+      "4",
+   },
+   {
+      "pcfx_last_scanline",
+      PCFX_LAST_SCANLINE_LABEL_BE,
+      NULL,
+      PCFX_LAST_SCANLINE_INFO_0_BE,
+      NULL,
+      NULL,
+      {
+         { "208",   NULL },
+         { "209",   NULL },
+         { "210",   NULL },
+         { "211",   NULL },
+         { "212",   NULL },
+         { "213",   NULL },
+         { "214",   NULL },
+         { "215",   NULL },
+         { "216",   NULL },
+         { "217",   NULL },
+         { "218",   NULL },
+         { "219",   NULL },
+         { "220",   NULL },
+         { "221",   NULL },
+         { "222",   NULL },
+         { "223",   NULL },
+         { "224",   NULL },
+         { "225",   NULL },
+         { "226",   NULL },
+         { "227",   NULL },
+         { "228",   NULL },
+         { "229",   NULL },
+         { "230",   NULL },
+         { "231",   NULL },
+         { "232",   NULL },
+         { "233",   NULL },
+         { "234",   NULL },
+         { "235",   OPTION_VAL_235_BE },
+         { "236",   NULL },
+         { "237",   NULL },
+         { "238",   NULL },
+         { "239",   NULL },
+         { NULL, NULL},
+      },
+      "235",
+   },
+   {
+      "pcfx_mouse_sensitivity",
+      PCFX_MOUSE_SENSITIVITY_LABEL_BE,
+      NULL,
+      PCFX_MOUSE_SENSITIVITY_INFO_0_BE,
+      NULL,
+      NULL,
+      {
+         { "1.00",   OPTION_VAL_1_00_BE },
+         { "1.25",   OPTION_VAL_1_25_BE },
+         { "1.50",   OPTION_VAL_1_50_BE },
+         { "1.75",   OPTION_VAL_1_75_BE },
+         { "2.00",   OPTION_VAL_2_00_BE },
+         { "2.25",   OPTION_VAL_2_25_BE },
+         { "2.50",   OPTION_VAL_2_50_BE },
+         { "2.75",   OPTION_VAL_2_75_BE },
+         { "3.00",   OPTION_VAL_3_00_BE },
+         { "3.25",   OPTION_VAL_3_25_BE },
+         { "3.50",   OPTION_VAL_3_50_BE },
+         { "3.75",   OPTION_VAL_3_75_BE },
+         { "4.00",   OPTION_VAL_4_00_BE },
+         { "4.25",   OPTION_VAL_4_25_BE },
+         { "4.50",   OPTION_VAL_4_50_BE },
+         { "4.75",   OPTION_VAL_4_75_BE },
+         { "5.00",   OPTION_VAL_5_00_BE },
+         { NULL, NULL},
+      },
+      "1.25",
+   },
+   { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
+};
+struct retro_core_options_v2 options_be = {
+   option_cats_be,
+   option_defs_be
+};
+
 /* RETRO_LANGUAGE_CA */
 
 #define PCFX_CDIMAGECACHE_LABEL_CA NULL
