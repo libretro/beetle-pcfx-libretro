@@ -424,6 +424,8 @@ else ifneq (,$(findstring windows_msvc2017,$(platform)))
 else ifeq ($(platform), emscripten)
    TARGET := $(TARGET_NAME)_libretro_$(platform).bc
    STATIC_LINKING = 1
+   HAVE_THREADS = 0
+   NO_GCC = 0
 
 # Windows MSVC 2005 x86
 else ifeq ($(platform), windows_msvc2005_x86)
@@ -574,7 +576,7 @@ all: $(TARGET)
 ifeq ($(DEBUG),1)
    FLAGS += -O0 -g
 else
-   FLAGS += -O2 -DNDEBUG $(EXTRA_GCC_FLAGS)
+   FLAGS += -O3 -DNDEBUG $(EXTRA_GCC_FLAGS)
 endif
 
 ifneq (,$(findstring msvc,$(platform)))
@@ -625,9 +627,7 @@ else
 endif
 
 $(TARGET): $(OBJECTS)
-ifeq ($(platform), emscripten)
-	$(CXX) $(CXXFLAGS) $(OBJOUT)$@ $^
-else ifeq ($(STATIC_LINKING), 1)
+ifeq ($(STATIC_LINKING), 1)
 	$(AR) rcs $@ $(OBJECTS)
 else
 	$(LD) $(LINKOUT)$@ $^ $(LDFLAGS) $(LIBS)
