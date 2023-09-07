@@ -575,8 +575,10 @@ all: $(TARGET)
 
 ifeq ($(DEBUG),1)
    FLAGS += -O0 -g
-else
+else ifeq ($(platform), emscripten)
    FLAGS += -O3 -DNDEBUG $(EXTRA_GCC_FLAGS)
+else
+   FLAGS += -O2 -DNDEBUG $(EXTRA_GCC_FLAGS)
 endif
 
 ifneq (,$(findstring msvc,$(platform)))
