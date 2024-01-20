@@ -1,5 +1,6 @@
 DEBUG = 0
 FRONTEND_SUPPORTS_RGB565 = 1
+EMULATORJS_THREADS ?= 0
 
 CORE_DIR := .
 HAVE_CHD = 1
@@ -424,6 +425,12 @@ else ifneq (,$(findstring windows_msvc2017,$(platform)))
 else ifeq ($(platform), emscripten)
    TARGET := $(TARGET_NAME)_libretro_$(platform).bc
    STATIC_LINKING = 1
+   HAVE_THREADS = 0
+   ifeq ($(EMULATORJS_THREADS), 1)
+      LDFLAGS += -pthread
+      CFLAGS += -pthread
+      CXXFLAGS += -pthread
+   endif
 
 # Windows MSVC 2005 x86
 else ifeq ($(platform), windows_msvc2005_x86)
@@ -573,6 +580,8 @@ all: $(TARGET)
 
 ifeq ($(DEBUG),1)
    FLAGS += -O0 -g
+else ifeq ($(platform), emscripten)
+   FLAGS += -O3 -DNDEBUG $(EXTRA_GCC_FLAGS)
 else
    FLAGS += -O2 -DNDEBUG $(EXTRA_GCC_FLAGS)
 endif
@@ -625,9 +634,7 @@ else
 endif
 
 $(TARGET): $(OBJECTS)
-ifeq ($(platform), emscripten)
-	$(CXX) $(CXXFLAGS) $(OBJOUT)$@ $^
-else ifeq ($(STATIC_LINKING), 1)
+ifeq ($(STATIC_LINKING), 1)
 	$(AR) rcs $@ $(OBJECTS)
 else
 	$(LD) $(LINKOUT)$@ $^ $(LDFLAGS) $(LIBS)
