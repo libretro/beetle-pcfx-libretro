@@ -197,6 +197,11 @@ ifeq ($(IOSSDK),)
 endif
    CC = clang -arch arm64 -isysroot $(IOSSDK)
    CXX = clang++ -arch arm64 -isysroot $(IOSSDK)
+   MINVER = -mappletvos-version-min=11.0
+   LDFLAGS += $(MINVER)
+   FLAGS += $(MINVER)
+   CC += $(MINVER)
+   CXX += $(MINVER)
 
 else ifeq ($(platform), qnx)
    TARGET := $(TARGET_NAME)_libretro_$(platform).so
