@@ -551,6 +551,11 @@ else
    HAVE_CDROM = 1
 endif
 
+# webOS
+ifneq (,$(or $(findstring webos,$(CROSS_COMPILE)),$(findstring starfish,$(CROSS_COMPILE))))
+   IS_X86 = 0
+endif
+
 include Makefile.common
 
 ifneq (,$(findstring msvc,$(platform)))
